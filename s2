@@ -174,7 +174,7 @@ function Update:Window(text, logo, keybind)
     Main.ClipsDescendants = true
     Main.AnchorPoint = Vector2.new(0.5, 0.5)
     Main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    Main.BackgroundTransparency = 0.1
+    Main.BackgroundTransparency = 0
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Size = UDim2.new(0, 0, 0, 0)
     UICorner.Parent = Main
@@ -1089,8 +1089,6 @@ function Update:Window(text, logo, keybind)
             updateTitle()
             callback(selected)
         end
-
-         setupScrollFrame(DropScroll, "DropScroll")
     
     -- ปรับปรุงการคำนวณ CanvasSize สำหรับ Dropdown
     local function updateDropdownCanvasSize()

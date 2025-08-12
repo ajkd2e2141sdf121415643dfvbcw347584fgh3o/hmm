@@ -1,5 +1,5 @@
 --uiแต่งv2
-_G.Color = Color3.fromRGB(0, 86, 255)
+_G.Color = Color3.fromRGB(0, 42, 255)
 local FixVersion = "Vector Hub"
 function Vec(text)
     local Notification = require(game.ReplicatedStorage.Notification)
@@ -1165,429 +1165,301 @@ function Update:Window(text, logo, keybind)
         return dropfunc
     end
 
-        function main:Slider(text, min, max, start, callback)
-            local sliderfunc = {}
-            local SliderFrame = Instance.new("Frame")
-            local SliderFrame_2 = Instance.new("Frame")
-            local UIStroke = Instance.new("UIStroke")
-            local UICorner = Instance.new("UICorner")
-            local ImageLabel = Instance.new("ImageLabel")
-            local Space = Instance.new("TextLabel")
-            local Title = Instance.new("TextLabel")
-            local SliderInput = Instance.new("Frame")
-            local SliderButton = Instance.new("Frame")
-            local SliderCount = Instance.new("Frame")
-            local SliderCorner = Instance.new("UICorner")
-            local SliderCorner2 = Instance.new("UICorner")
-            local BoxFrame = Instance.new("Frame")
-            local SliderBox = Instance.new("TextBox")
-            local SliderStroke = Instance.new("UIStroke")
-            local Title_2 = Instance.new("TextButton")
-            local UICorner_2 = Instance.new("UICorner")
-            local UICorner_3 = Instance.new("UICorner")
-        
-            SliderFrame.Name = "SliderFrame"
-            SliderFrame.Parent = MainFramePage
-            SliderFrame.BackgroundColor3 = _G.Color 
-            SliderFrame.BackgroundTransparency = 1.000
-            SliderFrame.BorderSizePixel = 0
-            SliderFrame.Size = UDim2.new(0, 387, 0, 60)
-        
-            SliderFrame_2.Name = "SliderFrame_2"
-            SliderFrame_2.Parent = SliderFrame
-            SliderFrame_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            SliderFrame_2.BackgroundTransparency = 1
-            SliderFrame_2.BorderSizePixel = 0
-            SliderFrame_2.Position = UDim2.new(0, 1, 0, 1)
-            SliderFrame_2.Size = UDim2.new(0, 387, 0, 60)
-        
-            UIStroke.Name = "UIStroke"
-            UIStroke.Parent = SliderFrame_2
-            UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            UIStroke.Color = _G.Color 
-            UIStroke.LineJoinMode = Enum.LineJoinMode.Round
-            UIStroke.Thickness = 1
-            UIStroke.Transparency = 0
-            UIStroke.Enabled = true
-            UIStroke.Archivable = true
-        
-            UICorner.Parent = SliderFrame_2
-            UICorner.CornerRadius = UDim.new(0, 3)
-        
-            Title.Parent = SliderFrame_2
-            Title.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
-            Title.BackgroundTransparency = 1.000
-            Title.Position = UDim2.new(0, 9, 0, 5)
-            Title.Size = UDim2.new(0, 280, 0, 30)
-            Title.Font = Enum.Font.GothamSemibold
-            Title.Text = text
-            Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Title.TextSize = 15.000
-            Title.TextXAlignment = Enum.TextXAlignment.Left
-        
-            SliderInput.Name = "SliderInput"
-            SliderInput.Parent = SliderFrame_2
-            SliderInput.BackgroundColor3 = _G.Color 
-            SliderInput.BackgroundTransparency = 0.7
-            SliderInput.BorderSizePixel = 0
-            SliderInput.Position = UDim2.new(0, 8, 0, 42)
-            SliderInput.Size = UDim2.new(0, 365, 0, 6)
-        
-            SliderCorner2.CornerRadius = UDim.new(0, 100000)
-            SliderCorner2.Parent = SliderInput
-        
-            SliderButton.Name = "SliderButton"
-            SliderButton.Parent = SliderInput
-            SliderButton.BackgroundColor3 = _G.Color 
-            SliderButton.BackgroundTransparency = 1.000
-            SliderButton.BorderSizePixel = 0
-            SliderButton.Position = UDim2.new(0, 0, 0, -7)
-            SliderButton.Size = UDim2.new(0, 346, 0, 25)
-        
-            SliderCount.Name = "SliderCount"
-            SliderCount.Parent = SliderButton
-            SliderCount.BackgroundColor3 = _G.Color 
-            SliderCount.BackgroundTransparency = 0.3
-            SliderCount.BorderSizePixel = 0
-            SliderCount.Position = UDim2.new(0, start, 0, 0)
-            SliderCount.Size = UDim2.new(0, 18, 0, 18)
-        
-            Title_2.Name = "Title_2"
-            Title_2.Parent = SliderButton
-            Title_2.AnchorPoint = Vector2.new(0, 0)
-            Title_2.BackgroundColor3 = _G.Color 
-            Title_2.AutoButtonColor = false
-            Title_2.BackgroundTransparency = 1.000
-            Title_2.Position = UDim2.new(0, start, 0, 0)
-            Title_2.Size = UDim2.new(0, 18, 0, 18)
-            Title_2.Font = Enum.Font.GothamBold
-            Title_2.Text = tostring(start and math.floor((start / max) * (max - min) + min) or 0)
-            Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Title_2.TextSize = 8.000
-            Title_2.TextXAlignment = Enum.TextXAlignment.Center
-        
-            UICorner_2.Parent = Title_2
-            UICorner_2.CornerRadius = UDim.new(0, 100000)
-        
-            SliderCorner.CornerRadius = UDim.new(0, 100000)
-            SliderCorner.Parent = SliderCount
-        
-            SliderStroke.Name = "SliderStroke"
-            SliderStroke.Parent = BoxFrame
-            SliderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-            SliderStroke.Color = _G.Color 
-            SliderStroke.LineJoinMode = Enum.LineJoinMode.Round
-            SliderStroke.Thickness = 1
-            SliderStroke.Transparency = 0.5
-            SliderStroke.Enabled = true
-            SliderStroke.Archivable = true
-        
-            BoxFrame.Name = "BoxFrame"
-            BoxFrame.Parent = SliderFrame_2
-            BoxFrame.BackgroundColor3 = _G.Color 
-            BoxFrame.BackgroundTransparency = 1.000
-            BoxFrame.Size = UDim2.new(0, 50, 0, 15)
-            BoxFrame.Position = UDim2.new(0, 323, 0, 8)
-        
-            SliderBox.Name = "SliderBox"
-            SliderBox.Parent = BoxFrame
-            SliderBox.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-            SliderBox.BackgroundTransparency = 1.000
-            SliderBox.Position = UDim2.new(0, 0, 0, 1.65)
-            SliderBox.Size = UDim2.new(0, 50, 0, 15)
-            SliderBox.ClearTextOnFocus = false
-            SliderBox.Font = Enum.Font.Code
-            SliderBox.Text = tostring(start and math.floor((start / max) * (max - min) + min) or 0)
-            SliderBox.TextColor3 = Color3.fromRGB(200, 200, 200)
-            SliderBox.TextSize = 10.000
-            SliderBox.TextTransparency = 0
-            SliderBox.TextXAlignment = Enum.TextXAlignment.Center
-            SliderBox.TextEditable = true
-        
-            UICorner_3.Parent = BoxFrame
-            UICorner_3.CornerRadius = UDim.new(0, 2)
-        
-            local UserInputService = game:GetService("UserInputService")
-            local TweenService = game:GetService("TweenService")
-            
-            local dragging = false
-            local SliderButtonInput
-            
-            local function updateSlider(input)
-                local posX = math.clamp((input.Position.X - SliderButton.AbsolutePosition.X) / SliderButton.AbsoluteSize.X, 0, 1)
-                
-                local newPos = UDim2.new(posX, 0, 0, 0)
-                
-                SliderCount:TweenPosition(
-                    UDim2.new(posX, 0, 0, 0),
-                    Enum.EasingDirection.InOut, 
-                    Enum.EasingStyle.Linear, 
-                    0.08, 
-                    true
-                )
-                
-                Title_2:TweenPosition(
-                    UDim2.new(posX, 0, 0, 0),
-                    Enum.EasingDirection.InOut, 
-                    Enum.EasingStyle.Linear, 
-                    0.12, 
-                    true
-                )
-                
-                local Value = math.floor(posX * (max - min) + min)
-                
-                SliderBox.Text = tostring(Value)
-                Title_2.Text = tostring(Value)
-                
-                pcall(callback, Value)
-            end
-            
-            SliderButton.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                    dragging = true
-                    SliderButtonInput = input
-                    TweenService:Create(SliderCount,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0, Size = UDim2.new(0, 14, 0, 14) }):Play()
-                        
-                    TweenService:Create(Title_2,
-                        TweenInfo.new(0.12, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        {
-                            AnchorPoint = Vector2.new(0.22, 0.8),
-                            TextSize = 13.000,
-                            BackgroundTransparency = 0,
-                            Size = UDim2.new(0, 25, 0, 25)
-                        }):Play()
-                        
-                    TweenService:Create(SliderBox,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { TextTransparency = 0 }):Play()
-                        
-                    TweenService:Create(SliderInput,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0.5 }):Play()
-                        
-                    TweenService:Create(SliderStroke,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), 
-                        { Transparency = 0 }):Play()
-                        
-                    updateSlider(input)
-                end
-            end)
-            
-            SliderButton.InputEnded:Connect(function(input)
-                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and dragging then
-                    dragging = false
-                    
-                    TweenService:Create(SliderCount,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0.3, Size = UDim2.new(0, 18, 0, 18) }):Play()
-                        
-                    TweenService:Create(Title_2,
-                        TweenInfo.new(0.12, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        {
-                            AnchorPoint = Vector2.new(0, 0),
-                            TextSize = 8.000,
-                            BackgroundTransparency = 1.000,
-                            Size = UDim2.new(0, 18, 0, 18)
-                        }):Play()
-                        
-                    TweenService:Create(SliderBox,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { TextTransparency = 0.5 }):Play()
-                        
-                    TweenService:Create(SliderInput,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0.7 }):Play()
-                        
-                    TweenService:Create(SliderStroke,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), 
-                        { Transparency = 0.5 }):Play()
-                end
-            end)
-            
-            UserInputService.InputChanged:Connect(function(input)
-                if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                    updateSlider(input)
-                end
-            end)
-            
-            UserInputService.InputEnded:Connect(function(input)
-                if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and dragging then
-                    dragging = false
-                    
-                    TweenService:Create(SliderCount,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0.3, Size = UDim2.new(0, 18, 0, 18) }):Play()
-                        
-                    TweenService:Create(Title_2,
-                        TweenInfo.new(0.12, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        {
-                            AnchorPoint = Vector2.new(0, 0),
-                            TextSize = 8.000,
-                            BackgroundTransparency = 1.000,
-                            Size = UDim2.new(0, 18, 0, 18)
-                        }):Play()
-                        
-                    TweenService:Create(SliderBox,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { TextTransparency = 0.5 }):Play()
-                        
-                    TweenService:Create(SliderInput,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut),
-                        { BackgroundTransparency = 0.7 }):Play()
-                        
-                    TweenService:Create(SliderStroke,
-                        TweenInfo.new(0.08, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut), 
-                        { Transparency = 0.5 }):Play()
-                end
-            end)
-        
-            function set(property)
-                if property == "Text" then
-                    if tonumber(SliderBox.Text) then
-                        if tonumber(SliderBox.Text) <= max then
-                            Value = SliderBox.Text
-                            Title_2.Text = SliderBox.Text
-                            SliderCount:TweenPosition(
-                                UDim2.new(((tonumber(SliderBox.Text) or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.08, true)
-                            Title_2:TweenPosition(
-                                UDim2.new(((tonumber(SliderBox.Text) or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.12, true)
-                            pcall(function()
-                                callback(Value)
-                            end)
-                        end
-                        if tonumber(SliderBox.Text) > max then
-                            SliderBox.Text = max
-                            Title_2.Text = max
-                            Value = max
-                            SliderCount:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.08, true)
-                            Title_2:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.12, true)
-                            pcall(function()
-                                callback(Value)
-                            end)
-                        end
-                        if tonumber(SliderBox.Text) >= min then
-                            Value = SliderBox.Text
-                            Title_2.Text = SliderBox.Text
-                            SliderCount:TweenPosition(
-                                UDim2.new(((tonumber(SliderBox.Text) or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.08, true)
-                            Title_2:TweenPosition(
-                                UDim2.new(((tonumber(SliderBox.Text) or min) - min) / (max - min), 0, 0, 0), "InOut",
-                                "Linear", 0.12, true)
-                            pcall(function()
-                                callback(Value)
-                            end)
-                        end
-                        if tonumber(SliderBox.Text) < min then
-                            Value = min
-                            Title_2 = min
-                            SliderCount.Position = UDim2.new(((min or min) - min) / (max - min), 0, 0, 0)
-                            Title_2.Position = UDim2.new(((min or min) - min) / (max - min), 0, 0, 0)
-                            pcall(function()
-                                callback(Value)
-                            end)
-                        end
-                    else
-                        SliderBox.Text = "" or Value
-                        Title_2.Text = Value
-                    end
-                end
-            end
-        
-            SliderBox.Focused:Connect(function()
-                SliderBox.Changed:Connect(set)
-            end)
-        
-            SliderBox.FocusLost:Connect(function(enterP)
-                if not enterP then
-                    if SliderBox.Text == "" then
-                        SliderBox.Text = min
-                        Title_2.Text = min
-                        Value = min
-                        SliderCount:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear",
-                            0.08, true)
-                        Title_2:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear", 0.12,
-                            true)
-                        pcall(function()
-                            callback(Value)
-                        end)
-                    end
-                    if tonumber(SliderBox.Text) > tonumber(max) then
-                        Value = max
-                        SliderBox.Text = max
-                        Title_2.Text = max
-                        SliderCount:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut",
-                            "Linear", 0.08, true)
-                        Title_2:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut", "Linear",
-                            0.12, true)
-                        pcall(function()
-                            callback(Value)
-                        end)
-                    else
-                        Value = tonumber(SliderBox.Text)
-                    end
-                    if tonumber(SliderBox.Text) < min then
-                        SliderBox.Text = min
-                        Title_2.Text = min
-                        Value = min
-                        SliderCount:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear",
-                            0.08, true)
-                        Title_2:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear", 0.12,
-                            true)
-                        pcall(function()
-                            callback(Value)
-                        end)
-                    else
-                        Value = tonumber(SliderBox.Text)
-                    end
-                end
-                if tonumber(SliderBox.Text) > max then
-                    SliderBox.Text = max
-                    Title_2.Text = max
-                    Value = max
-                    SliderCount:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut", "Linear",
-                        0.08, true)
-                    Title_2:TweenPosition(UDim2.new(((max or min) - min) / (max - min), 0, 0, 0), "InOut", "Linear", 0.12,
-                        true)
-                    pcall(function()
-                        callback(Value)
-                    end)
-                else
-                    Value = tonumber(SliderBox.Text)
-                end
-                if tonumber(SliderBox.Text) < min then
-                    SliderBox.Text = min
-                    Title_2.Text = min
-                    Value = min
-                    SliderCount.Position = UDim2.new(((min) - min) / (max - min), 0, 0, 0)
-                    Title_2.Position = UDim2.new(((min) - min) / (max - min), 0, 0, 0)
-                    pcall(function()
-                        callback(Value)
-                    end)
-                else
-                    Value = tonumber(SliderBox.Text)
-                end
-                if SliderBox.Text == "" then
-                    SliderBox.Text = min
-                    Title_2.Text = min
-                    Value = min
-                    SliderCount:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear", 0.08,
-                        true)
-                    Title_2:TweenPosition(UDim2.new(((min) - min) / (max - min), 0, 0, 0), "InOut", "Linear", 0.12, true)
-                    pcall(function()
-                        callback(Value)
-                    end)
-                end
-            end)
-            return sliderfunc
+function main:Slider(text, min, max, start, callback)
+    local sliderfunc = {}
+    local Value = start or min
+    local dragging = false
+    local connections = {}
+
+    -- UI Elements
+    local SliderFrame = Instance.new("Frame")
+    local SliderFrame_2 = Instance.new("Frame")
+    local UIStroke = Instance.new("UIStroke")
+    local UICorner = Instance.new("UICorner")
+    local Title = Instance.new("TextLabel")
+    local SliderInput = Instance.new("Frame")
+    local SliderButton = Instance.new("Frame")
+    local SliderCount = Instance.new("Frame")
+    local SliderCorner = Instance.new("UICorner")
+    local SliderCorner2 = Instance.new("UICorner")
+    local BoxFrame = Instance.new("Frame")
+    local SliderBox = Instance.new("TextBox")
+    local SliderStroke = Instance.new("UIStroke")
+    local Title_2 = Instance.new("TextButton")
+    local UICorner_2 = Instance.new("UICorner")
+    local UICorner_3 = Instance.new("UICorner")
+
+    SliderFrame.Name = "SliderFrame"
+    SliderFrame.Parent = MainFramePage
+    SliderFrame.BackgroundColor3 = _G.Color 
+    SliderFrame.BackgroundTransparency = 1.000
+    SliderFrame.BorderSizePixel = 0
+    SliderFrame.Size = UDim2.new(0, 387, 0, 60)
+
+    SliderFrame_2.Name = "SliderFrame_2"
+    SliderFrame_2.Parent = SliderFrame
+    SliderFrame_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    SliderFrame_2.BackgroundTransparency = 1
+    SliderFrame_2.BorderSizePixel = 0
+    SliderFrame_2.Position = UDim2.new(0, 1, 0, 1)
+    SliderFrame_2.Size = UDim2.new(0, 387, 0, 60)
+
+    UIStroke.Name = "UIStroke"
+    UIStroke.Parent = SliderFrame_2
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Color = _G.Color 
+    UIStroke.LineJoinMode = Enum.LineJoinMode.Round
+    UIStroke.Thickness = 1
+    UIStroke.Transparency = 0
+    UIStroke.Enabled = true
+    UIStroke.Archivable = true
+
+    UICorner.Parent = SliderFrame_2
+    UICorner.CornerRadius = UDim.new(0, 3)
+
+    Title.Parent = SliderFrame_2
+    Title.BackgroundColor3 = Color3.fromRGB(150, 150, 150)
+    Title.BackgroundTransparency = 1.000
+    Title.Position = UDim2.new(0, 9, 0, 5)
+    Title.Size = UDim2.new(0, 280, 0, 30)
+    Title.Font = Enum.Font.GothamSemibold
+    Title.Text = text
+    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextSize = 15.000
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+
+    SliderInput.Name = "SliderInput"
+    SliderInput.Parent = SliderFrame_2
+    SliderInput.BackgroundColor3 = _G.Color 
+    SliderInput.BackgroundTransparency = 0.7
+    SliderInput.BorderSizePixel = 0
+    SliderInput.Position = UDim2.new(0, 8, 0, 42)
+    SliderInput.Size = UDim2.new(0, 365, 0, 6)
+
+    SliderCorner2.CornerRadius = UDim.new(0, 100000)
+    SliderCorner2.Parent = SliderInput
+
+    SliderButton.Name = "SliderButton"
+    SliderButton.Parent = SliderInput
+    SliderButton.BackgroundColor3 = _G.Color 
+    SliderButton.BackgroundTransparency = 1.000
+    SliderButton.BorderSizePixel = 0
+    SliderButton.Position = UDim2.new(0, 0, 0, -7)
+    SliderButton.Size = UDim2.new(0, 365, 0, 20)
+
+    SliderCount.Name = "SliderCount"
+    SliderCount.Parent = SliderButton
+    SliderCount.BackgroundColor3 = _G.Color 
+    SliderCount.BackgroundTransparency = 0.3
+    SliderCount.BorderSizePixel = 0
+    SliderCount.Size = UDim2.new(0, 18, 0, 18)
+
+    Title_2.Name = "Title_2"
+    Title_2.Parent = SliderButton
+    Title_2.AnchorPoint = Vector2.new(0, 0)
+    Title_2.BackgroundColor3 = _G.Color 
+    Title_2.AutoButtonColor = false
+    Title_2.BackgroundTransparency = 1.000
+    Title_2.Size = UDim2.new(0, 18, 0, 18)
+    Title_2.Font = Enum.Font.GothamBold
+    Title_2.Text = tostring(Value)
+    Title_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title_2.TextSize = 8.000
+    Title_2.TextXAlignment = Enum.TextXAlignment.Center
+
+    UICorner_2.Parent = Title_2
+    UICorner_2.CornerRadius = UDim.new(0, 100000)
+
+    SliderCorner.CornerRadius = UDim.new(0, 100000)
+    SliderCorner.Parent = SliderCount
+
+    BoxFrame.Name = "BoxFrame"
+    BoxFrame.Parent = SliderFrame_2
+    BoxFrame.BackgroundColor3 = _G.Color 
+    BoxFrame.BackgroundTransparency = 1.000
+    BoxFrame.Size = UDim2.new(0, 50, 0, 15)
+    BoxFrame.Position = UDim2.new(0, 323, 0, 8)
+
+    SliderBox.Name = "SliderBox"
+    SliderBox.Parent = BoxFrame
+    SliderBox.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    SliderBox.BackgroundTransparency = 1.000
+    SliderBox.Position = UDim2.new(0, 0, 0, 1.65)
+    SliderBox.Size = UDim2.new(0, 50, 0, 15)
+    SliderBox.ClearTextOnFocus = false
+    SliderBox.Font = Enum.Font.Code
+    SliderBox.Text = tostring(Value)
+    SliderBox.TextColor3 = Color3.fromRGB(200, 200, 200)
+    SliderBox.TextSize = 10.000
+    SliderBox.TextTransparency = 0
+    SliderBox.TextXAlignment = Enum.TextXAlignment.Center
+    SliderBox.TextEditable = true
+
+    SliderStroke.Name = "SliderStroke"
+    SliderStroke.Parent = BoxFrame
+    SliderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    SliderStroke.Color = _G.Color 
+    SliderStroke.LineJoinMode = Enum.LineJoinMode.Round
+    SliderStroke.Thickness = 1
+    SliderStroke.Transparency = 0.5
+    SliderStroke.Enabled = true
+    SliderStroke.Archivable = true
+
+    UICorner_3.Parent = BoxFrame
+    UICorner_3.CornerRadius = UDim.new(0, 2)
+
+    -- ฟังก์ชั่นที่ปรับปรุง
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+
+    local function calculatePosition(inputX)
+        local relativeX = inputX - SliderInput.AbsolutePosition.X
+        return math.clamp(relativeX / SliderInput.AbsoluteSize.X, 0, 1)
+    end
+
+    local function updateSlider(percentage, animate)
+        animate = animate ~= false
+        Value = math.floor(percentage * (max - min) + min)
+        Value = math.clamp(Value, min, max)
+
+        local targetPos = UDim2.new(percentage, -9, 0, -7)  -- ปรับ offset ให้ center knob
+        if animate then
+            SliderCount:TweenPosition(targetPos, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+            Title_2:TweenPosition(targetPos, Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.1, true)
+        else
+            SliderCount.Position = targetPos
+            Title_2.Position = targetPos
         end
 
+        SliderBox.Text = tostring(Value)
+        Title_2.Text = tostring(Value)
+        pcall(callback, Value)
+    end
+
+    local function startDrag(input)
+        if dragging then return end
+
+        dragging = true
+
+        -- Visual feedback
+        TweenService:Create(SliderCount, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            BackgroundTransparency = 0,
+            Size = UDim2.new(0, 20, 0, 20)
+        }):Play()
+
+        TweenService:Create(Title_2, TweenInfo.new(0.12, Enum.EasingStyle.Linear), {
+            AnchorPoint = Vector2.new(0.5, 0.5),
+            TextSize = 13,
+            BackgroundTransparency = 0,
+            Size = UDim2.new(0, 25, 0, 25)
+        }):Play()
+
+        TweenService:Create(SliderBox, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            TextTransparency = 0
+        }):Play()
+
+        TweenService:Create(SliderInput, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            BackgroundTransparency = 0.5
+        }):Play()
+
+        TweenService:Create(SliderStroke, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            Transparency = 0
+        }):Play()
+
+        -- อัปเดตทันที
+        local percentage = calculatePosition(input.Position.X)
+        updateSlider(percentage, false)
+
+        -- Connections
+        connections.inputChanged = UserInputService.InputChanged:Connect(function(deltaInput)
+            if dragging and (deltaInput.UserInputType == Enum.UserInputType.MouseMovement or deltaInput.UserInputType == Enum.UserInputType.Touch) then
+                local percentage = calculatePosition(deltaInput.Position.X)
+                updateSlider(percentage, false)
+            end
+        end)
+    end
+
+    local function endDrag()
+        if not dragging then return end
+
+        dragging = false
+
+        -- ล้าง connections
+        for _, connection in pairs(connections) do
+            if connection and connection.Connected then
+                connection:Disconnect()
+            end
+        end
+        connections = {}
+
+        -- Reset visual feedback
+        TweenService:Create(SliderCount, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            BackgroundTransparency = 0.3,
+            Size = UDim2.new(0, 18, 0, 18)
+        }):Play()
+
+        TweenService:Create(Title_2, TweenInfo.new(0.12, Enum.EasingStyle.Linear), {
+            AnchorPoint = Vector2.new(0, 0),
+            TextSize = 8,
+            BackgroundTransparency = 1,
+            Size = UDim2.new(0, 18, 0, 18)
+        }):Play()
+
+        TweenService:Create(SliderBox, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            TextTransparency = 0.5
+        }):Play()
+
+        TweenService:Create(SliderInput, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            BackgroundTransparency = 0.7
+        }):Play()
+
+        TweenService:Create(SliderStroke, TweenInfo.new(0.08, Enum.EasingStyle.Linear), {
+            Transparency = 0.5
+        }):Play()
+    end
+
+    -- Event connections
+    SliderButton.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            startDrag(input)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+            endDrag()
+        end
+    end)
+
+    -- TextBox handling
+    SliderBox.FocusLost:Connect(function(enterPressed)
+        local inputValue = tonumber(SliderBox.Text)
+        if inputValue then
+            inputValue = math.clamp(inputValue, min, max)
+            local percentage = (inputValue - min) / (max - min)
+            updateSlider(percentage, true)
+        else
+            SliderBox.Text = tostring(Value)
+        end
+    end)
+
+    -- ตั้งค่าเริ่มต้น
+    local initialPercentage = (Value - min) / (max - min)
+    updateSlider(initialPercentage, false)
+
+    -- Return functions
+    function sliderfunc:Set(newValue)
+        newValue = math.clamp(newValue, min, max)
+        local percentage = (newValue - min) / (max - min)
+        updateSlider(percentage, true)
+    end
+
+    function sliderfunc:GetValue()
+        return Value
+    end
+
+    return sliderfunc
+end
 function main:Textbox(text, disappear, callback)
     local Textbox = Instance.new("Frame")
     local TextboxCorner = Instance.new("UICorner")

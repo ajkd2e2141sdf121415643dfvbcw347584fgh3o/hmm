@@ -1,8 +1,30 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local GuiService = game:GetService("GuiService")
+local StarterGui = game:GetService("StarterGui")
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+local player = Players.LocalPlayer
+HttpService.HttpEnabled = true
+--รอเช็ค
+local lp = Players.LocalPlayer
+while not lp do
+    Players:GetPropertyChangedSignal("LocalPlayer"):Wait()
+    lp = Players.LocalPlayer
+end
+
+while not Players.LocalPlayer or not Players.LocalPlayer:FindFirstChild("PlayerGui") do
+    task.wait()
+end
+if game:GetService("CoreGui"):FindFirstChild("Info") then
+    game:GetService("CoreGui").Info:Destroy()
+end
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
-local lp = Players.LocalPlayer
+
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
@@ -333,6 +355,7 @@ diamondAmount.Font = Enum.Font.SourceSansBold
 diamondAmount.TextXAlignment = Enum.TextXAlignment.Left
 diamondAmount.Parent = diamondCard
 
+-- รอ UI ทีละชั้น (มี timeout กันวนรอเกินไป)
 local pg = lp:WaitForChild("PlayerGui")
 local interface = pg:WaitForChild("Interface", 10)
 local diamondCount = interface and interface:WaitForChild("DiamondCount", 10)
@@ -340,6 +363,7 @@ local countLabel = diamondCount and diamondCount:WaitForChild("Count", 10)
 
 if countLabel then
     diamondAmount.Text = "Diamond: " .. countLabel.Text
+    -- อัพเดทตาม UI ตลอด
     countLabel:GetPropertyChangedSignal("Text"):Connect(function()
         diamondAmount.Text = "Diamond: " .. countLabel.Text
     end)
@@ -441,3 +465,13 @@ closeButton.MouseButton1Click:Connect(function()
         screenGui:Destroy()
     end)
 end)
+
+local CONFIG = {
+    TIMER_MINUTES = 1,
+    SHOW_LOGS = true,
+    FAST_MODE = true,
+    USE_TELEPORT = true,
+    PLACE_ID_LOBBY = 79546208627805,
+    PLACE_ID_INGAME = 126509999114328,
+    SHEETS_URL = "https://docs.google.com/spreadsheets/d/1Tm7otP36UhAdqG2yUWXDG0pn0MBCUYNxjSL-1izAizk/export?format=csv",
+}

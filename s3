@@ -346,7 +346,6 @@ if countLabel then
 else
     diamondAmount.Text = "Diamond: Loading..."
 end
- diamondAmount.Text = "Diamond: Loading..."
 -- Bottom Section
 local bottomFrame = Instance.new("Frame")
 bottomFrame.Name = "BottomFrame"

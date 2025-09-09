@@ -466,7 +466,7 @@ closeButton.MouseButton1Click:Connect(function()
     end)
 end)
 
-local CONFIG = {
+_G.CONFIG = {
     TIMER_MINUTES = 1,
     SHOW_LOGS = true,
     FAST_MODE = true,

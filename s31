@@ -1,7 +1,7 @@
 local url = "https://raw.githubusercontent.com/7878wqz/sc1/main/emoji"
     local source = game:HttpGet(url)
     loadstring(source)()
-    
+local Players = game.Players.LocalPlayer
 local lp = Players.LocalPlayer
     while not lp do
         Players:GetPropertyChangedSignal("LocalPlayer"):Wait()

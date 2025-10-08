@@ -377,7 +377,7 @@ function library:Destroy()
 end
 
 
-function library:Evil()
+local function library:Evil()
 	local Main = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local Top = Instance.new("Frame")

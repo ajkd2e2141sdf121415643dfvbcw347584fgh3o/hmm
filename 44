@@ -377,7 +377,7 @@ function library:Destroy()
 end
 
 
-local function library:Evil()
+local function libraryVec()
 	local Main = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
 	local Top = Instance.new("Frame")

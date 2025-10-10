@@ -3007,7 +3007,8 @@ function functionitem:AddSlider(options)
 			end
 		return tabs
 	end
-	return sections
---end
+--[[	return sections
+end
 
---return library
+return library
+]]

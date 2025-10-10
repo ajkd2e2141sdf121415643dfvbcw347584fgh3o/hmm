@@ -3010,4 +3010,3 @@ function functionitem:AddSlider(options)
 	return sections
 end
 return library
-end

@@ -3009,6 +3009,5 @@ function functionitem:AddSlider(options)
 	end
 	return sections
 end
---[[
 return library
-]]
+end

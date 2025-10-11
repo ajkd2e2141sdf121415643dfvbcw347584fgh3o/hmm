@@ -805,7 +805,7 @@ function VectorHub:Evil()
     -- REST OF UI CODE
     -- ==========================================
     local UiToggle_UiStroke1 = Instance.new("UIStroke")
-    UiToggle_UiStroke1.Color = Color3.fromRGB(0, 86, 255)
+    UiToggle_UiStroke1.Color = _G.Color
     UiToggle_UiStroke1.Thickness = 1
     UiToggle_UiStroke1.Name = "UiToggle_UiStroke1"
     UiToggle_UiStroke1.Parent = Main

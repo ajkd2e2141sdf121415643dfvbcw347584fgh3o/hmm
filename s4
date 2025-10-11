@@ -921,7 +921,7 @@ function VectorHub:Evil()
     local ResizeHandle = Instance.new("Frame")
     ResizeHandle.Name = "ResizeHandle"
     ResizeHandle.Parent = Main
-    ResizeHandle.BackgroundColor3 = _G.Color
+    ResizeHandle.BackgroundColor3 = Color3.fromRGB(0, 0, 255)
     ResizeHandle.Size = UDim2.new(0, 15, 0, 15)
     ResizeHandle.Position = UDim2.new(1, -15, 1, -15)
     ResizeHandle.ZIndex = 10

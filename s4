@@ -1239,7 +1239,6 @@ local function RegisterComponent(category, name, object)
         )
     end)
 end
-
 local function ParseArguments(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     if type(arg1) == "table" then
         return arg1
@@ -1265,12 +1264,12 @@ local function ParseArguments(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
                 Flag = arg4
             }
         elseif arg1 and arg2 and arg3 then
-            -- Dropdown, ButtonTog
+            -- Toggle (no Flag), Dropdown, ButtonTog
             return {
                 Name = arg1,
                 Value = arg2,
-                List = arg2, -- สำหรับ Dropdown
-                Callback = arg3
+                Callback = arg3,
+                Flag = nil  -- ตั้งค่า Flag เป็น nil ถ้าไม่มี
             }
         elseif arg1 and arg2 then
             -- Button
@@ -1286,7 +1285,6 @@ local function ParseArguments(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
         end
     end
 end
-
 -- ==========================================
 -- 🔥 Toggle Function
 -- ==========================================
@@ -1295,7 +1293,7 @@ function functionitem:Toggle(arg1, arg2, arg3, arg4)
     local Name = options.Name
     local default = options.Value
     local callback = options.Callback or function() end
-    local Flag = options.Flag
+    local Flag = options.Flag or nil 
 
     if not Name or Name == "" then
         warn("Toggle: Name is required!")
@@ -1682,7 +1680,7 @@ function functionitem:Textbox(arg1, arg2, arg3, arg4)
     local Name = options.Name
     local Placeholder = options.Value or ""
     local callback = options.Callback or function() end
-    local Flag = options.Flag
+    local Flag = options.Flag or nil
 
     local Textbox = Instance.new("Frame")
     local UICorner_16 = Instance.new("UICorner")
@@ -1829,7 +1827,7 @@ function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
     local default = options.Value or ""
     local list = options.List or {}
     local callback = options.Callback or function() end
-    local Flag = options.Flag
+    local Flag = options.Flag or nil
 
     local Dropfunc = {}
     local filteredItems = {}
@@ -2107,7 +2105,7 @@ function functionitem:MultiDropdown(arg1, arg2, arg3, arg4, arg5)
     local default = options.Value or {}
     local list = options.List or {}
     local callback = options.Callback or function() end
-    local Flag = options.Flag
+    local Flag = options.Flag or nil
 
     local Dropfunc = {}
     local DropTable = {}
@@ -2400,7 +2398,7 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     local min = options.Min or 1
     local max = options.Max or 2
     local callback = options.Callback or options.Format or function() end
-    local Flag = options.Flag
+    local Flag = options.Flag or nil
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")

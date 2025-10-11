@@ -387,7 +387,7 @@ local function MakeResizable(resizeHandle, object, minSize, maxSize)
     local StartSize = nil
 
     minSize = minSize or Vector2.new(200, 200)
-    maxSize = maxSize or Vector2.new(800, 600)
+    maxSize = maxSize or Vector2.new(588, 440)
 
     local function Update(input)
         if Resizing then
@@ -449,7 +449,7 @@ function VectorHub:Evil()
     Main.ClipsDescendants = true
     Main.AnchorPoint = Vector2.new(0.5, 0.5)
 
-    Main:TweenSize(UDim2.new(0,585,0,430),"Out","Quad",0.5,false) --370
+    Main:TweenSize(UDim2.new(0,588,0,440),"Out","Quad",0.5,false) --370
 
     Logo.Name = "Logo"
     Logo.Parent = Main
@@ -2642,7 +2642,7 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     return sliderfunc
 end
 
-			function functionitem:AddColorpicker(text, preset, callback)
+function functionitem:AddColorpicker(text, preset, callback)
     local OldToggleColor = Color3.fromRGB(0, 0, 0)
     local OldColor = Color3.fromRGB(0, 0, 0)
     local OldColorSelectionPosition = nil
@@ -2653,185 +2653,148 @@ end
     local ColorInput = nil
     local HueInput = nil
 
-    local Colorpicker = Instance.new("Frame")
-    local ColorpickerTitle = Instance.new("TextLabel")
-    local ColorpickerFrameOutline = Instance.new("Frame")
-    local ColorpickerFrameOutlineCorner = Instance.new("UICorner")
-    local ColorpickerFrame = Instance.new("Frame")
-    local ColorpickerFrameCorner = Instance.new("UICorner")
+   local ColorPicker = Instance.new("Frame")
+    local UICorner = Instance.new("UICorner")
     local Color = Instance.new("ImageLabel")
-    local ColorCorner = Instance.new("UICorner")
-    local ColorSelection = Instance.new("ImageLabel")
-    local Hue = Instance.new("ImageLabel")
-    local HueCorner = Instance.new("UICorner")
-    local HueGradient = Instance.new("UIGradient")
-    local HueSelection = Instance.new("ImageLabel")
-    local PresetClr = Instance.new("Frame")
-    local PresetClrCorner = Instance.new("UICorner")
+    local UICorner_2 = Instance.new("UICorner")
+    local ColorPicker_2 = Instance.new("Frame")
+    local UICorner_3 = Instance.new("UICorner")
+    local ColorName = Instance.new("TextLabel")
+    local ColorButton = Instance.new("TextButton")
 
-    Colorpicker.Name = "Colorpicker"
-    Colorpicker.Parent = SectionContainer
-    Colorpicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Colorpicker.BackgroundTransparency = 1.000
-    Colorpicker.Position = UDim2.new(0.0895741582, 0, 0.474232763, 0)
-    Colorpicker.Size = UDim2.new(0, 403, 0, 175)
+    ColorPicker.Name = "ColorPicker"
+    ColorPicker.Parent = SectionFrame
+    ColorPicker.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    ColorPicker.Size = UDim2.new(0, 360, 0, 32)
 
-    ColorpickerTitle.Name = "ColorpickerTitle"
-    ColorpickerTitle.Parent = Colorpicker
-    ColorpickerTitle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ColorpickerTitle.BackgroundTransparency = 1.000
-    ColorpickerTitle.Position = UDim2.new(0, 5, 0, 0)
-    ColorpickerTitle.Size = UDim2.new(0, 200, 0, 29)
-    ColorpickerTitle.Font = Enum.Font.Gotham
-    ColorpickerTitle.Text = text
-    ColorpickerTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-    ColorpickerTitle.TextSize = 14.000
-    ColorpickerTitle.TextXAlignment = Enum.TextXAlignment.Left
-
-    ColorpickerFrameOutline.Name = "ColorpickerFrameOutline"
-    ColorpickerFrameOutline.Parent = ColorpickerTitle
-    ColorpickerFrameOutline.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ColorpickerFrameOutline.Position = UDim2.new(-0.00100000005, 0, 0.991999984, 0)
-    ColorpickerFrameOutline.Size = UDim2.new(0, 238, 0, 139)
-
-    ColorpickerFrameOutlineCorner.CornerRadius = UDim.new(0, 3)
-    ColorpickerFrameOutlineCorner.Name = "ColorpickerFrameOutlineCorner"
-    ColorpickerFrameOutlineCorner.Parent = ColorpickerFrameOutline
-
-    ColorpickerFrame.Name = "ColorpickerFrame"
-    ColorpickerFrame.Parent = ColorpickerTitle
-    ColorpickerFrame.BackgroundColor3 = Color3.fromRGB(23, 23, 23)
-    ColorpickerFrame.ClipsDescendants = true
-    ColorpickerFrame.Position = UDim2.new(0.00899999978, 0, 1.06638515, 0)
-    ColorpickerFrame.Selectable = true
-    ColorpickerFrame.Size = UDim2.new(0, 234, 0, 135)
-
-    ColorpickerFrameCorner.CornerRadius = UDim.new(0, 3)
-    ColorpickerFrameCorner.Name = "ColorpickerFrameCorner"
-    ColorpickerFrameCorner.Parent = ColorpickerFrame
+    UICorner.CornerRadius = UDim.new(0, 4)
+    UICorner.Parent = ColorPicker
 
     Color.Name = "Color"
-    Color.Parent = ColorpickerFrame
-    Color.BackgroundColor3 = Color3.fromRGB(255, 0, 4)
-    Color.Position = UDim2.new(0, 10, 0, 10)
-    Color.Size = UDim2.new(0, 154, 0, 118)
-    Color.ZIndex = 10
-    Color.Image = "rbxassetid://4155801252"
+    Color.Parent = ColorPicker
+    Color.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Color.Position = UDim2.new(0.0138888889923692, 0, 0.15625, 0)
+    Color.Size = UDim2.new(0, 22, 0, 22)
+    Color.Image = "rbxassetid://13265402688"
+    Color.ImageColor3 = _G.Color
 
-    ColorCorner.CornerRadius = UDim.new(0, 3)
-    ColorCorner.Name = "ColorCorner"
-    ColorCorner.Parent = Color
+    UICorner_2.CornerRadius = UDim.new(0, 4)
+    UICorner_2.Parent = Color
 
-    ColorSelection.Name = "ColorSelection"
-    ColorSelection.Parent = Color
-    ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
-    ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    ColorSelection.BackgroundTransparency = 1.000
-    ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)))
-    ColorSelection.Size = UDim2.new(0, 18, 0, 18)
-    ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
-    ColorSelection.ScaleType = Enum.ScaleType.Fit
+    ColorPicker_2.Name = "ColorPicker"
+    ColorPicker_2.Parent = ColorPicker
+    ColorPicker_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ColorPicker_2.BackgroundTransparency = 1.000
+    ColorPicker_2.Position = UDim2.new(0.108333334326744, 0, 0.15625, 0)
+    ColorPicker_2.Size = UDim2.new(0, 315, 0, 22)
 
-    Hue.Name = "Hue"
-    Hue.Parent = ColorpickerFrame
-    Hue.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Hue.Position = UDim2.new(0, 171, 0, 10)
-    Hue.Size = UDim2.new(0, 18, 0, 118)
+    UICorner_3.CornerRadius = UDim.new(0, 4)
+    UICorner_3.Parent = ColorPicker_2
 
-    HueCorner.CornerRadius = UDim.new(0, 3)
-    HueCorner.Name = "HueCorner"
-    HueCorner.Parent = Hue
+    ColorName.Name = "ColorName"
+    ColorName.Parent = ColorPicker_2
+    ColorName.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ColorName.BackgroundTransparency = 1.000
+    ColorName.Size = UDim2.new(0, 315, 0, 22)
+    ColorName.Font = Enum.Font.Gotham
+    ColorName.Text = name
+    ColorName.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ColorName.TextSize = 14.000
+    ColorName.TextXAlignment = Enum.TextXAlignment.Left
 
-    HueGradient.Color = ColorSequence.new {ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))}
-    HueGradient.Rotation = 270
-    HueGradient.Name = "HueGradient"
-    HueGradient.Parent = Hue
+    ColorButton.Name = "ColorButton"
+    ColorButton.Parent = ColorPicker
+    ColorButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ColorButton.BackgroundTransparency = 1.000
+    ColorButton.Size = UDim2.new(0, 360, 0, 32)
+    ColorButton.Font = Enum.Font.SourceSans
+    ColorButton.Text = ""
+    ColorButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    ColorButton.TextSize = 14.000
 
-    HueSelection.Name = "HueSelection"
-    HueSelection.Parent = Hue
-    HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
-    HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    HueSelection.BackgroundTransparency = 1.000
-    HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)))
-    HueSelection.Size = UDim2.new(0, 18, 0, 18)
-    HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
+    local UIWithColor = {
+        Main = UI:FindFirstChild("Main"),
+        ResizeHandle = UI:FindFirstChild("Main") and UI.Main:FindFirstChild("ResizeHandle"),
+        Top = UI:FindFirstChild("Main") and UI.Main:FindFirstChild("Top"),
+    }
 
-    PresetClr.Name = "PresetClr"
-    PresetClr.Parent = ColorpickerFrame
-    PresetClr.BackgroundColor3 = preset
-    PresetClr.Position = UDim2.new(0.846153855, 0, 0.0740740746, 0)
-    PresetClr.Size = UDim2.new(0, 25, 0, 25)
-
-    PresetClrCorner.CornerRadius = UDim.new(0, 3)
-    PresetClrCorner.Name = "PresetClrCorner"
-    PresetClrCorner.Parent = PresetClr
-
-    local function UpdateColorPicker(nope)
-        PresetClr.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
-        Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
-        _G.Color = PresetClr.BackgroundColor3 -- อัปเดต _G.Color โดยอัตโนมัติ
-        pcall(callback, PresetClr.BackgroundColor3)
+    local function UpdateColors(newColor)
+        _G.Color = newColor
+        for _, element in pairs(UIWithColor) do
+            if element then
+                element.BackgroundColor3 = newColor
+            end
+        end
+        Color.ImageColor3 = newColor
+        if callback then
+            callback(newColor)
+        end
     end
 
-    ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
-    ColorS = (math.clamp(ColorSelection.AbsolutePosition.X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
-    ColorV = 1 - (math.clamp(ColorSelection.AbsolutePosition.Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
-
-    PresetClr.BackgroundColor3 = preset
-    Color.BackgroundColor3 = preset
-    _G.Color = preset -- ตั้งค่าเริ่มต้นให้ _G.Color
-    pcall(callback, PresetClr.BackgroundColor3)
-
-    Color.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if ColorInput then
-                ColorInput:Disconnect()
-            end
-
-            ColorInput = game:GetService("RunService").RenderStepped:Connect(function()
-                local ColorX = (math.clamp(game.Players.LocalPlayer:GetMouse().X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
-                local ColorY = (math.clamp(game.Players.LocalPlayer:GetMouse().Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
-                ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
-                ColorS = ColorX
-                ColorV = 1 - ColorY
-
-                UpdateColorPicker(true)
-            end)
+    ColorButton.MouseButton1Click:Connect(function()
+        local ColorPickerUI = game:GetService("CoreGui"):FindFirstChild("ColorPickerUI")
+        if ColorPickerUI then
+            ColorPickerUI:Destroy()
         end
-    end)
 
-    Color.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if ColorInput then
-                ColorInput:Disconnect()
-            end
+        local ColorPickerUI = Instance.new("ScreenGui")
+        ColorPickerUI.Name = "ColorPickerUI"
+        ColorPickerUI.Parent = game:GetService("CoreGui")
+        ColorPickerUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+        local Frame = Instance.new("Frame")
+        Frame.Parent = ColorPickerUI
+        Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Frame.Position = UDim2.new(0.5, -100, 0.5, -100)
+        Frame.Size = UDim2.new(0, 200, 0, 200)
+
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 4)
+        UICorner.Parent = Frame
+
+        local ColorPalette = Instance.new("ImageLabel")
+        ColorPalette.Name = "ColorPalette"
+        ColorPalette.Parent = Frame
+        ColorPalette.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ColorPalette.Position = UDim2.new(0.05, 0, 0.05, 0)
+        ColorPalette.Size = UDim2.new(0, 180, 0, 180)
+        ColorPalette.Image = "rbxassetid://698052001"
+
+        local ColorPicker = Instance.new("Frame")
+        ColorPicker.Name = "ColorPicker"
+        ColorPicker.Parent = ColorPalette
+        ColorPicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ColorPicker.Size = UDim2.new(0, 10, 0, 10)
+        ColorPicker.ZIndex = 2
+
+        local function UpdateColorPicker(input)
+            local X = math.clamp((input.Position.X - ColorPalette.AbsolutePosition.X) / ColorPalette.AbsoluteSize.X, 0, 1)
+            local Y = math.clamp((input.Position.Y - ColorPalette.AbsolutePosition.Y) / ColorPalette.AbsoluteSize.Y, 0, 1)
+            local Color = Color3.fromHSV(X, Y, 1)
+            ColorPicker.Position = UDim2.new(X, -5, Y, -5)
+            UpdateColors(Color)
         end
-    end)
 
-    Hue.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if HueInput then
-                HueInput:Disconnect()
+        ColorPalette.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                UpdateColorPicker(input)
             end
+        end)
 
-            HueInput = game:GetService("RunService").RenderStepped:Connect(function()
-                local HueY = (math.clamp(game.Players.LocalPlayer:GetMouse().Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
-                HueSelection.Position = UDim2.new(0.48, 0, HueY, 0)
-                ColorH = 1 - HueY
-
-                UpdateColorPicker(true)
-            end)
-        end
-    end)
-
-    Hue.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            if HueInput then
-                HueInput:Disconnect()
+        ColorPalette.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+                if input.UserInputState == Enum.UserInputState.Change then
+                    UpdateColorPicker(input)
+                end
             end
-        end
+        end)
+
+        game:GetService("UserInputService").InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                ColorPickerUI:Destroy()
+            end
+        end)
     end)
-end
 				return functionitem
 			end
 			return sections

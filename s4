@@ -413,24 +413,6 @@ function VectorHub:Evil()
     Logo.Size = UDim2.new(0, 30, 0, 30)
     Logo.ImageTransparency = 0
     Logo.Image = "rbxassetid://14645512457"
-
-    Logo_Background.Name = "Logo"
-    Logo_Background.Parent = Main
-    Logo_Background.Active = true
-    Logo_Background.AnchorPoint = Vector2.new(0,0)
-    Logo_Background.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Logo_Background.BackgroundTransparency = 1.000
-    Logo_Background.Position = UDim2.new(0, 135, 0, 75)
-    Logo_Background.Size = UDim2.new(0, 305, 0, 305)
-    Logo_Background.ImageTransparency = 0.7
-    Logo_Background.Image = "rbxassetid://14645512457"
-    
-    RunService.RenderStepped:Connect(function()
-        Logo_Background.Rotation = Logo_Background.Rotation + 1
-        if Logo_Background.Rotation >= 360 then
-            Logo_Background.Rotation = 0
-        end
-    end)
     
     Title.Name = "Title"
     Title.Parent = Main

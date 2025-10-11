@@ -377,7 +377,55 @@
 		VectorHub:Destroy()
 	end
 	
-	
+local function MakeResizable(resizeHandle, object, minSize, maxSize)
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
+
+    local Resizing = false
+    local ResizeInput = nil
+    local ResizeStart = nil
+    local StartSize = nil
+
+    minSize = minSize or Vector2.new(200, 200)
+    maxSize = maxSize or Vector2.new(800, 600)
+
+    local function Update(input)
+        if Resizing then
+            local Delta = input.Position - ResizeStart
+            local newWidth = math.clamp(StartSize.X + Delta.X, minSize.X, maxSize.X)
+            local newHeight = math.clamp(StartSize.Y + Delta.Y, minSize.Y, maxSize.Y)
+            local newSize = UDim2.new(0, newWidth, 0, newHeight)
+            local Tween = TweenService:Create(object, TweenInfo.new(0.1), {Size = newSize})
+            Tween:Play()
+        end
+    end
+
+    resizeHandle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            Resizing = true
+            ResizeStart = input.Position
+            StartSize = Vector2.new(object.Size.X.Offset, object.Size.Y.Offset)
+
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    Resizing = false
+                end
+            end)
+        end
+    end)
+
+    resizeHandle.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            ResizeInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == ResizeInput and Resizing then
+            Update(input)
+        end
+    end)
+end	
 
 function VectorHub:Evil()
     local Main = Instance.new("Frame")
@@ -865,7 +913,23 @@ function VectorHub:Evil()
     end)
 
     dragify(ClickFrame, Main)
-    
+    local ResizeHandle = Instance.new("Frame")
+    ResizeHandle.Name = "ResizeHandle"
+    ResizeHandle.Parent = Main
+    ResizeHandle.BackgroundColor3 = _G.Color
+    ResizeHandle.Size = UDim2.new(0, 15, 0, 15)
+    ResizeHandle.Position = UDim2.new(1, -15, 1, -15)
+    ResizeHandle.ZIndex = 10
+
+    local ResizeHandleCorner = Instance.new("UICorner")
+    ResizeHandleCorner.CornerRadius = UDim.new(0, 4)
+    ResizeHandleCorner.Parent = ResizeHandle
+
+    -- ทำให้สามารถลากเพื่อย้ายได้
+    dragify(ClickFrame, Main)
+
+    -- ทำให้สามารถปรับขนาดได้
+    MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600))
     -- ==========================================
     -- TABS SYSTEM WITH AUTO-REGISTER
     -- ==========================================

@@ -2642,7 +2642,7 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     return sliderfunc
 end
 
-function Section:AddColorpicker(name, callback)
+function functionitem:AddColorpicker(text, preset, callback)
     local ColorPicker = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
     local Color = Instance.new("ImageLabel")
@@ -2652,8 +2652,11 @@ function Section:AddColorpicker(name, callback)
     local ColorName = Instance.new("TextLabel")
     local ColorButton = Instance.new("TextButton")
 
+    -- ใช้ preset ถ้ามี มิฉะนั้นใช้ _G.Color
+    local initialColor = preset or _G.Color or Color3.fromRGB(0, 86, 255)
+
     ColorPicker.Name = "ColorPicker"
-    ColorPicker.Parent = SectionFrame
+    ColorPicker.Parent = SectionFrame -- ต้องแน่ใจว่า SectionFrame ถูกกำหนดใน functionitem
     ColorPicker.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
     ColorPicker.Size = UDim2.new(0, 360, 0, 32)
 
@@ -2666,7 +2669,7 @@ function Section:AddColorpicker(name, callback)
     Color.Position = UDim2.new(0.0138888889923692, 0, 0.15625, 0)
     Color.Size = UDim2.new(0, 22, 0, 22)
     Color.Image = "rbxassetid://13265402688"
-    Color.ImageColor3 = _G.Color
+    Color.ImageColor3 = initialColor -- ใช้สีจาก preset หรือ _G.Color
 
     UICorner_2.CornerRadius = UDim.new(0, 4)
     UICorner_2.Parent = Color
@@ -2687,7 +2690,7 @@ function Section:AddColorpicker(name, callback)
     ColorName.BackgroundTransparency = 1.000
     ColorName.Size = UDim2.new(0, 315, 0, 22)
     ColorName.Font = Enum.Font.Gotham
-    ColorName.Text = name
+    ColorName.Text = text -- ใช้ text แทน name
     ColorName.TextColor3 = Color3.fromRGB(255, 255, 255)
     ColorName.TextSize = 14.000
     ColorName.TextXAlignment = Enum.TextXAlignment.Left
@@ -2702,24 +2705,29 @@ function Section:AddColorpicker(name, callback)
     ColorButton.TextColor3 = Color3.fromRGB(0, 0, 0)
     ColorButton.TextSize = 14.000
 
+    -- เก็บ UI elements ที่ต้องเปลี่ยนสี
     local UIWithColor = {
         Main = UI:FindFirstChild("Main"),
         ResizeHandle = UI:FindFirstChild("Main") and UI.Main:FindFirstChild("ResizeHandle"),
         Top = UI:FindFirstChild("Main") and UI.Main:FindFirstChild("Top"),
     }
 
+    -- ฟังก์ชันสำหรับอัปเดตสี
     local function UpdateColors(newColor)
-        _G.Color = newColor
+        _G.Color = newColor -- อัปเดต _G.Color
         for _, element in pairs(UIWithColor) do
             if element then
                 element.BackgroundColor3 = newColor
             end
         end
-        Color.ImageColor3 = newColor
+        Color.ImageColor3 = newColor -- อัปเดตสีของ Colorpicker
         if callback then
             callback(newColor)
         end
     end
+
+    -- อัปเดตสีเริ่มต้นตาม preset
+    UpdateColors(initialColor)
 
     ColorButton.MouseButton1Click:Connect(function()
         local ColorPickerUI = game:GetService("CoreGui"):FindFirstChild("ColorPickerUI")
@@ -2762,7 +2770,7 @@ function Section:AddColorpicker(name, callback)
             local Y = math.clamp((input.Position.Y - ColorPalette.AbsolutePosition.Y) / ColorPalette.AbsoluteSize.Y, 0, 1)
             local Color = Color3.fromHSV(X, Y, 1)
             ColorPicker.Position = UDim2.new(X, -5, Y, -5)
-            UpdateColors(Color)
+            UpdateColors(Color) -- อัปเดตสีเมื่อเลือก
         end
 
         ColorPalette.InputBegan:Connect(function(input)

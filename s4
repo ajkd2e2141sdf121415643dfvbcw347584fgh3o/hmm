@@ -440,7 +440,7 @@ function VectorHub:Evil()
     Title.Size = UDim2.new(0, 483, 0, 31)
     Title.Font = Enum.Font.FredokaOne
     Title.Text = "Vector"
-    Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Title.TextColor3 = _G.Color
     Title.TextSize = 17.000
     Title.TextWrapped = true
     Title.TextXAlignment = Enum.TextXAlignment.Left

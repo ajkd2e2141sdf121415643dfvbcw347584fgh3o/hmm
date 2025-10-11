@@ -1,5 +1,5 @@
-print("เค")
-	_G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
+	print("Loaded[0]")
+    _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 	local UserInputService = game:GetService("UserInputService")
 	local VirtualInputManager = game:GetService("VirtualInputManager")
 	local TweenService = game:GetService("TweenService")
@@ -454,7 +454,7 @@ function VectorHub:Evil()
     if IsOnMobile then 
     Main:TweenSize(UDim2.new(0,588,0,370),"Out","Quad",0.5,false)
     else
-    Main:TweenSize(UDim2.new(0,588,0,440),"Out","Quad",0.5,false)
+    Main:TweenSize(UDim2.new(0,588,0,450),"Out","Quad",0.5,false)
     end
 
     Logo.Name = "Logo"
@@ -1240,7 +1240,26 @@ local function RegisterComponent(category, name, object)
         )
     end)
 end
+local ColorDependents = {}
 
+-- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
+local function UpdateColorDependents(newColor)
+    _G.Color = newColor
+    for _, component in pairs(ColorDependents) do
+        if component.Instance and component.Property then
+            component.Instance[component.Property] = newColor
+        end
+    end
+end
+
+-- ฟังก์ชันลงทะเบียน components ที่ใช้ _G.Color
+local function RegisterColorDependent(componentName, instance, property)
+    table.insert(ColorDependents, {
+        Name = componentName,
+        Instance = instance,
+        Property = property
+    })
+end
 local function ParseArguments(...)
     local args = {...}
     
@@ -2705,7 +2724,12 @@ function functionitem:Slider(...)
     return sliderfunc
 end
 
-			function functionitem:AddColorpicker(text, preset, Callback)
+function functionitem:AddColorpicker(...)
+    local options = ParseArguments(...)
+    local text = options.Name or "Colorpicker"
+    local preset = options.Value or Color3.fromRGB(255, 255, 255)
+    local Callback = options.Callback or function() end
+
     local OldToggleColor = Color3.fromRGB(0, 0, 0)
     local OldColor = Color3.fromRGB(0, 0, 0)
     local OldColorSelectionPosition = nil
@@ -2790,7 +2814,7 @@ end
     ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
     ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     ColorSelection.BackgroundTransparency = 1.000
-    ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)))
+    ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)) or 0.5, 0, 0.5, 0)
     ColorSelection.Size = UDim2.new(0, 18, 0, 18)
     ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
     ColorSelection.ScaleType = Enum.ScaleType.Fit
@@ -2805,7 +2829,15 @@ end
     HueCorner.Name = "HueCorner"
     HueCorner.Parent = Hue
 
-    HueGradient.Color = ColorSequence.new {ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)), ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)), ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)), ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)), ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))}
+    HueGradient.Color = ColorSequence.new {
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 4)),
+        ColorSequenceKeypoint.new(0.20, Color3.fromRGB(234, 255, 0)),
+        ColorSequenceKeypoint.new(0.40, Color3.fromRGB(21, 255, 0)),
+        ColorSequenceKeypoint.new(0.60, Color3.fromRGB(0, 255, 255)),
+        ColorSequenceKeypoint.new(0.80, Color3.fromRGB(0, 17, 255)),
+        ColorSequenceKeypoint.new(0.90, Color3.fromRGB(255, 0, 251)),
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 4))
+    }
     HueGradient.Rotation = 270
     HueGradient.Name = "HueGradient"
     HueGradient.Parent = Hue
@@ -2815,7 +2847,7 @@ end
     HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
     HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     HueSelection.BackgroundTransparency = 1.000
-    HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)))
+    HueSelection.Position = UDim2.new(0.48, 0, preset and 1 - select(1, Color3.toHSV(preset)) or 0.5, 0)
     HueSelection.Size = UDim2.new(0, 18, 0, 18)
     HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
 
@@ -2832,7 +2864,7 @@ end
     local function UpdateColorPicker(nope)
         PresetClr.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
         Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
-        _G.Color = PresetClr.BackgroundColor3 -- อัปเดต _G.Color โดยอัตโนมัติ
+        UpdateColorDependents(PresetClr.BackgroundColor3) -- อัปเดต _G.Color และ components อื่นๆ
         pcall(Callback, PresetClr.BackgroundColor3)
     end
 
@@ -2842,7 +2874,7 @@ end
 
     PresetClr.BackgroundColor3 = preset
     Color.BackgroundColor3 = preset
-    _G.Color = preset -- ตั้งค่าเริ่มต้นให้ _G.Color
+    UpdateColorDependents(preset) -- ตั้งค่าเริ่มต้นให้ _G.Color และ components
     pcall(Callback, PresetClr.BackgroundColor3)
 
     Color.InputBegan:Connect(function(input)
@@ -2850,14 +2882,12 @@ end
             if ColorInput then
                 ColorInput:Disconnect()
             end
-
             ColorInput = game:GetService("RunService").RenderStepped:Connect(function()
                 local ColorX = (math.clamp(game.Players.LocalPlayer:GetMouse().X - Color.AbsolutePosition.X, 0, Color.AbsoluteSize.X) / Color.AbsoluteSize.X)
                 local ColorY = (math.clamp(game.Players.LocalPlayer:GetMouse().Y - Color.AbsolutePosition.Y, 0, Color.AbsoluteSize.Y) / Color.AbsoluteSize.Y)
                 ColorSelection.Position = UDim2.new(ColorX, 0, ColorY, 0)
                 ColorS = ColorX
                 ColorV = 1 - ColorY
-
                 UpdateColorPicker(true)
             end)
         end
@@ -2876,12 +2906,10 @@ end
             if HueInput then
                 HueInput:Disconnect()
             end
-
             HueInput = game:GetService("RunService").RenderStepped:Connect(function()
                 local HueY = (math.clamp(game.Players.LocalPlayer:GetMouse().Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
                 HueSelection.Position = UDim2.new(0.48, 0, HueY, 0)
                 ColorH = 1 - HueY
-
                 UpdateColorPicker(true)
             end)
         end
@@ -2894,8 +2922,10 @@ end
             end
         end
     end)
-end
-				return functionitem
+
+    RegisterComponent("Colorpicker", text, Colorpicker) -- สมมติว่า RegisterComponent มีอยู่
+    RegisterColorDependent("ColorpickerPreset", PresetClr, "BackgroundColor3") -- ลงทะเบียน PresetClr
+end				return functionitem
 			end
 			return sections
 		end

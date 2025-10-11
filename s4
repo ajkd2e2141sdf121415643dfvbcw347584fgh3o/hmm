@@ -1,4 +1,4 @@
-	print("Loaded[Succes]")
+	print("Loaded[0]")
     _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 	local UserInputService = game:GetService("UserInputService")
 	local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2931,6 +2931,9 @@ RegisterColorDependent("Title2",Title2,"TextColor3")
 RegisterColorDependent("SearchResults",SearchResults,"ScrollBarImageColor3")
 RegisterColorDependent("SearchStroke",SearchStroke,"Color")
 RegisterColorDependent("FrameTab",FrameTab,"BackgroundColor3")
+RegisterColorDependent("ResultsStroke",ResultsStroke,"Color")
+RegisterColorDependent("UIStroke96",UIStroke96,"Color")
+RegisterColorDependent("SearchIcon",SearchIcon,"ImageColor3")
 
                 end				
                 return functionitem

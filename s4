@@ -1355,7 +1355,8 @@ function functionitem:Toggle(...)
     end
 
     local ToglFunc = {}
-    local Tgo = default or false
+    local Tgo = Value
+
     local MainToggle = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
     local Text = Instance.new("TextLabel")

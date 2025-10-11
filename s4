@@ -1239,72 +1239,123 @@ local function RegisterComponent(category, name, object)
         )
     end)
 end
-local function ParseArguments(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-    if type(arg1) == "table" then
-        return arg1
-    else
-        -- รูปแบบแยกพารามิเตอร์ตามประเภทของ component
-        if arg1 and arg2 and arg3 and arg4 and arg5 and arg6 then
-            -- Slider
-            return {
-                Name = arg1,
-                Min = arg2,
-                Max = arg3,
-                Value = arg4,
-                floor = arg5,
-                Callback = arg6,
-                Flag = arg7
-            }
-        elseif arg1 and arg2 and arg3 and arg4 then
-            -- Toggle, Textbox, MultiDropdown
-            return {
-                Name = arg1,
-                Value = arg2,
-                Callback = arg3,
-                Flag = arg4
-            }
-        elseif arg1 and arg2 and arg3 then
-            -- Toggle (no Flag), Dropdown, ButtonTog
-            return {
-                Name = arg1,
-                Value = arg2,
-                Callback = arg3,
-                Flag = nil  -- ตั้งค่า Flag เป็น nil ถ้าไม่มี
-            }
-        elseif arg1 and arg2 then
-            -- Button
-            return {
-                Name = arg1,
-                Callback = arg2
-            }
-        else
-            -- Label
-            return {
-                Name = arg1
-            }
+
+local function ParseArguments(...)
+    local args = {...}
+    
+    -- ถ้า argument แรกเป็น table (รูปแบบเดิม) ให้คืนค่า table นั้นเลย
+    if #args == 1 and type(args[1]) == "table" then
+        return args[1]
+    end
+    
+    -- Positional arguments: แปลงตามลำดับให้เป็น table
+    local options = {}
+    
+    -- Toggle: Name (string), Value (boolean, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2] -- อาจเป็น boolean หรือ nil
+        end
+        if #args >= 3 and type(args[3]) == "function" then
+            options.Callback = args[3]
         end
     end
-end
--- ==========================================
--- 🔥 Toggle Function
--- ==========================================
-function functionitem:Toggle(arg1, arg2, arg3, arg4)
-    local options = ParseArguments(arg1, arg2, arg3, arg4)
-    print("Toggle options:", options)  -- Debug: ตรวจสอบว่า options ถูกต้อง
+    
+    -- Button: Name (string), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" and (#args == 1 or type(args[2]) == "function") then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Callback = args[2]
+        end
+    end
+    
+    -- Label, LabelLog: Name (string)
+    if args[1] and type(args[1]) == "string" and #args == 1 then
+        options.Name = args[1]
+    end
+    
+    -- ButtonTog: Name (string), Value (boolean, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2]
+        end
+        if #args >= 3 and type(args[3]) == "function" then
+            options.Callback = args[3]
+        end
+    end
+    
+    -- Textbox: Name (string), Value (string, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2]
+        end
+        if #args >= 3 and type(args[3]) == "function" then
+            options.Callback = args[3]
+        end
+    end
+    
+    -- Dropdown, MultiDropdown: Name (string), Value (string or table, optional), List (table, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2]
+        end
+        if #args >= 3 and type(args[3]) == "table" then
+            options.List = args[3]
+        end
+        if #args >= 4 and type(args[4]) == "function" then
+            options.Callback = args[4]
+        end
+    end
+    
+    -- Slider: Name (string), Min (number), Max (number), Value (number, optional), floor (boolean, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" and type(args[2]) == "number" and type(args[3]) == "number" then
+        options.Name = args[1]
+        options.Min = args[2]
+        options.Max = args[3]
+        if #args >= 4 then
+            options.Value = args[4]
+        end
+        if #args >= 5 then
+            options.floor = args[5]
+        end
+        if #args >= 6 and type(args[6]) == "function" then
+            options.Callback = args[6]
+        end
+    end
+    
+    -- Colorpicker: Name (string), Value (Color3, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2]
+        end
+        if #args >= 3 and type(args[3]) == "function" then
+            options.Callback = args[3]
+        end
+    end
 
-    local Name = options.Name
-    local default = options.Value or false  -- ตั้งค่า default เป็น false ถ้า Value เป็น nil
-    local callback = options.Callback or function() end  -- ตั้งค่า default callback
-    local Flag = options.Flag  -- Flag เป็น optional (อาจเป็น nil)
+    return options
+end
+local functionitem = {}
+
+-- 🔥 Toggle Function
+function functionitem:Toggle(...)
+    local options = ParseArguments(...)
+    local Name = options.Name or ""
+    local Value = options.Value or false
+    local Callback = options.Callback or function() end
 
     if not Name or Name == "" then
         warn("Toggle: Name is required!")
-        return
+        return {}
     end
 
     local ToglFunc = {}
-    local Tgo = default
-    print("Initial Toggle state:", Tgo)  -- Debug: ตรวจสอบสถานะเริ่มต้น
+    local Tgo = Value
 
     local MainToggle = Instance.new("Frame")
     MainToggle.Name = "Toggle"
@@ -1324,7 +1375,7 @@ function functionitem:Toggle(arg1, arg2, arg3, arg4)
     Text.Text = Name
     Text.TextColor3 = Color3.fromRGB(255, 255, 255)
     Text.TextSize = 12
-    Text.TextWrapped = true  -- รองรับ newline ในชื่อ
+    Text.TextWrapped = true
     Text.TextXAlignment = Enum.TextXAlignment.Left
 
     local TextButton = Instance.new("TextButton")
@@ -1356,35 +1407,25 @@ function functionitem:Toggle(arg1, arg2, arg3, arg4)
     UICorner_2.CornerRadius = UDim.new(0, 4)
     UICorner_2.Parent = MainToggle
 
-    -- การจัดการสถานะ Toggle
     TextButton.MouseButton1Click:Connect(function()
         Tgo = not Tgo
         ToggleStatus.ImageTransparency = Tgo and 0 or 1
-        print("Toggle clicked, new value:", Tgo)  -- Debug: ตรวจสอบการกด
-        local success, err = pcall(callback, Tgo)
+        local success, err = pcall(Callback, Tgo)
         if not success then
-            warn("Callback error:", err)  -- Debug: ตรวจสอบข้อผิดพลาดใน callback
-        end
-        if Flag then
-            _G.Settings[Flag] = Tgo  -- อัปเดต _G.Settings ถ้ามี Flag
-            print("Updated _G.Settings[" .. tostring(Flag) .. "]:", _G.Settings[Flag])  -- Debug
+            warn("Callback error:", err)
         end
     end)
 
-    -- 🔥 Register to Search
     RegisterComponent("Toggle", Name, MainToggle)
-
-    MainToggle.Parent = SectionFrame
+    MainToggle.Parent = SectionContainer
     return ToglFunc
 end
 
--- ==========================================
 -- 🔥 Button Function
--- ==========================================
-function functionitem:Button(arg1, arg2)
-    local options = ParseArguments(arg1, arg2)
+function functionitem:Button(...)
+    local options = ParseArguments(...)
     local Name = options.Name or "Button"
-    local callback = options.Callback or function() end
+    local Callback = options.Callback or function() end
 
     local Button = Instance.new("Frame")
     local UICorner_6 = Instance.new("UICorner")
@@ -1426,7 +1467,7 @@ function functionitem:Button(arg1, arg2)
     TextButton.Text = ""
     TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     TextButton.TextSize = 14.000
-    
+
     TextButton.MouseEnter:Connect(function()
         TweenService:Create(Button, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundTransparency = 0.5}):Play()
@@ -1442,26 +1483,21 @@ function functionitem:Button(arg1, arg2)
         TextLabel_3.TextSize = 0
         TweenService:Create(TextLabel_3, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {TextSize = 12}):Play()
-        callback()
+        Callback()
     end)
 
-    -- 🔥 Register to Search
     RegisterComponent("Button", Name, Button)
-    
-    return
 end
 
--- ==========================================
 -- 🔥 Label Function
--- ==========================================
-function functionitem:Label(arg1)
-    local options = ParseArguments(arg1)
-    local text = options.Name
+function functionitem:Label(...)
+    local options = ParseArguments(...)
+    local text = options.Name or ""
 
     local textas = {}
     local Label = Instance.new("Frame")
     local Text = Instance.new("TextLabel")
-    
+
     Label.Name = text
     Label.Parent = SectionContainer
     Label.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -1480,23 +1516,19 @@ function functionitem:Label(arg1)
     Text.Text = text
     Text.TextColor3 = Color3.fromRGB(255, 255, 255)
     Text.TextSize = 12.000
-    
+
     function textas:Set(newtext)
         Text.Text = newtext
     end
 
-    -- 🔥 Register to Search
     RegisterComponent("Label", text, Label)
-    
     return textas
 end
 
--- ==========================================
 -- 🔥 LabelLog Function
--- ==========================================
-function functionitem:LabelLog(arg1)
-    local options = ParseArguments(arg1)
-    local text = options.Name
+function functionitem:LabelLog(...)
+    local options = ParseArguments(...)
+    local text = options.Name or ""
 
     local textas = {}
     local Label = Instance.new("Frame")
@@ -1519,29 +1551,28 @@ function functionitem:LabelLog(arg1)
     Text.Text = text
     Text.TextColor3 = Color3.fromRGB(255, 255, 255)
     Text.TextSize = 12.000
-    
+
     function textas:Refresh(newtext)
         Text.Text = newtext
     end
-    
+
     function textas:Color(Color)
         Text.TextColor3 = Color
     end
-    
+
+    RegisterComponent("LabelLog", text, Label)
     return textas
 end
 
--- ==========================================
 -- 🔥 ButtonTog Function
--- ==========================================
-function functionitem:ButtonTog(arg1, arg2, arg3)
-    local options = ParseArguments(arg1, arg2, arg3)
-    local Title = options.Name
-    local default = options.Value
-    local callback = options.Callback or function() end
+function functionitem:ButtonTog(...)
+    local options = ParseArguments(...)
+    local Title = options.Name or "ButtonTog"
+    local Value = options.Value or false
+    local Callback = options.Callback or function() end
 
     local b3Func = {}
-    local Tgs = default
+    local Tgs = Value
     local Button_2 = Instance.new("Frame")
     local UICorner_21 = Instance.new("UICorner")
     local TextLabel_4 = Instance.new("TextLabel")
@@ -1549,7 +1580,7 @@ function functionitem:ButtonTog(arg1, arg2, arg3)
 
     Button_2.Name = Title
     Button_2.Parent = SectionContainer
-    Button_2.BackgroundColor3 = default and Color3.fromRGB(33, 132, 112) or _G.Color
+    Button_2.BackgroundColor3 = Value and Color3.fromRGB(33, 132, 112) or _G.Color
     Button_2.Size = UDim2.new(0, 265, 0, 30)
     Button_2.ZIndex = 16
 
@@ -1587,14 +1618,14 @@ function functionitem:ButtonTog(arg1, arg2, arg3)
         CircleClick(Button_2, Mouse.X, Mouse.Y)
     end)
 
-    if default then
+    if Value then
         TweenService:Create(
             Button_2,
             TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundColor3 = Color3.fromRGB(33, 132, 112)}
         ):Play()
-        callback(default)
-        Tgs = default
+        Callback(Value)
+        Tgs = Value
     end
 
     function b3Func:Update(state)
@@ -1603,25 +1634,20 @@ function functionitem:ButtonTog(arg1, arg2, arg3)
             TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundColor3 = state and Color3.fromRGB(33, 132, 112) or _G.Color}
         ):Play()
-        callback(state)
+        Callback(state)
         Tgs = state
     end
 
-    -- 🔥 Register to Search
     RegisterComponent("ButtonTog", Title, Button_2)
-    
     return b3Func
 end
 
--- ==========================================
 -- 🔥 Textbox Function
--- ==========================================
-function functionitem:Textbox(arg1, arg2, arg3, arg4)
-    local options = ParseArguments(arg1, arg2, arg3, arg4)
-    local Name = options.Name
-    local Placeholder = options.Value or ""
-    local callback = options.Callback or function() end
-    local Flag = options.Flag or nil
+function functionitem:Textbox(...)
+    local options = ParseArguments(...)
+    local Name = options.Name or "Textbox"
+    local Value = options.Value or ""
+    local Callback = options.Callback or function() end
 
     local Textbox = Instance.new("Frame")
     local UICorner_16 = Instance.new("UICorner")
@@ -1703,7 +1729,7 @@ function functionitem:Textbox(arg1, arg2, arg3, arg4)
     HeadTitle.ZIndex = 16
     HeadTitle.Font = Enum.Font.GothamBold
     HeadTitle.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
-    HeadTitle.PlaceholderText = Placeholder
+    HeadTitle.PlaceholderText = Value
     HeadTitle.Text = ""
     HeadTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
     HeadTitle.TextSize = 13.000
@@ -1747,28 +1773,22 @@ function functionitem:Textbox(arg1, arg2, arg3, arg4)
     HeadTitle.FocusLost:Connect(function(ep)
         if ep then
             if #HeadTitle.Text > 0 then
-                callback(HeadTitle.Text)
+                Callback(HeadTitle.Text)
                 HeadTitle.Text = HeadTitle.Text
             end
         end
     end)
 
-    -- 🔥 Register to Search
     RegisterComponent("Textbox", Name, Textbox)
-    
-    return
 end
 
--- ==========================================
 -- 🔥 Dropdown Function
--- ==========================================
-function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
-    local options = ParseArguments(arg1, arg2, arg3, arg4, arg5)
-    local text = options.Name
-    local default = options.Value or ""
+function functionitem:Dropdown(...)
+    local options = ParseArguments(...)
+    local text = options.Name or "Dropdown"
+    local Value = options.Value or ""
     local list = options.List or {}
-    local callback = options.Callback or function() end
-    local Flag = options.Flag or nil
+    local Callback = options.Callback or function() end
 
     local Dropfunc = {}
     local filteredItems = {}
@@ -1848,7 +1868,7 @@ function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
     Text_2.Size = UDim2.new(0, 265, 0, 35)
     Text_2.ZIndex = 16
     Text_2.Font = Enum.Font.GothamBold
-    Text_2.Text = default
+    Text_2.Text = Value
     Text_2.TextColor3 = Color3.fromRGB(255, 255, 255)
     Text_2.TextSize = 13.000
     Text_2.TextXAlignment = Enum.TextXAlignment.Center
@@ -1995,7 +2015,7 @@ function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
         UIStroke96.Color = _G.Color
         UIStroke96.Transparency = 1
         
-        if Text == default then
+        if Text == Value then
             TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                 {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
         end
@@ -2013,7 +2033,7 @@ function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
         _5.MouseButton1Click:Connect(function()
             Tof = false
             Dropfunc:TogglePanel(Tof)
-            callback(Text)
+            Callback(Text)
             Text_2.Text = Text
             
             for i, v in pairs(Scroll_Items:GetChildren()) do
@@ -2033,26 +2053,22 @@ function functionitem:Dropdown(arg1, arg2, arg3, arg4, arg5)
     end
     
     RegisterComponent("Dropdown", text, MainDropDown)
-    
     return Dropfunc
 end
 
--- ==========================================
 -- 🔥 MultiDropdown Function
--- ==========================================
-function functionitem:MultiDropdown(arg1, arg2, arg3, arg4, arg5)
-    local options = ParseArguments(arg1, arg2, arg3, arg4, arg5)
-    local text = options.Name
-    local default = options.Value or {}
+function functionitem:MultiDropdown(...)
+    local options = ParseArguments(...)
+    local text = options.Name or "MultiDropdown"
+    local Value = options.Value or {}
     local list = options.List or {}
-    local callback = options.Callback or function() end
-    local Flag = options.Flag or nil
+    local Callback = options.Callback or function() end
 
     local Dropfunc = {}
     local DropTable = {}
 
-    if default then
-        for _, v in ipairs(default) do
+    if Value then
+        for _, v in ipairs(Value) do
             table.insert(DropTable, v)
         end
     end
@@ -2301,7 +2317,7 @@ function functionitem:MultiDropdown(arg1, arg2, arg3, arg4, arg5)
         _5.MouseButton1Click:Connect(function()
             if not table.find(DropTable, Text) then
                 table.insert(DropTable, Text)
-                callback(DropTable, Text)
+                Callback(DropTable, Text)
                 Text_2.Text = table.concat(DropTable, ", ")
                 TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                     {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
@@ -2314,7 +2330,7 @@ function functionitem:MultiDropdown(arg1, arg2, arg3, arg4, arg5)
                         Text_2.Text = table.concat(DropTable, ", ")
                     end
                 end
-                callback(DropTable, Text)
+                Callback(DropTable, Text)
             end
         end)
     end
@@ -2324,22 +2340,18 @@ function functionitem:MultiDropdown(arg1, arg2, arg3, arg4, arg5)
     end
     
     RegisterComponent("MultiDropdown", text, MainDropDown)
-    
     return Dropfunc
 end
 
--- ==========================================
 -- 🔥 Slider Function
--- ==========================================
-function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-    local options = ParseArguments(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
-    local text = options.Name
+function functionitem:Slider(...)
+    local options = ParseArguments(...)
+    local text = options.Name or "Slider"
+    local Min = options.Min or 1
+    local Max = options.Max or 2
+    local Value = options.Value or Min
     local floor = options.floor or false
-    local de = options.Value or 1
-    local min = options.Min or 1
-    local max = options.Max or 2
-    local callback = options.Callback or options.Format or function() end
-    local Flag = options.Flag or nil
+    local Callback = options.Callback or function() end
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")
@@ -2472,7 +2484,7 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     MainValue.Name = "MainValue"
     MainValue.Parent = ValueFrame
     MainValue.BackgroundColor3 = _G.Color
-    MainValue.Size = UDim2.new((de or 0) / max, 0, 0, 5)
+    MainValue.Size = UDim2.new((Value or 0) / Max, 0, 0, 5)
     MainValue.BorderSizePixel = 0
 
     MainValueUICorner.CornerRadius = UDim.new(0, 30)
@@ -2484,7 +2496,7 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     ConneValue.Parent = PartValue
     ConneValue.AnchorPoint = Vector2.new(0.7, 0.7)
     ConneValue.BackgroundColor3 = _G.Color
-    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5,0, 0)
+    ConneValue.Position = UDim2.new((Value or 0)/Max, 0.5, 0.5,0, 0)
     ConneValue.Size = UDim2.new(0, 10, 0, 10)
     ConneValue.BorderSizePixel = 0
 
@@ -2493,9 +2505,9 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     UICorner.Parent = ConneValue
 
     if floor == true then
-        CustomValue.Text = tostring(de and string.format("%0.2f",(de / max) * (max - min) + min) or 0)
+        CustomValue.Text = tostring(Value and string.format("%0.2f",(Value / Max) * (Max - Min) + Min) or 0)
     else
-        CustomValue.Text = tostring(de and math.floor((de / max) * (max - min) + min) or 0)
+        CustomValue.Text = tostring(Value and math.floor((Value / Max) * (Max - Min) + Min) or 0)
     end
 
     local function move(input)
@@ -2514,13 +2526,13 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
         MainValue:TweenSize(pos1, "Out", "Sine", 0.2, true)
         ConneValue:TweenPosition(pos, "Out", "Sine", 0.2, true)
         if floor == true then
-            local value = string.format("%.0f",((pos.X.Scale * max) / max) * (max - min) + min)
+            local value = string.format("%.0f",((pos.X.Scale * Max) / Max) * (Max - Min) + Min)
             CustomValue.Text = tostring(value)
-            callback(value)
+            Callback(value)
         else
-            local value = math.floor(((pos.X.Scale * max) / max) * (max - min) + min)
+            local value = math.floor(((pos.X.Scale * Max) / Max) * (Max - Min) + Min)
             CustomValue.Text = tostring(value)
-            callback(value)
+            Callback(value)
         end
     end
 
@@ -2562,36 +2574,41 @@ function functionitem:Slider(arg1, arg2, arg3, arg4, arg5, arg6, arg7)
     end)
     CustomValue.FocusLost:Connect(function()
         if CustomValue.Text == "" then
-            CustomValue.Text = de
+            CustomValue.Text = Value
         end
-        if tonumber(CustomValue.Text) > max then
-            CustomValue.Text = max
+        if tonumber(CustomValue.Text) > Max then
+            CustomValue.Text = Max
         end
-        MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
+        MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / Max, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/Max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
         if floor == true then
-            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min) )
+            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / Max) * (Max - Min) + Min) )
         else
-            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
+            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / Max) * (Max - Min) + Min) )
         end
-        pcall(callback, CustomValue.Text)
+        pcall(Callback, CustomValue.Text)
     end)
 
     function sliderfunc:Update(value)
-        MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
+        MainValue:TweenSize(UDim2.new((value or 0) / Max, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((value or 0)/Max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
         CustomValue.Text = value
         pcall(function()
-            callback(value)
+            Callback(value)
         end)
     end
 
     RegisterComponent("Slider", text, SliderFrame)
-    
     return sliderfunc
 end
 
-			function functionitem:AddColorpicker(text, preset, callback)
+-- 🔥 Colorpicker Function
+function functionitem:AddColorpicker(...)
+    local options = ParseArguments(...)
+    local text = options.Name or "Colorpicker"
+    local Value = options.Value or Color3.fromRGB(255, 255, 255)
+    local Callback = options.Callback or function() end
+
     local OldToggleColor = Color3.fromRGB(0, 0, 0)
     local OldColor = Color3.fromRGB(0, 0, 0)
     local OldColorSelectionPosition = nil
@@ -2676,7 +2693,7 @@ end
     ColorSelection.AnchorPoint = Vector2.new(0.5, 0.5)
     ColorSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     ColorSelection.BackgroundTransparency = 1.000
-    ColorSelection.Position = UDim2.new(preset and select(3, Color3.toHSV(preset)))
+    ColorSelection.Position = UDim2.new(Value and select(3, Color3.toHSV(Value)))
     ColorSelection.Size = UDim2.new(0, 18, 0, 18)
     ColorSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
     ColorSelection.ScaleType = Enum.ScaleType.Fit
@@ -2701,13 +2718,13 @@ end
     HueSelection.AnchorPoint = Vector2.new(0.5, 0.5)
     HueSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     HueSelection.BackgroundTransparency = 1.000
-    HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(preset)))
+    HueSelection.Position = UDim2.new(0.48, 0, 1 - select(1, Color3.toHSV(Value)))
     HueSelection.Size = UDim2.new(0, 18, 0, 18)
     HueSelection.Image = "http://www.roblox.com/asset/?id=4805639000"
 
     PresetClr.Name = "PresetClr"
     PresetClr.Parent = ColorpickerFrame
-    PresetClr.BackgroundColor3 = preset
+    PresetClr.BackgroundColor3 = Value
     PresetClr.Position = UDim2.new(0.846153855, 0, 0.0740740746, 0)
     PresetClr.Size = UDim2.new(0, 25, 0, 25)
 
@@ -2718,8 +2735,8 @@ end
     local function UpdateColorPicker(nope)
         PresetClr.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
         Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
-        _G.Color = PresetClr.BackgroundColor3 -- อัปเดต _G.Color โดยอัตโนมัติ
-        pcall(callback, PresetClr.BackgroundColor3)
+        _G.Color = PresetClr.BackgroundColor3
+        pcall(Callback, PresetClr.BackgroundColor3)
     end
 
     ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
@@ -2781,6 +2798,7 @@ end
         end
     end)
 end
+	
 				return functionitem
 			end
 			return sections

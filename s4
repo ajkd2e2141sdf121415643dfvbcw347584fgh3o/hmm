@@ -9,7 +9,92 @@
 	local Mouse = LocalPlayer:GetMouse()
 	local GuiService = game:GetService("GuiService")
 
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/SSDAWGDFHTEHVFFSGXCVBSDFBFDGWGSDVDDSXC/d/main/perpid"))()
+	
+--[[Perpid]]
+local Ui =  game:GetService("CoreGui").RobloxGui.Modules:FindFirstChild("dsfwefwfwdfsfasdadaxczcw")
+if Ui then
+    Ui:Destroy()
+end
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+local tween = game:service"TweenService"
+local RunService = game:GetService("RunService")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local GuiService = game:GetService("GuiService")
+local SoundClick2 = Instance.new("Sound")
+SoundClick2.Name = "Sound Effect"
+SoundClick2.SoundId = "rbxassetid://3398620867"
+SoundClick2.Volume = 1
+SoundClick2.Parent = game.Workspace
+local UIStroke = Instance.new("UIStroke")
+local UICorner = Instance.new("UICorner")
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local RobloxButton = Enum.ButtonStyle.RobloxButton
+ScreenGui.Parent =  game:GetService("CoreGui").RobloxGui.Modules
+ScreenGui.Name = "dsfwefwfwdfsfasdadaxczcw"
+ImageButton.Parent = ScreenGui
+ImageButton.Position = UDim2.new(0.120833337, 0, 0.0952890813, 0)
+ImageButton.Size = UDim2.new(0, 65, 0, 65)
+ImageButton.Draggable = true
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.BackgroundTransparency = 1
+ImageButton.Image = "rbxassetid://16129235054"
+function LoadFunction()    
+        ImageButton.MouseEnter:Connect(function()
+        TweenService:Create(
+            ImageButton,
+            TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(0, 80, 0, 80)}
+        ):Play()
+    end)
+    ImageButton.MouseLeave:Connect(function()
+        TweenService:Create(
+            ImageButton,
+            TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
+            {Size = UDim2.new(0, 65, 0, 65)}
+        ):Play()
+    end)
+    
+    local LoadFocus = false
+    
+    ImageButton.MouseButton1Down:Connect(function()
+        if LoadFocus == false then 
+            LoadFocus = false
+            TweenService:Create(
+                ImageButton,
+                TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
+                {Rotation = 180}
+            ):Play()
+            SoundClick2:Play()
+            TweenService:Create(
+                ImageButton,
+                TweenInfo.new(.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In),
+                {ImageTransparency = 0}
+            ):Play()
+            wait(.5)
+            TweenService:Create(
+                ImageButton,
+                TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
+                {Rotation = 0}
+            ):Play()
+            TweenService:Create(
+                ImageButton,
+                TweenInfo.new(.4, Enum.EasingStyle.Quart, Enum.EasingDirection.In),
+                {ImageTransparency = 0}
+            ):Play()
+            wait(.5)	
+            
+        end
+    end)
+end
+    LoadFunction()
+    ImageButton.MouseButton1Down:connect(function()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true,Enum.KeyCode.F1,false,game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false,Enum.KeyCode.F1,false,game)
+    end)
 	function Vec(text)
 		local Notification = require(game.ReplicatedStorage.Notification)
 		local notification = Notification.new(text)
@@ -912,7 +997,11 @@ function VectorHub:Evil()
                 uitoggled = true
             else
                 UI.Enabled = true
-                Main:TweenSize(UDim2.new(0, 555, 0, 375), Enum.EasingDirection.Out, Enum.EasingStyle.Quart,0.2,true)
+				if IsOnMobile then 
+				Main:TweenSize(UDim2.new(0,588,0,370), Enum.EasingDirection.Out, Enum.EasingStyle.Quart,0.2,true)
+				else
+                Main:TweenSize(UDim2.new(0,588,0,450), Enum.EasingDirection.Out, Enum.EasingStyle.Quart,0.2,true)
+				end
                 uitoggled = false
             end
         end

@@ -1290,10 +1290,12 @@ end
 -- ==========================================
 function functionitem:Toggle(arg1, arg2, arg3, arg4)
     local options = ParseArguments(arg1, arg2, arg3, arg4)
+    print("Toggle options:", options)  -- Debug: ตรวจสอบว่า options ถูกต้อง
+
     local Name = options.Name
-    local default = options.Value
-    local callback = options.Callback or function() end
-    local Flag = options.Flag or nil 
+    local default = options.Value or false  -- ตั้งค่า default เป็น false ถ้า Value เป็น nil
+    local callback = options.Callback or function() end  -- ตั้งค่า default callback
+    local Flag = options.Flag  -- Flag เป็น optional (อาจเป็น nil)
 
     if not Name or Name == "" then
         warn("Toggle: Name is required!")
@@ -1301,139 +1303,78 @@ function functionitem:Toggle(arg1, arg2, arg3, arg4)
     end
 
     local ToglFunc = {}
-    local Tgo = default or false
-    local MainToggle = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner")
-    local Text = Instance.new("TextLabel")
-    local MainToggle_3 = Instance.new("ImageLabel")
-    local UICorner_3 = Instance.new("UICorner")
-    local TextButton = Instance.new("TextButton")
+    local Tgo = default
+    print("Initial Toggle state:", Tgo)  -- Debug: ตรวจสอบสถานะเริ่มต้น
 
-    MainToggle.Name = Name
-    MainToggle.Parent = SectionContainer
+    local MainToggle = Instance.new("Frame")
+    MainToggle.Name = "Toggle"
     MainToggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     MainToggle.BackgroundTransparency = 1
-    MainToggle.BorderSizePixel = 0
-    MainToggle.ClipsDescendants = true
-    MainToggle.Size = UDim2.new(0, 265, 0, 45)
-    MainToggle.ZIndex = 16
+    MainToggle.Size = UDim2.new(1, 0, 0, 25)
+    MainToggle.Position = UDim2.new(0, 0, 0, 0)
 
-    UICorner.CornerRadius = UDim.new(0, 4)
-    UICorner.Parent = MainToggle
-
+    local Text = Instance.new("TextLabel")
     Text.Name = "Text"
     Text.Parent = MainToggle
     Text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Text.BackgroundTransparency = 1.000
-    Text.Position = UDim2.new(0, 45, 0, 16)
-    Text.Size = UDim2.new(0, 100, 0, 12)
-    Text.ZIndex = 16
-    Text.Font = Enum.Font.GothamBold
+    Text.BackgroundTransparency = 1
+    Text.Position = UDim2.new(0, 30, 0, 0)
+    Text.Size = UDim2.new(1, -30, 1, 0)
+    Text.Font = Enum.Font.Gotham
     Text.Text = Name
     Text.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Text.TextSize = 14.000
-    Text.TextTransparency = 0.2
+    Text.TextSize = 12
+    Text.TextWrapped = true  -- รองรับ newline ในชื่อ
     Text.TextXAlignment = Enum.TextXAlignment.Left
 
-    MainToggle_3.Name = "MainToggle"
-    MainToggle_3.Parent = MainToggle
-    MainToggle_3.AnchorPoint = Vector2.new(0.5, 0.5)
-    MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    MainToggle_3.ClipsDescendants = true
-    MainToggle_3.Position = UDim2.new(0, 15, 0.5, 0)
-    MainToggle_3.Size = UDim2.new(0, 25, 0, 25)
-    MainToggle_3.ZIndex = 16
-    MainToggle_3.Image = "http://www.roblox.com/asset/?id="
-    MainToggle_3.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    MainToggle_3.Visible = true
-
-    UICorner_3.CornerRadius = UDim.new(0, 5)
-    UICorner_3.Parent = MainToggle_3
-
-    TextButton.Name = ""
+    local TextButton = Instance.new("TextButton")
+    TextButton.Name = "TextButton"
     TextButton.Parent = MainToggle
     TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextButton.BackgroundTransparency = 1.000
-    TextButton.BorderSizePixel = 0
-    TextButton.Position = UDim2.new(0, 0, 0, 0)
-    TextButton.Size = UDim2.new(0, 265, 0, 35)
-    TextButton.ZIndex = 16
-    TextButton.AutoButtonColor = false
-    TextButton.Font = Enum.Font.Gotham
+    TextButton.BackgroundTransparency = 1
+    TextButton.Position = UDim2.new(0, 5, 0, 5)
+    TextButton.Size = UDim2.new(0, 15, 0, 15)
+    TextButton.Font = Enum.Font.SourceSans
     TextButton.Text = ""
-    TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextButton.TextSize = 14.000
+    TextButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+    TextButton.TextSize = 14
 
-    if default == true then
-        MainToggle_3.BackgroundColor3 = _G.Color
-        MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
-        MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-        UICorner_3.CornerRadius = UDim.new(0, 100)
-        pcall(callback,true)
-    end
+    local ToggleStatus = Instance.new("ImageLabel")
+    ToggleStatus.Name = "ToggleStatus"
+    ToggleStatus.Parent = TextButton
+    ToggleStatus.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleStatus.BackgroundTransparency = 1
+    ToggleStatus.Size = UDim2.new(1, 0, 1, 0)
+    ToggleStatus.Image = "rbxassetid://13347713379"
+    ToggleStatus.ImageTransparency = Tgo and 0 or 1
 
-    TextButton.MouseEnter:Connect(function()
-        if Tgo == false then
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-        else
-            MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-            UICorner_3.CornerRadius = UDim.new(0, 100)
-        end
-    end)
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 4)
+    UICorner.Parent = TextButton
 
-    TextButton.MouseLeave:Connect(function()
-        if Tgo == false then
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-        else
-            MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-            UICorner_3.CornerRadius = UDim.new(0, 100)
-        end
-    end)
+    local UICorner_2 = Instance.new("UICorner")
+    UICorner_2.CornerRadius = UDim.new(0, 4)
+    UICorner_2.Parent = MainToggle
 
+    -- การจัดการสถานะ Toggle
     TextButton.MouseButton1Click:Connect(function()
-        local SoundClick = Instance.new("Sound")
-        SoundClick.Name = "SoundEffect"
-        SoundClick.SoundId = "rbxassetid://130785805"
-        SoundClick.Volume = 1
-        SoundClick.Parent = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-        SoundClick:Play()
-        if Tgo == false then
-            Tgo = true
-            pcall(callback,true)
-            MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-            UICorner_3.CornerRadius = UDim.new(0, 100)
-            MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29),"In","Linear",0.2,true)
-            wait(0.2)
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-        else
-            Tgo = false
-            pcall(callback,false)
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-            wait(0.2)
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
+        Tgo = not Tgo
+        ToggleStatus.ImageTransparency = Tgo and 0 or 1
+        print("Toggle clicked, new value:", Tgo)  -- Debug: ตรวจสอบการกด
+        local success, err = pcall(callback, Tgo)
+        if not success then
+            warn("Callback error:", err)  -- Debug: ตรวจสอบข้อผิดพลาดใน callback
         end
-        wait(0.1)
-        CircleClick(TextButton, Mouse.X, Mouse.Y)
-        SoundClick:Destroy()
+        if Flag then
+            _G.Settings[Flag] = Tgo  -- อัปเดต _G.Settings ถ้ามี Flag
+            print("Updated _G.Settings[" .. tostring(Flag) .. "]:", _G.Settings[Flag])  -- Debug
+        end
     end)
 
     -- 🔥 Register to Search
     RegisterComponent("Toggle", Name, MainToggle)
-    
+
+    MainToggle.Parent = SectionFrame
     return ToglFunc
 end
 

@@ -1,3 +1,4 @@
+print("เค")
 	_G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 	local UserInputService = game:GetService("UserInputService")
 	local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -1424,7 +1425,7 @@ function functionitem:Toggle(...)
         MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
         MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
         UICorner_3.CornerRadius = UDim.new(0, 100)
-        pcall(callback,true)
+        pcall(Callback,true)
     end
 
     TextButton.MouseEnter:Connect(function()
@@ -1464,7 +1465,7 @@ function functionitem:Toggle(...)
         SoundClick:Play()
         if Tgo == false then
             Tgo = true
-            pcall(callback,true)
+            pcall(Callback,true)
             MainToggle_3.BackgroundColor3 = _G.Color
             MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
             UICorner_3.CornerRadius = UDim.new(0, 100)
@@ -1473,7 +1474,7 @@ function functionitem:Toggle(...)
             MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
         else
             Tgo = false
-            pcall(callback,false)
+            pcall(Callback,false)
             MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
             MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
             MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29),"In","Linear",0.2,true)
@@ -1488,7 +1489,6 @@ function functionitem:Toggle(...)
 
     -- 🔥 Register to Search
     RegisterComponent("Toggle", Name, MainToggle)
-    
     return ToglFunc
 end
 
@@ -1556,7 +1556,7 @@ function functionitem:Button(...)
         TextLabel_3.TextSize = 0
         TweenService:Create(TextLabel_3, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {TextSize = 12}):Play()
-        callback()
+        Callback()
     end)
 
     -- 🔥 Register to Search
@@ -1652,7 +1652,7 @@ function functionitem:ButtonTog(...)
     local options = ParseArguments(...)
     local Title = options.Name
     local default = options.Value
-    local callback = options.Callback or function() end
+    local Callback = options.Callback or function() end
 
     local b3Func = {}
     local Tgs = default
@@ -1707,7 +1707,7 @@ function functionitem:ButtonTog(...)
             TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundColor3 = Color3.fromRGB(33, 132, 112)}
         ):Play()
-        callback(default)
+        Callback(default)
         Tgs = default
     end
 
@@ -1717,7 +1717,7 @@ function functionitem:ButtonTog(...)
             TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundColor3 = state and Color3.fromRGB(33, 132, 112) or _G.Color}
         ):Play()
-        callback(state)
+        Callback(state)
         Tgs = state
     end
 
@@ -1734,7 +1734,7 @@ function functionitem:Textbox(...)
     local options = ParseArguments(...)
     local Name = options.Name
     local Placeholder = options.Value or ""
-    local callback = options.Callback or function() end
+    local Callback = options.Callback or function() end
     local Flag = options.Flag
 
     local Textbox = Instance.new("Frame")
@@ -1861,7 +1861,7 @@ function functionitem:Textbox(...)
     HeadTitle.FocusLost:Connect(function(ep)
         if ep then
             if #HeadTitle.Text > 0 then
-                callback(HeadTitle.Text)
+                Callback(HeadTitle.Text)
                 HeadTitle.Text = HeadTitle.Text
             end
         end
@@ -1881,7 +1881,7 @@ function functionitem:Dropdown(...)
     local text = options.Name
     local default = options.Value or ""
     local list = options.List or {}
-    local callback = options.Callback or function() end
+    local Callback = options.Callback or function() end
     local Flag = options.Flag
 
     local Dropfunc = {}
@@ -2127,7 +2127,7 @@ function functionitem:Dropdown(...)
         _5.MouseButton1Click:Connect(function()
             Tof = false
             Dropfunc:TogglePanel(Tof)
-            callback(Text)
+            Callback(Text)
             Text_2.Text = Text
             
             for i, v in pairs(Scroll_Items:GetChildren()) do
@@ -2159,7 +2159,7 @@ function functionitem:MultiDropdown(...)
     local text = options.Name
     local default = options.Value or {}
     local list = options.List or {}
-    local callback = options.Callback or function() end
+    local Callback = options.Callback or function() end
     local Flag = options.Flag
 
     local Dropfunc = {}
@@ -2415,7 +2415,7 @@ function functionitem:MultiDropdown(...)
         _5.MouseButton1Click:Connect(function()
             if not table.find(DropTable, Text) then
                 table.insert(DropTable, Text)
-                callback(DropTable, Text)
+                Callback(DropTable, Text)
                 Text_2.Text = table.concat(DropTable, ", ")
                 TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                     {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
@@ -2428,7 +2428,7 @@ function functionitem:MultiDropdown(...)
                         Text_2.Text = table.concat(DropTable, ", ")
                     end
                 end
-                callback(DropTable, Text)
+                Callback(DropTable, Text)
             end
         end)
     end
@@ -2452,7 +2452,7 @@ function functionitem:Slider(...)
     local de = options.Value or 1
     local min = options.Min or 1
     local max = options.Max or 2
-    local callback = options.Callback or options.Format or function() end
+    local Callback = options.Callback or options.Format or function() end
     local Flag = options.Flag
 
     local SliderFrame = Instance.new("Frame")
@@ -2630,11 +2630,11 @@ function functionitem:Slider(...)
         if floor == true then
             local value = string.format("%.0f",((pos.X.Scale * max) / max) * (max - min) + min)
             CustomValue.Text = tostring(value)
-            callback(value)
+            Callback(value)
         else
             local value = math.floor(((pos.X.Scale * max) / max) * (max - min) + min)
             CustomValue.Text = tostring(value)
-            callback(value)
+            Callback(value)
         end
     end
 
@@ -2688,7 +2688,7 @@ function functionitem:Slider(...)
         else
             CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
         end
-        pcall(callback, CustomValue.Text)
+        pcall(Callback, CustomValue.Text)
     end)
 
     function sliderfunc:Update(value)
@@ -2696,7 +2696,7 @@ function functionitem:Slider(...)
         ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
         CustomValue.Text = value
         pcall(function()
-            callback(value)
+            Callback(value)
         end)
     end
 
@@ -2705,7 +2705,7 @@ function functionitem:Slider(...)
     return sliderfunc
 end
 
-			function functionitem:AddColorpicker(text, preset, callback)
+			function functionitem:AddColorpicker(text, preset, Callback)
     local OldToggleColor = Color3.fromRGB(0, 0, 0)
     local OldColor = Color3.fromRGB(0, 0, 0)
     local OldColorSelectionPosition = nil
@@ -2833,7 +2833,7 @@ end
         PresetClr.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
         Color.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
         _G.Color = PresetClr.BackgroundColor3 -- อัปเดต _G.Color โดยอัตโนมัติ
-        pcall(callback, PresetClr.BackgroundColor3)
+        pcall(Callback, PresetClr.BackgroundColor3)
     end
 
     ColorH = 1 - (math.clamp(HueSelection.AbsolutePosition.Y - Hue.AbsolutePosition.Y, 0, Hue.AbsoluteSize.Y) / Hue.AbsoluteSize.Y)
@@ -2843,7 +2843,7 @@ end
     PresetClr.BackgroundColor3 = preset
     Color.BackgroundColor3 = preset
     _G.Color = preset -- ตั้งค่าเริ่มต้นให้ _G.Color
-    pcall(callback, PresetClr.BackgroundColor3)
+    pcall(Callback, PresetClr.BackgroundColor3)
 
     Color.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then

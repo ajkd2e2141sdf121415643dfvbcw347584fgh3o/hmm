@@ -1,4 +1,4 @@
-	print("Loaded[..]")
+	print("Loaded[0]")
     _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 	local UserInputService = game:GetService("UserInputService")
 	local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -984,7 +984,7 @@ function VectorHub:Evil()
         UICorner_3.CornerRadius = UDim.new(0, 3)
         UICorner_3.Parent = Tab
 
-        Tab2.Name = "Tab"
+        Tab2.Name = "Tab2"
         Tab2.Parent = Tab
         Tab2.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         Tab2.Size = UDim2.new(0, 80, 0, 25)
@@ -1089,6 +1089,7 @@ function VectorHub:Evil()
         end
 
         Tab.MouseButton1Click:Connect(function()
+            UIStroke96.Color = _G.Color
             for _, x in next, TabContainer:GetChildren() do
                 if x.Name == "Tab" then
                     TweenService:Create(x.TextLabel, TweenInfo.new(0, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),

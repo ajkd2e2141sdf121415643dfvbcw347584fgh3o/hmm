@@ -2576,7 +2576,7 @@ function functionitem:Slider(...)
     local PartValueUICorner = Instance.new("UICorner")
     local MainValue = Instance.new("Frame")
     local MainValueUICorner = Instance.new("UICorner")
-    local sliderfunc = {}
+    local SliderFunc = {}
 
     SliderFrame.Name = text
     SliderFrame.Parent = SectionContainer

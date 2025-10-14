@@ -2556,13 +2556,14 @@ end
 -- ==========================================
 function functionitem:Slider(...)
     local options = ParseArguments(...)
-    local text = options.Name
+    local Name = options.Name or ""
+    local Min = options.Min or 0
+    local Max = options.Max or math.huge
+    local Value = options.Value or Min
     local floor = options.floor or false
-    local de = options.Value or 1
-    local min = options.Min or 1
-    local max = options.Max or 2
     local Callback = options.Callback or options.Format or function() end
     local Flag = options.Flag
+
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")
@@ -2800,18 +2801,16 @@ function functionitem:Slider(...)
         pcall(Callback, CustomValue.Text)
     end)
 
-    function sliderfunc:Update(value)
-        MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
-        CustomValue.Text = value
-        pcall(function()
-            Callback(value)
-        end)
+    SliderFunc.Set = function(value)
+        CurrentValue = math.clamp(floor and math.floor(value) or value, Min, Max)
+        SliderFill.Size = UDim2.new((CurrentValue - Min) / (Max - Min), 0, 1, 0)
+        SliderLabel.Text = Name .. ": " .. (floor and math.floor(CurrentValue) or CurrentValue)
+        pcall(Callback, CurrentValue)
     end
 
     RegisterComponent("Slider", text, SliderFrame)
     
-    return sliderfunc
+    return SliderFunc
 end
 
 function functionitem:AddColorpicker(...)

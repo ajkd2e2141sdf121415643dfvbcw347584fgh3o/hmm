@@ -2556,14 +2556,13 @@ end
 -- ==========================================
 function functionitem:Slider(...)
     local options = ParseArguments(...)
-	local text = options.Name
-	local floor = options.floor or false
-	local de = options.Value or 1
-	local min = options.Min or 1
-	local max = options.Max or math.huge
+    local text = options.Name
+    local floor = options.floor or false
+    local de = options.Value or 1
+    local min = options.Min or 1
+    local max = options.Max or math.huge
     local Callback = options.Callback or options.Format or function() end
     local Flag = options.Flag
-
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")
@@ -2576,7 +2575,7 @@ function functionitem:Slider(...)
     local PartValueUICorner = Instance.new("UICorner")
     local MainValue = Instance.new("Frame")
     local MainValueUICorner = Instance.new("UICorner")
-    local SliderFunc = {}
+    local sliderfunc = {}
 
     SliderFrame.Name = text
     SliderFrame.Parent = SectionContainer
@@ -2801,16 +2800,18 @@ function functionitem:Slider(...)
         pcall(Callback, CustomValue.Text)
     end)
 
-    SliderFunc.Set = function(value)
-        CurrentValue = math.clamp(floor and math.floor(value) or value, Min, Max)
-        SliderFill.Size = UDim2.new((CurrentValue - Min) / (Max - Min), 0, 1, 0)
-        SliderLabel.Text = Name .. ": " .. (floor and math.floor(CurrentValue) or CurrentValue)
-        pcall(Callback, CurrentValue)
+    function sliderfunc:Update(value)
+        MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
+        CustomValue.Text = value
+        pcall(function()
+            Callback(value)
+        end)
     end
 
     RegisterComponent("Slider", text, SliderFrame)
     
-    return SliderFunc
+    return sliderfunc
 end
 
 function functionitem:AddColorpicker(...)

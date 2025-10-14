@@ -2556,11 +2556,11 @@ end
 -- ==========================================
 function functionitem:Slider(...)
     local options = ParseArguments(...)
-    local Name = options.Name or ""
-    local Min = options.Min or 0
-    local Max = options.Max or math.huge
-    local Value = options.Value or Min
-    local floor = options.floor or false
+	local text = options.Name
+	local floor = options.floor or false
+	local de = options.Value or 1
+	local min = options.Min or 1
+	local max = options.Max or math.huge
     local Callback = options.Callback or options.Format or function() end
     local Flag = options.Flag
 

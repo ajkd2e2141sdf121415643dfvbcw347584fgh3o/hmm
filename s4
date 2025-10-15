@@ -1,15 +1,80 @@
-	print("Loaded[0]")
-    _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
-	local UserInputService = game:GetService("UserInputService")
-	local VirtualInputManager = game:GetService("VirtualInputManager")
-	local TweenService = game:GetService("TweenService")
-	local tween = game:service"TweenService"
-	local RunService = game:GetService("RunService")
-	local LocalPlayer = game:GetService("Players").LocalPlayer
-	local Mouse = LocalPlayer:GetMouse()
-	local GuiService = game:GetService("GuiService")
+print("Loaded[0]")
+_G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
+local UserInputService = game:GetService("UserInputService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+local tween = game:service"TweenService"
+local RunService = game:GetService("RunService")
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+local GuiService = game:GetService("GuiService")
+print("Loaded[1S]")
+local StarterGui = game:GetService("StarterGui")
+local HttpService = game:GetService("HttpService")
+local Player = game.Players.LocalPlayer
+local SettingsPath = "VectorHub/Blox Fruits/" .. Player.Name .. ".json"
 
-	
+local bind = Instance.new("BindableFunction")
+bind.OnInvoke = function(choice)
+	if choice == "Yes" then
+		if isfile(SettingsPath) then
+			local success, data = pcall(function()
+				return HttpService:JSONDecode(readfile(SettingsPath))
+			end)
+
+			if success and type(data) == "table" then
+				for k, v in pairs(data) do
+					if v == true then
+						data[k] = false
+						_G.Settings[k] = false
+					end
+				end
+
+				-- เซฟกลับลงไฟล์
+				writefile(SettingsPath, HttpService:JSONEncode(data))
+
+				StarterGui:SetCore("SendNotification", {
+					Title = "VectorHub",
+					Text = "✅ รีเซ็ตค่าการตั้งค่าเรียบร้อย!\nSuccess",
+					Icon = "rbxassetid://14645512457",
+					Duration = 5
+				})
+			else
+				StarterGui:SetCore("SendNotification", {
+					Title = "VectorHub",
+					Text = "⚠️ โหลดไฟล์ตั้งค่าไม่สำเร็จ\nNot Success",
+					Icon = "rbxassetid://14645512457",
+					Duration = 5
+				})
+			end
+		else
+			StarterGui:SetCore("SendNotification", {
+				Title = "VectorHub",
+				Text = "❌ ไม่พบไฟล์ตั้งค่า\nNo Settings",
+				Icon = "rbxassetid://14645512457",
+				Duration = 5
+			})
+		end
+	else
+		StarterGui:SetCore("SendNotification", {
+			Title = "VectorHub",
+			Text = "ยกเลิกการรีเซ็ตค่า",
+			Icon = "rbxassetid://14645512457",
+			Duration = 5
+		})
+	end
+end
+
+StarterGui:SetCore("SendNotification", {
+	Title = "VectorHub",
+	Text = "Reset Settings?\nรีเซ็ตค่าการตั้งค่ามั้ย?",
+	Icon = "rbxassetid://14645512457",
+	Duration = 30,
+	Button1 = "Yes",
+	Button2 = "No",
+	Callback = bind
+})
+
 --[[Perpid]]
 local Ui =  game:GetService("CoreGui").RobloxGui.Modules:FindFirstChild("dsfwefwfwdfsfasdadaxczcw")
 if Ui then

@@ -1550,9 +1550,10 @@ function functionitem:Toggle(...)
             MainToggle_3.Size = UDim2.new(0, 25, 0, 25)
         end
     end
-
+print("อัพเดท")
     -- === ตั้งค่าเริ่มต้นจาก SaveSettings ===
     pcall(updateUI(Value))  -- ตรงนี้สำคัญ!
+    print("คอแบค")
     pcall(Callback, Value)  -- รัน Callback ตาม SaveSettings
 print("แม่เย็ด")
     -- === Hover Effect ===

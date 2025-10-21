@@ -2924,8 +2924,8 @@ RegisterColorDependent("MainValue",MainValue,"BackgroundColor3")
 RegisterColorDependent("UIStroke965",UIStroke965,"Color")
 RegisterColorDependent("UIStroke96",UIStroke96,"Color")
 RegisterColorDependent("SearchStroke",SearchStroke,"Color")
--- 🔥 Toggle Function
-function functionitem:Toggle(...)
+                end				
+                function functionitem:Toggle(...)
     local options = ParseArguments(...)
     local Name = options.Name or ""
     local Value = options.Value or false
@@ -3083,7 +3083,6 @@ function functionitem:Toggle(...)
 
     return ToglFunc
 end
-                end				
                 return functionitem
 			end
 			return sections

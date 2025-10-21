@@ -2759,7 +2759,7 @@ function functionitem:Slider(...)
     -- === อัปเดตค่า ===
     local function updateValue(val)
         val = tonumber(val) or default
-        if val < min then val: val = min end
+        if val < min then val = min end
         if val > max then val = max end
 
         local percent = (val - min) / (max - min)

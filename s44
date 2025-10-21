@@ -3076,8 +3076,12 @@ function functionitem:Toggle(...)
         function ToglFunc:Get() return Tgo end
 
         RegisterComponent("Toggle", Name, MainToggle)
-    end)
+   
 
+
+    return ToglFunc
+     end)
+     
     if not success then
         warn("Failed to create Toggle GUI:", err)
         -- คืนค่าเปล่า แต่ยังใช้ได้
@@ -3089,8 +3093,6 @@ function functionitem:Toggle(...)
             Get = function() return Tgo end
         }
     end
-
-    return ToglFunc
 end
                 return functionitem
 			end

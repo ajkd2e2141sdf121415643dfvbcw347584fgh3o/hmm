@@ -1092,7 +1092,7 @@ function VectorHub:Evil()
 
     -- ทำให้สามารถลากเพื่อย้ายได้
     dragify(ClickFrame, Main)
-    MakeDraggable(ClickFrame.Main)
+    MakeDraggable(ClickFrame,Main)
     -- ทำให้สามารถปรับขนาดได้
     MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600))
     -- ==========================================

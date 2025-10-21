@@ -557,7 +557,7 @@ function VectorHub:Evil()
     Logo.Parent = Main
     Logo.Active = true
     Logo.AnchorPoint = Vector2.new(0,0)
-    Logo.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Logo.BackgroundColor3 = Color3.fromRGB(0, 133, 255)
     Logo.BackgroundTransparency = 1.000
     Logo.Position = UDim2.new(0, 10, 0, 10)
     Logo.Size = UDim2.new(0, 30, 0, 30)
@@ -1034,7 +1034,6 @@ function VectorHub:Evil()
     local ResizeHandleCorner = Instance.new("UICorner")
     ResizeHandleCorner.CornerRadius = UDim.new(0, 4)
     ResizeHandleCorner.Parent = ResizeHandle
-    print("ควยๆ")
     -- ทำให้สามารถลากเพื่อย้ายได้
     MakeDraggable(ClickFrame,Main)
     -- ทำให้สามารถปรับขนาดได้
@@ -1472,7 +1471,7 @@ function functionitem:Toggle(...)
     end
 
     local ToglFunc = {}
-    local Tgo = Value  -- เริ่มจาก SaveSettings
+    local Tgo = Value or false
 
     local MainToggle = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
@@ -1553,9 +1552,9 @@ function functionitem:Toggle(...)
     end
 
     -- === ตั้งค่าเริ่มต้นจาก SaveSettings ===
-    updateUI(Value)  -- ตรงนี้สำคัญ!
+    pcall(updateUI(Value))  -- ตรงนี้สำคัญ!
     pcall(Callback, Value)  -- รัน Callback ตาม SaveSettings
-
+print("แม่เย็ด")
     -- === Hover Effect ===
     TextButton.MouseEnter:Connect(function()
         MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28), "In", "Linear", 0.2, true)

@@ -1303,83 +1303,82 @@ function VectorHub:Evil()
         -- ==========================================
         -- SECTIONS SYSTEM
         -- ==========================================
-        local sections = {}
+    local sections = {}
         
-        function sections:CreateSection(options)
-            local Name = options.Name
-            local side = options.Side
-            CurrentSectionName = Name  -- 🔥 บันทึก Section Name
+    function sections:CreateSection(options)
+        local Name = options.Name
+        local side = options.Side
+        CurrentSectionName = Name  -- 🔥 บันทึก Section Name
 
-            if side == nil then
-                return Left
-            end
+        if side == nil then
+            return Left
+        end
 
-            local Section = Instance.new("Frame")
-            local UICorner_5 = Instance.new("UICorner")
-            local Top_2 = Instance.new("Frame")
-            local Line = Instance.new("Frame")
-            local Sectionname = Instance.new("TextLabel")
-            local SectionContainer = Instance.new("Frame")
-            local UIListLayout_2 = Instance.new("UIListLayout")
-            local UIPadding_2 = Instance.new("UIPadding")
+        local Section = Instance.new("Frame")
+        local UICorner_5 = Instance.new("UICorner")
+        local Top_2 = Instance.new("Frame")
+        local Line = Instance.new("Frame")
+        local Sectionname = Instance.new("TextLabel")
+        local SectionContainer = Instance.new("Frame")
+        local UIListLayout_2 = Instance.new("UIListLayout")
+        local UIPadding_2 = Instance.new("UIPadding")
 
-            Section.Name = Name
-            Section.Parent = GetType(side)
-            Section.BackgroundColor3 = Color3.fromRGB(10, 11, 12)
-            Section.ClipsDescendants = true
-            Section.Transparency = 0.1
-            Section.Size = UDim2.new(1, 0, 0, 40)
+        Section.Name = Name
+        Section.Parent = GetType(side)
+        Section.BackgroundColor3 = Color3.fromRGB(10, 11, 12)
+        Section.ClipsDescendants = true
+        Section.Transparency = 0.1
+        Section.Size = UDim2.new(1, 0, 0, 40)
 
-            UICorner_5.CornerRadius = UDim.new(0, 5)
-            UICorner_5.Parent = Section
+        UICorner_5.CornerRadius = UDim.new(0, 5)
+        UICorner_5.Parent = Section
 
-            Top_2.Name = "Top"
-            Top_2.Parent = Section
-            Top_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Top_2.BackgroundTransparency = 1.000
-            Top_2.BorderColor3 = Color3.fromRGB(27, 42, 53)
-            Top_2.Size = UDim2.new(0, 238, 0, 31)
+        Top_2.Name = "Top"
+        Top_2.Parent = Section
+        Top_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Top_2.BackgroundTransparency = 1.000
+        Top_2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+        Top_2.Size = UDim2.new(0, 238, 0, 31)
 
-            Line.Name = "Line"
-            Line.Parent = Top_2
-            Line.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            Line.BorderSizePixel = 0
-            Line.Size = UDim2.new(0, 274, 0, 1)
+        Line.Name = "Line"
+        Line.Parent = Top_2
+        Line.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        Line.BorderSizePixel = 0
+        Line.Size = UDim2.new(0, 274, 0, 1)
 
-            Sectionname.Name = "Sectionname"
-            Sectionname.Parent = Top_2
-            Sectionname.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Sectionname.BackgroundTransparency = 1.000
-            Sectionname.Position = UDim2.new(0.0591227226, 0, 0.0222222228, 0)
-            Sectionname.Size = UDim2.new(0, 224, 0, 24)
-            Sectionname.Font = Enum.Font.GothamBold
-            Sectionname.Text = Name
-            Sectionname.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Sectionname.TextSize = 12.000
-            Sectionname.TextTransparency = 0
-            Sectionname.TextXAlignment = Enum.TextXAlignment.Left
+        Sectionname.Name = "Sectionname"
+        Sectionname.Parent = Top_2
+        Sectionname.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Sectionname.BackgroundTransparency = 1.000
+        Sectionname.Position = UDim2.new(0.0591227226, 0, 0.0222222228, 0)
+        Sectionname.Size = UDim2.new(0, 224, 0, 24)
+        Sectionname.Font = Enum.Font.GothamBold
+        Sectionname.Text = Name
+        Sectionname.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Sectionname.TextSize = 12.000
+        Sectionname.TextTransparency = 0
+        Sectionname.TextXAlignment = Enum.TextXAlignment.Left
 
-            SectionContainer.Name = "SectionContainer"
-            SectionContainer.Parent = Top_2
-            SectionContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            SectionContainer.BackgroundTransparency = 1.000
-            SectionContainer.BorderSizePixel = 0
-            SectionContainer.Position = UDim2.new(0, 0, 0.796416223, 0)
-            SectionContainer.Size = UDim2.new(0, 239, 0, 318)
+        SectionContainer.Name = "SectionContainer"
+        SectionContainer.Parent = Top_2
+        SectionContainer.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        SectionContainer.BackgroundTransparency = 1.000
+        SectionContainer.BorderSizePixel = 0
+        SectionContainer.Position = UDim2.new(0, 0, 0.796416223, 0)
+        SectionContainer.Size = UDim2.new(0, 239, 0, 318)
 
-            UIListLayout_2.Parent = SectionContainer
-            UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-            UIListLayout_2.Padding = UDim.new(0, 10)
+        UIListLayout_2.Parent = SectionContainer
+        UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+        UIListLayout_2.Padding = UDim.new(0, 10)
 
-            UIPadding_2.Parent = SectionContainer
-            UIPadding_2.PaddingLeft = UDim.new(0, 5)
+        UIPadding_2.Parent = SectionContainer
+        UIPadding_2.PaddingLeft = UDim.new(0, 5)
 
-            UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
-            end)
+        UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
+        end)
 
-       local functionitem = {}
-
+    local functionitem = {}
 -- 🔥 Helper Function สำหรับ Register
     local function RegisterComponent(category, name, object)
         pcall(function()
@@ -1394,7 +1393,6 @@ function VectorHub:Evil()
         end)
     end
     local ColorDependents = {}
-
     -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
     local function UpdateColorDependents(newColor)
         _G.Color = newColor
@@ -1413,6 +1411,7 @@ function VectorHub:Evil()
             Property = property
         })
     end
+
     local function ParseArguments(...)
         local args = {...}
         
@@ -1484,44 +1483,43 @@ function VectorHub:Evil()
             end
         end
 --slider
-        if args[1] and type(args[1]) == "string" then
-            options.Name = args[1]
-            if #args >= 2 then
-                options.Min = args[2]
-            end
-            if #args >= 3 then
-                options.Max = args[3]
-            end
-            if #args >= 4 then
-                options.Value = args[4]
-            end
-            if #args >= 5 then
-                options.floor = args[5]
-            end
-            if #args >= 6 and type(args[6]) == "function" then
-                options.Callback = args[6]
-            end
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Min = args[2]
         end
-       
-        -- Colorpicker: Name (string), Value (Color3, optional), Callback (function, optional)
-        if args[1] and type(args[1]) == "string" then
-            options.Name = args[1]
-            if #args >= 2 then
-                options.Value = args[2]
-            end
-            if #args >= 3 and type(args[3]) == "function" then
-                options.Callback = args[3]
-            end
+        if #args >= 3 then
+            options.Max = args[3]
         end
-
-        return options
+        if #args >= 4 then
+            options.Value = args[4]
+        end
+        if #args >= 5 then
+            options.floor = args[5]
+        end
+        if #args >= 6 and type(args[6]) == "function" then
+            options.Callback = args[6]
+        end
+    end
+    
+    -- Colorpicker: Name (string), Value (Color3, optional), Callback (function, optional)
+    if args[1] and type(args[1]) == "string" then
+        options.Name = args[1]
+        if #args >= 2 then
+            options.Value = args[2]
+        end
+        if #args >= 3 and type(args[3]) == "function" then
+            options.Callback = args[3]
+        end
     end
 
+    return options
+end
 -- 🔥 Toggle Function
 function functionitem:Toggle(...)
     local options = ParseArguments(...)
     local Name = options.Name or ""
-    local Value = options.Value or false
+    local Value = options.Value or false  -- มาจาก SaveSettings
     local Callback = options.Callback or function() end
 
     if not Name or Name == "" then
@@ -1530,7 +1528,7 @@ function functionitem:Toggle(...)
     end
 
     local ToglFunc = {}
-    local Tgo = Value
+    local Tgo = Value  -- เริ่มจาก SaveSettings
 
     local MainToggle = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
@@ -1539,6 +1537,7 @@ function functionitem:Toggle(...)
     local UICorner_3 = Instance.new("UICorner")
     local TextButton = Instance.new("TextButton")
 
+    -- === GUI Setup (เหมือนเดิม) ===
     MainToggle.Name = Name
     MainToggle.Parent = SectionContainer
     MainToggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -1554,14 +1553,14 @@ function functionitem:Toggle(...)
     Text.Name = "Text"
     Text.Parent = MainToggle
     Text.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Text.BackgroundTransparency = 1.000
+    Text.BackgroundTransparency = 1
     Text.Position = UDim2.new(0, 45, 0, 16)
     Text.Size = UDim2.new(0, 100, 0, 12)
     Text.ZIndex = 16
     Text.Font = Enum.Font.GothamBold
     Text.Text = Name
     Text.TextColor3 = Color3.fromRGB(255, 255, 255)
-    Text.TextSize = 14.000
+    Text.TextSize = 14
     Text.TextTransparency = 0.2
     Text.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -1575,7 +1574,6 @@ function functionitem:Toggle(...)
     MainToggle_3.ZIndex = 16
     MainToggle_3.Image = "http://www.roblox.com/asset/?id="
     MainToggle_3.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    MainToggle_3.Visible = true
 
     UICorner_3.CornerRadius = UDim.new(0, 5)
     UICorner_3.Parent = MainToggle_3
@@ -1583,7 +1581,7 @@ function functionitem:Toggle(...)
     TextButton.Name = ""
     TextButton.Parent = MainToggle
     TextButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    TextButton.BackgroundTransparency = 1.000
+    TextButton.BackgroundTransparency = 1
     TextButton.BorderSizePixel = 0
     TextButton.Position = UDim2.new(0, 0, 0, 0)
     TextButton.Size = UDim2.new(0, 265, 0, 35)
@@ -1592,74 +1590,71 @@ function functionitem:Toggle(...)
     TextButton.Font = Enum.Font.Gotham
     TextButton.Text = ""
     TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextButton.TextSize = 14.000
+    TextButton.TextSize = 14
 
-    if default == true then
-        MainToggle_3.BackgroundColor3 = _G.Color
-        MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
-        MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-        UICorner_3.CornerRadius = UDim.new(0, 100)
-        pcall(Callback,true)
-    end
-
-    TextButton.MouseEnter:Connect(function()
-        if Tgo == false then
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-        else
+    -- === ฟังก์ชันอัปเดต UI ตามสถานะ ===
+    local function updateUI(state)
+        Tgo = state
+        if state then
             MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28),"In","Linear",0.2,true)
             MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
             UICorner_3.CornerRadius = UDim.new(0, 100)
+            MainToggle_3.Size = UDim2.new(0, 25, 0, 25)
+        else
+            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
+            UICorner_3.CornerRadius = UDim.new(0, 5)
+            MainToggle_3.Size = UDim2.new(0, 25, 0, 25)
         end
+    end
+
+    -- === ตั้งค่าเริ่มต้นจาก SaveSettings ===
+    updateUI(Value)  -- ตรงนี้สำคัญ!
+    pcall(Callback, Value)  -- รัน Callback ตาม SaveSettings
+
+    -- === Hover Effect ===
+    TextButton.MouseEnter:Connect(function()
+        MainToggle_3:TweenSize(UDim2.new(0, 28, 0, 28), "In", "Linear", 0.2, true)
     end)
 
     TextButton.MouseLeave:Connect(function()
-        if Tgo == false then
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-        else
-            MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-            UICorner_3.CornerRadius = UDim.new(0, 100)
-        end
+        MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25), "In", "Linear", 0.2, true)
     end)
 
+    -- === คลิกสลับสถานะ ===
     TextButton.MouseButton1Click:Connect(function()
         local SoundClick = Instance.new("Sound")
-        SoundClick.Name = "SoundEffect"
         SoundClick.SoundId = "rbxassetid://130785805"
         SoundClick.Volume = 1
         SoundClick.Parent = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
         SoundClick:Play()
-        if Tgo == false then
-            Tgo = true
-            pcall(Callback,true)
-            MainToggle_3.BackgroundColor3 = _G.Color
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=6023426926"
-            UICorner_3.CornerRadius = UDim.new(0, 100)
-            MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29),"In","Linear",0.2,true)
-            wait(0.2)
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-        else
-            Tgo = false
-            pcall(Callback,false)
-            MainToggle_3.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-            MainToggle_3.Image = "http://www.roblox.com/asset/?id=00"
-            MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29),"In","Linear",0.2,true)
-            UICorner_3.CornerRadius = UDim.new(0, 5)
-            wait(0.2)
-            MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25),"In","Linear",0.2,true)
-        end
-        wait(0.1)
+
+        Tgo = not Tgo
+        updateUI(Tgo)
+        pcall(Callback, Tgo)
+
+        -- เอฟเฟกต์คลิก
+        MainToggle_3:TweenSize(UDim2.new(0, 29, 0, 29), "In", "Linear", 0.2, true)
+        task.wait(0.2)
+        MainToggle_3:TweenSize(UDim2.new(0, 25, 0, 25), "In", "Linear", 0.2, true)
+
+        task.wait(0.1)
         CircleClick(TextButton, Mouse.X, Mouse.Y)
         SoundClick:Destroy()
     end)
+
+    -- === ฟังก์ชันภายนอก: อัปเดตจาก SaveSettings หรืออื่น ๆ ===
+    function ToglFunc:Update(state)
+        if type(state) == "boolean" then
+            Tgo = state
+            updateUI(state)
+            pcall(Callback, state)
+        end
+    end
+
+    function ToglFunc:Get()
+        return Tgo
+    end
 
     -- 🔥 Register to Search
     RegisterComponent("Toggle", Name, MainToggle)

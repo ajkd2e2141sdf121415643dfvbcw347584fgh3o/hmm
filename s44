@@ -1378,144 +1378,144 @@ function VectorHub:Evil()
                 Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
             end)
 
-            -- ==========================================
-            -- 🔥 FUNCTION ITEMS WITH AUTO-REGISTER
        local functionitem = {}
 
 -- 🔥 Helper Function สำหรับ Register
-local function RegisterComponent(category, name, object)
-    pcall(function()
-        local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
-        SearchSystem:AddToDatabase(
-            category,
-            cleanName,
-            CurrentTabName,
-            CurrentSectionName,
-            object
-        )
-    end)
-end
-local ColorDependents = {}
+    local function RegisterComponent(category, name, object)
+        pcall(function()
+            local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
+            SearchSystem:AddToDatabase(
+                category,
+                cleanName,
+                CurrentTabName,
+                CurrentSectionName,
+                object
+            )
+        end)
+    end
+    local ColorDependents = {}
 
--- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
-local function UpdateColorDependents(newColor)
-    _G.Color = newColor
-    for _, component in pairs(ColorDependents) do
-        if component.Instance and component.Property then
-            component.Instance[component.Property] = newColor
-        end
-    end
-end
-
--- ฟังก์ชันลงทะเบียน components ที่ใช้ _G.Color
-local function RegisterColorDependent(componentName, instance, property)
-    table.insert(ColorDependents, {
-        Name = componentName,
-        Instance = instance,
-        Property = property
-    })
-end
-local function ParseArguments(...)
-    local args = {...}
-    
-    -- ถ้า argument แรกเป็น table (รูปแบบเดิม) ให้คืนค่า table นั้นเลย
-    if #args == 1 and type(args[1]) == "table" then
-        return args[1]
-    end
-    
-    -- Positional arguments: แปลงตามลำดับให้เป็น table
-    local options = {}
-    
-    -- Toggle: Name (string), Value (boolean, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Value = args[2] -- อาจเป็น boolean หรือ nil
-        end
-        if #args >= 3 and type(args[3]) == "function" then
-            options.Callback = args[3]
-        end
-    end
-    
-    -- Button: Name (string), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" and (#args == 1 or type(args[2]) == "function") then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Callback = args[2]
-        end
-    end
-    
-    -- Label, LabelLog: Name (string)
-    if args[1] and type(args[1]) == "string" and #args == 1 then
-        options.Name = args[1]
-    end
-    
-    -- ButtonTog: Name (string), Value (boolean, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Value = args[2]
-        end
-        if #args >= 3 and type(args[3]) == "function" then
-            options.Callback = args[3]
-        end
-    end
-    
-    -- Textbox: Name (string), Value (string, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Value = args[2]
-        end
-        if #args >= 3 and type(args[3]) == "function" then
-            options.Callback = args[3]
-        end
-    end
-    
-    -- Dropdown, MultiDropdown: Name (string), Value (string or table, optional), List (table, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Value = args[2]
-        end
-        if #args >= 3 and type(args[3]) == "table" then
-            options.List = args[3]
-        end
-        if #args >= 4 and type(args[4]) == "function" then
-            options.Callback = args[4]
-        end
-    end
-    
-    -- Slider: Name (string), Min (number), Max (number), Value (number, optional), floor (boolean, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" and type(args[2]) == "number" and type(args[3]) == "number" then
-        options.Name = args[1]
-        options.Min = args[2]
-        options.Max = args[3]
-        if #args >= 4 then
-            options.Value = args[4]
-        end
-        if #args >= 5 then
-            options.floor = args[5]
-        end
-        if #args >= 6 and type(args[6]) == "function" then
-            options.Callback = args[6]
-        end
-    end
-    
-    -- Colorpicker: Name (string), Value (Color3, optional), Callback (function, optional)
-    if args[1] and type(args[1]) == "string" then
-        options.Name = args[1]
-        if #args >= 2 then
-            options.Value = args[2]
-        end
-        if #args >= 3 and type(args[3]) == "function" then
-            options.Callback = args[3]
+    -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
+    local function UpdateColorDependents(newColor)
+        _G.Color = newColor
+        for _, component in pairs(ColorDependents) do
+            if component.Instance and component.Property then
+                component.Instance[component.Property] = newColor
+            end
         end
     end
 
-    return options
-end
-local functionitem = {}
+    -- ฟังก์ชันลงทะเบียน components ที่ใช้ _G.Color
+    local function RegisterColorDependent(componentName, instance, property)
+        table.insert(ColorDependents, {
+            Name = componentName,
+            Instance = instance,
+            Property = property
+        })
+    end
+    local function ParseArguments(...)
+        local args = {...}
+        
+        -- ถ้า argument แรกเป็น table (รูปแบบเดิม) ให้คืนค่า table นั้นเลย
+        if #args == 1 and type(args[1]) == "table" then
+            return args[1]
+        end
+        
+        -- Positional arguments: แปลงตามลำดับให้เป็น table
+        local options = {}
+        
+        -- Toggle: Name (string), Value (boolean, optional), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Value = args[2] -- อาจเป็น boolean หรือ nil
+            end
+            if #args >= 3 and type(args[3]) == "function" then
+                options.Callback = args[3]
+            end
+        end
+        
+        -- Button: Name (string), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" and (#args == 1 or type(args[2]) == "function") then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Callback = args[2]
+            end
+        end
+        
+        -- Label, LabelLog: Name (string)
+        if args[1] and type(args[1]) == "string" and #args == 1 then
+            options.Name = args[1]
+        end
+        
+        -- ButtonTog: Name (string), Value (boolean, optional), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Value = args[2]
+            end
+            if #args >= 3 and type(args[3]) == "function" then
+                options.Callback = args[3]
+            end
+        end
+        
+        -- Textbox: Name (string), Value (string, optional), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Value = args[2]
+            end
+            if #args >= 3 and type(args[3]) == "function" then
+                options.Callback = args[3]
+            end
+        end
+        
+        -- Dropdown, MultiDropdown: Name (string), Value (string or table, optional), List (table, optional), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Value = args[2]
+            end
+            if #args >= 3 and type(args[3]) == "table" then
+                options.List = args[3]
+            end
+            if #args >= 4 and type(args[4]) == "function" then
+                options.Callback = args[4]
+            end
+        end
+--slider
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Min = args[2]
+            end
+            if #args >= 3 then
+                options.Max = args[3]
+            end
+            if #args >= 4 then
+                options.Value = args[4]
+            end
+            if #args >= 5 then
+                options.floor = args[5]
+            end
+            if #args >= 6 and type(args[6]) == "function" then
+                options.Callback = args[6]
+            end
+        end
+       
+        -- Colorpicker: Name (string), Value (Color3, optional), Callback (function, optional)
+        if args[1] and type(args[1]) == "string" then
+            options.Name = args[1]
+            if #args >= 2 then
+                options.Value = args[2]
+            end
+            if #args >= 3 and type(args[3]) == "function" then
+                options.Callback = args[3]
+            end
+        end
+
+        return options
+    end
 
 -- 🔥 Toggle Function
 function functionitem:Toggle(...)
@@ -2619,38 +2619,15 @@ end
 -- ==========================================
 -- 🔥 Slider Function
 -- ==========================================
--- ==========================================
--- Slider Function (รองรับทั้งแบบเก่า + ใหม่)
--- ==========================================
 function functionitem:Slider(...)
-    local args = {...}
-    local name, min, max, default, callback
-
-    -- แบบใหม่: section:Slider("Name", min, max, default, func)
-    if #args >= 4 and type(args[1]) == "string" and type(args[2]) == "number" and type(args[3]) == "number" then
-        name = args[1]
-        min = tonumber(args[2])
-        max = tonumber(args[3])
-        default = tonumber(args[4]) or min
-        callback = args[5] or function() end
-
-    -- แบบเก่า: section:Slider({Name=..., Min=..., Max=..., Value=..., Callback=...})
-    elseif #args == 1 and type(args[1]) == "table" then
-        local options = args[1]
-        name = options.Name or "Slider"
-        min = tonumber(options.Min) or 1
-        max = tonumber(options.Max) or 100
-        default = tonumber(options.Value) or min
-        callback = options.Callback or function() end
-
-    else
-        warn("Slider: Invalid arguments")
-        return {}
-    end
-
-    -- จำกัดค่า
-    if default < min then default = min end
-    if default > max then default = max end
+    local options = ParseArguments(...)
+    local text = options.Name
+    local floor = options.floor or false
+    local de = options.Value or 1
+    local min = options.Min or 1
+    local max = options.Max or math.huge
+    local Callback = options.Callback or options.Format or function() end
+    local Flag = options.Flag
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")
@@ -2659,166 +2636,246 @@ function functionitem:Slider(...)
     local ShowValueFrameUICorner = Instance.new("UICorner")
     local ValueFrame = Instance.new("Frame")
     local ValueFrameUICorner = Instance.new("UICorner")
+    local PartValue = Instance.new("Frame")
+    local PartValueUICorner = Instance.new("UICorner")
     local MainValue = Instance.new("Frame")
     local MainValueUICorner = Instance.new("UICorner")
-    local DragPoint = Instance.new("Frame")
-    local PointCorner = Instance.new("UICorner")
     local sliderfunc = {}
 
-    -- === GUI Setup (เหมือนเดิม) ===
-    SliderFrame.Name = name
+    SliderFrame.Name = text
     SliderFrame.Parent = SectionContainer
     SliderFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    SliderFrame.BackgroundTransparency = 0.7
+    SliderFrame.BackgroundTransparency = 0.700
+    SliderFrame.Position = UDim2.new(0.109489053, 0, 0.708609283, 0)
     SliderFrame.Size = UDim2.new(0, 265, 0, 45)
 
     local UIStroke96 = Instance.new("UIStroke")
-    UIStroke96.Thickness  = 1.2
-    UIStroke96.Parent     = SliderFrame
-    UIStroke96.Color      = _G.Color
+    UIStroke96.Thickness = 1.2
+    UIStroke96.Parent = SliderFrame
+    UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
+    UIStroke96.Color = _G.Color
     UIStroke96.Transparency = 1
-    UIStroke96.ApplyStrokeMode = Enum
 
     SliderFrame.MouseEnter:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 0.1}):Play()
+        TweenService:Create(
+            UIStroke96,
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Transparency = 0.10}
+        ):Play()
     end)
+
     SliderFrame.MouseLeave:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 1}):Play()
+        TweenService:Create(
+            UIStroke96,
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Transparency = 1}
+        ):Play()
     end)
 
     local UICorner_7 = Instance.new("UICorner")
     UICorner_7.CornerRadius = UDim.new(0, 4)
     UICorner_7.Parent = SliderFrame
 
-    LabelNameSlider.Name = "Label"
+    LabelNameSlider.Name = "LabelNameSlider"
     LabelNameSlider.Parent = SliderFrame
-    LabelNameSlider.BackgroundTransparency = 1
-    LabelNameSlider.Position = UDim2.new(0, 10, 0, 5)
-    LabelNameSlider.Size = UDim2.new(0, 180, 0, 20)
+    LabelNameSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    LabelNameSlider.BackgroundTransparency = 1.000
+    LabelNameSlider.Position = UDim2.new(0.0729926974, 0, 0.0396823473, 0)
+    LabelNameSlider.Size = UDim2.new(0, 182, 0, 25)
     LabelNameSlider.Font = Enum.Font.GothamBold
-    LabelNameSlider.Text = name
+    LabelNameSlider.Text = tostring(text)
     LabelNameSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LabelNameSlider.TextSize = 11
+    LabelNameSlider.TextSize = 11.000
     LabelNameSlider.TextXAlignment = Enum.TextXAlignment.Left
 
-    ShowValueFrame.Name = "ValueBox"
+    ShowValueFrame.Name = "ShowValueFrame"
     ShowValueFrame.Parent = SliderFrame
     ShowValueFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    ShowValueFrame.Position = UDim2.new(1, -70, 0, 5)
-    ShowValueFrame.Size = UDim2.new(0, 60, 0, 21)
+    ShowValueFrame.Position = UDim2.new(0.733576655, 0, 0.0656082779, 0)
+    ShowValueFrame.Size = UDim2.new(0, 58, 0, 21)
 
-    CustomValue.Name = "Value"
+    CustomValue.Name = "CustomValue"
     CustomValue.Parent = ShowValueFrame
-    CustomValue.BackgroundTransparency = 1
-    CustomValue.Position = UDim2.new(0, 3, 0, 0)
-    CustomValue.Size = UDim2.new(1, -6, 1, 0)
+    CustomValue.AnchorPoint = Vector2.new(0.5, 0.5)
+    CustomValue.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    CustomValue.Position = UDim2.new(0.5, 0, 0.5, 0)
+    CustomValue.Size = UDim2.new(0, 55, 0, 21)
     CustomValue.Font = Enum.Font.GothamBold
-    CustomValue.Text = tostring(default)
+    CustomValue.Text = ""
     CustomValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CustomValue.TextSize = 11
+    CustomValue.TextSize = 11.000
 
-    local ValueStroke = Instance.new("UIStroke")
-    ValueStroke.Thickness = 1.2
-    ValueStroke.Parent = CustomValue
-    ValueStroke.Color = _G.Color
-    ValueStroke.Transparency = 0.1
+    local UIStroke965 = Instance.new("UIStroke")
+    UIStroke965.Thickness = 1.2
+    UIStroke965.Parent = CustomValue
+    UIStroke965.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke965.LineJoinMode = Enum.LineJoinMode.Round
+    UIStroke965.Color = _G.Color
+    UIStroke965.Transparency = 0.10
+
+    SliderFrame.MouseEnter:Connect(function()
+        TweenService:Create(
+            UIStroke965,
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Transparency = 0.5}
+        ):Play()
+    end)
+
+    SliderFrame.MouseLeave:Connect(function()
+        TweenService:Create(
+            UIStroke965,
+            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Transparency = 0.10}
+        ):Play()
+    end)
 
     ShowValueFrameUICorner.CornerRadius = UDim.new(0, 4)
+    ShowValueFrameUICorner.Name = "ShowValueFrameUICorner"
     ShowValueFrameUICorner.Parent = ShowValueFrame
 
-    ValueFrame.Name = "Bar"
+    ValueFrame.Name = "ValueFrame"
     ValueFrame.Parent = SliderFrame
     ValueFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     ValueFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    ValueFrame.Position = UDim2.new(0.5, 0, 0.75, 0)
-    ValueFrame.Size = UDim2.new(0, 240, 0, 5)
+    ValueFrame.Position = UDim2.new(0.5, 0, 0.8, 0)
+    ValueFrame.Size = UDim2.new(0, 200, 0, 5)
 
     ValueFrameUICorner.CornerRadius = UDim.new(0, 30)
+    ValueFrameUICorner.Name = "ValueFrameUICorner"
     ValueFrameUICorner.Parent = ValueFrame
 
-    MainValue.Name = "Fill"
+    PartValue.Name = "PartValue"
+    PartValue.Parent = ValueFrame
+    PartValue.AnchorPoint = Vector2.new(0.5, 0.5)
+    PartValue.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    PartValue.BackgroundTransparency = 1.000
+    PartValue.Position = UDim2.new(0.5, 0, 0.8, 0)
+    PartValue.Size = UDim2.new(0, 200, 0, 5)
+
+    PartValueUICorner.CornerRadius = UDim.new(0, 30)
+    PartValueUICorner.Name = "PartValueUICorner"
+    PartValueUICorner.Parent = PartValue
+
+    MainValue.Name = "MainValue"
     MainValue.Parent = ValueFrame
     MainValue.BackgroundColor3 = _G.Color
-    MainValue.Size = UDim2.new((default - min) / (max - min), 0, 1, 0)
+    MainValue.Size = UDim2.new((de or 0) / max, 0, 0, 5)
     MainValue.BorderSizePixel = 0
 
     MainValueUICorner.CornerRadius = UDim.new(0, 30)
+    MainValueUICorner.Name = "MainValueUICorner"
     MainValueUICorner.Parent = MainValue
 
-    DragPoint.Name = "Point"
-    DragPoint.Parent = ValueFrame
-    DragPoint.AnchorPoint = Vector2.new(0.5, 0.5)
-    DragPoint.BackgroundColor3 = _G.Color
-    DragPoint.Position = UDim2.new((default - min) / (max - min), 0, 0.5, 0)
-    DragPoint.Size = UDim2.new(0, 10, 0, 10)
-    DragPoint.BorderSizePixel = 0
+    local ConneValue = Instance.new("Frame")
+    ConneValue.Name = "ConneValue"
+    ConneValue.Parent = PartValue
+    ConneValue.AnchorPoint = Vector2.new(0.7, 0.7)
+    ConneValue.BackgroundColor3 = _G.Color
+    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5,0, 0)
+    ConneValue.Size = UDim2.new(0, 10, 0, 10)
+    ConneValue.BorderSizePixel = 0
 
-    PointCorner.CornerRadius = UDim.new(0, 10)
-    PointCorner.Parent = DragPoint
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 10)
+    UICorner.Parent = ConneValue
 
-    -- === อัปเดตค่า ===
-    local function updateValue(val)
-        val = tonumber(val) or default
-        if val < min then val = min end
-        if val > max then val = max end
-
-        local percent = (val - min) / (max - min)
-        MainValue:TweenSize(UDim2.new(percent, 0, 1, 0), "Out", "Sine", 0.1, true)
-        DragPoint:TweenPosition(UDim2.new(percent, 0, 0.5, 0), "Out", "Sine", 0.1, true)
-        CustomValue.Text = tostring(val)
-
-        pcall(callback, val)  -- ส่ง number เสมอ
+    if floor == true then
+        CustomValue.Text = tostring(de and string.format("%0.2f",(de / max) * (max - min) + min) or 0)
+    else
+        CustomValue.Text = tostring(de and math.floor((de / max) * (max - min) + min) or 0)
     end
 
-    -- === ลาก ===
+    local function move(input)
+        local pos = UDim2.new(
+            math.clamp((input.Position.X - ValueFrame.AbsolutePosition.X) / ValueFrame.AbsoluteSize.X, 0, 1),
+            0,
+            0.5,
+            0
+        )
+        local pos1 = UDim2.new(
+            math.clamp((input.Position.X - ValueFrame.AbsolutePosition.X) / ValueFrame.AbsoluteSize.X, 0, 1),
+            0,
+            0,
+            5
+        )
+        MainValue:TweenSize(pos1, "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(pos, "Out", "Sine", 0.2, true)
+        if floor == true then
+            local value = string.format("%.0f",((pos.X.Scale * max) / max) * (max - min) + min)
+            CustomValue.Text = tostring(value)
+            Callback(value)
+        else
+            local value = math.floor(((pos.X.Scale * max) / max) * (max - min) + min)
+            CustomValue.Text = tostring(value)
+            Callback(value)
+        end
+    end
+
     local dragging = false
-    local function onDrag(input)
-        if not dragging then return end
-        local pos = input.Position.X
-        local framePos = ValueFrame.AbsolutePosition.X
-        local frameSize = ValueFrame.AbsoluteSize.X
-        local percent = math.clamp((pos - framePos) / frameSize, 0, 1)
-        local value = math.floor(min + percent * (max - min) + 0.5)
-        updateValue(value)
-    end
-
-    DragPoint.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end
+    ConneValue.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
     end)
-    DragPoint.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+    ConneValue.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    SliderFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    SliderFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
     end)
     ValueFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            onDrag(input)
         end
     end)
     ValueFrame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
     end)
     game:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            onDrag(input)
+            move(input)
         end
     end)
-
-    -- === พิมพ์ค่า ===
-    CustomValue.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            updateValue(tonumber(CustomValue.Text) or default)
+    CustomValue.FocusLost:Connect(function()
+        if CustomValue.Text == "" then
+            CustomValue.Text = de
         end
+        if tonumber(CustomValue.Text) > max then
+            CustomValue.Text = max
+        end
+        MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
+        if floor == true then
+            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min) )
+        else
+            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
+        end
+        pcall(Callback, CustomValue.Text)
     end)
 
-    -- === ฟังก์ชันภายนอก ===
     function sliderfunc:Update(value)
-        updateValue(tonumber(value))
+        MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
+        CustomValue.Text = value
+        pcall(function()
+            Callback(value)
+        end)
     end
 
-    -- ตั้งค่าเริ่มต้น
-    updateValue(default)
-
-    RegisterComponent("Slider", name, SliderFrame)
+    RegisterComponent("Slider", text, SliderFrame)
+    
     return sliderfunc
 end
 

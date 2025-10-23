@@ -1,4 +1,4 @@
-print("Loaded[qqq0]")
+print("Loaded[sad]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2003,7 +2003,6 @@ function functionitem:Dropdown(...)
 
     local Dropfunc = {}
     local currentValue = default
-    local selectedButton = nil -- เก็บปุ่มที่เลือก
 
     -- === GUI ===
     local MainDropDown = Instance.new("Frame")
@@ -2011,7 +2010,7 @@ function functionitem:Dropdown(...)
     local MainDropDown_2 = Instance.new("Frame")
     local UICorner_8 = Instance.new("UICorner")
     local v = Instance.new("TextButton")
-    local TextLabel = Instance.new("TextLabel")
+    local TextLabel = Instance.new("TextLabel")  -- เปลี่ยนชื่อให้ชัด
     local ImageButton = Instance.new("ImageButton")
     local SearchBox = Instance.new("TextBox")
     local SearchBoxCorner = Instance.new("UICorner")
@@ -2064,10 +2063,11 @@ function functionitem:Dropdown(...)
     v.AutoButtonColor = false
     v.Text = ""
 
+    -- === แสดง Name เต็ม (รองรับ \n) ===
     TextLabel.Name = "DisplayText"
     TextLabel.Parent = MainDropDown
     TextLabel.BackgroundTransparency = 1
-    TextLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    TextLabel.Size = UDim2.new(1, -40, 0, 35)
     TextLabel.Position = UDim2.new(0, 10, 0, 0)
     TextLabel.ZIndex = 16
     TextLabel.Font = Enum.Font.GothamBold
@@ -2076,22 +2076,22 @@ function functionitem:Dropdown(...)
     TextLabel.TextSize = 13
     TextLabel.TextXAlignment = Enum.TextXAlignment.Left
     TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-    TextLabel.TextTransparency = 0.2
+    TextLabel.TextTransparency = 0.2  -- ชื่อ dropdown
 
+    -- === แสดงค่าเลือก ===
     local ValueText = Instance.new("TextLabel")
     ValueText.Name = "ValueText"
     ValueText.Parent = MainDropDown
     ValueText.BackgroundTransparency = 1
-    ValueText.Size = UDim2.new(0.5, -20, 0, 35)
-    ValueText.Position = UDim2.new(0.5, 10, 0, 0)
+    ValueText.Size = UDim2.new(1, -40, 0, 35)
+    ValueText.Position = UDim2.new(0, 10, 0, 0)
     ValueText.ZIndex = 16
     ValueText.Font = Enum.Font.GothamBold
     ValueText.Text = default
-    ValueText.TextColor3 = Color3.fromRGB(0, 200, 200)
+    ValueText.TextColor3 = Color3.fromRGB(255, 255, 255)
     ValueText.TextSize = 13
     ValueText.TextXAlignment = Enum.TextXAlignment.Left
     ValueText.TextYAlignment = Enum.TextYAlignment.Center
-    ValueText.ClipsDescendants = true
 
     ImageButton.Parent = MainDropDown_2
     ImageButton.BackgroundTransparency = 1
@@ -2101,6 +2101,7 @@ function functionitem:Dropdown(...)
     ImageButton.ZIndex = 16
     ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
 
+    -- === Search + Scroll ===
     SearchBox.Name = "SearchBox"
     SearchBox.Parent = MainDropDown
     SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -2150,6 +2151,7 @@ function functionitem:Dropdown(...)
     UIPadding_3.PaddingLeft = UDim.new(0, 10)
     UIPadding_3.PaddingTop = UDim.new(0, 5)
 
+    -- === ฟังก์ชันเปิด/ปิด ===
     local isOpen = false
     function Dropfunc:TogglePanel(state)
         isOpen = state
@@ -2174,6 +2176,7 @@ function functionitem:Dropdown(...)
     v.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
     ImageButton.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
 
+    -- === ค้นหา ===
     function Dropfunc:FilterItems(query)
         query = query:lower()
         for _, item in Scroll_Items:GetChildren() do
@@ -2187,6 +2190,7 @@ function functionitem:Dropdown(...)
         Dropfunc:FilterItems(SearchBox.Text)
     end)
 
+    -- === เพิ่มไอเท็ม ===
     function Dropfunc:Add(Text)
         local btn = Instance.new("TextButton")
         local corner = Instance.new("UICorner")
@@ -2219,51 +2223,49 @@ function functionitem:Dropdown(...)
         end)
 
         btn.MouseButton1Click:Connect(function()
-            -- รีเซ็ตสีเก่า
-            if selectedButton then
-                TweenService:Create(selectedButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-            end
-
-            -- ตั้งค่าใหม่
             currentValue = Text
             ValueText.Text = Text
-            selectedButton = btn
-            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
-            
             Callback(Text)
             Dropfunc:TogglePanel(false)
+
+            -- รีเซ็ตสีเก่า
+            for _, other in Scroll_Items:GetChildren() do
+                if other:IsA("TextButton") and other.TextColor3 == Color3.fromRGB(0, 200, 200) then
+                    TweenService:Create(other, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                end
+            end
+            -- ตั้งค่าสีใหม่
+            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
         end)
 
         -- ตั้งค่า default
         if Text == default then
             TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
-            selectedButton = btn
         end
     end
 
+    -- === เพิ่มรายการทั้งหมด ===
     for _, item in ipairs(list) do
         Dropfunc:Add(item)
     end
 
+    -- === ตั้งค่าเริ่มต้น ===
     ValueText.Text = default
     if default ~= "" then
         Callback(default)
     end
 
+    -- === ฟังก์ชันภายนอก ===
     function Dropfunc:Update(value)
         if table.find(list, value) then
             currentValue = value
             ValueText.Text = value
             Callback(value)
-            
+            -- อัปเดตสี
             for _, btn in Scroll_Items:GetChildren() do
                 if btn:IsA("TextButton") then
-                    if btn.Text == value then
-                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
-                        selectedButton = btn
-                    else
-                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-                    end
+                    local color = (btn.Text == value) and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
+                    TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = color}):Play()
                 end
             end
         end
@@ -2271,21 +2273,6 @@ function functionitem:Dropdown(...)
 
     function Dropfunc:Get()
         return currentValue
-    end
-
-    function Dropfunc:Clear()
-        for _, btn in Scroll_Items:GetChildren() do
-            if btn:IsA("TextButton") then
-                btn:Destroy()
-            end
-        end
-        
-        currentValue = ""
-        ValueText.Text = ""
-        SearchBox.Text = ""
-        selectedButton = nil
-        
-        Callback("")
     end
 
     RegisterComponent("Dropdown", Name, MainDropDown)
@@ -2376,7 +2363,7 @@ function functionitem:MultiDropdown(...)
     NameLabel.Name = "NameLabel"
     NameLabel.Parent = Header
     NameLabel.BackgroundTransparency = 1
-    NameLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    NameLabel.Size = UDim2.new(1, -40, 0, 35)
     NameLabel.Position = UDim2.new(0, 10, 0, 0)
     NameLabel.ZIndex = 16
     NameLabel.Font = Enum.Font.GothamBold
@@ -2391,16 +2378,15 @@ function functionitem:MultiDropdown(...)
     ValueLabel.Name = "ValueLabel"
     ValueLabel.Parent = Header
     ValueLabel.BackgroundTransparency = 1
-    ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
-    ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
+    ValueLabel.Size = UDim2.new(1, -40, 0, 35)
+    ValueLabel.Position = UDim2.new(0, 10, 0, 0)
     ValueLabel.ZIndex = 16
     ValueLabel.Font = Enum.Font.GothamBold
     ValueLabel.Text = table.concat(selected, ", ")
-    ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
+    ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     ValueLabel.TextSize = 13
     ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
     ValueLabel.TextYAlignment = Enum.TextYAlignment.Center
-    ValueLabel.ClipsDescendants = true
 
     -- === ลูกศร ===
     Arrow.Parent = Header
@@ -2499,11 +2485,7 @@ function functionitem:MultiDropdown(...)
 
     -- === อัปเดตข้อความ ===
     local function updateDisplay()
-        if #selected > 0 then
-            ValueLabel.Text = table.concat(selected, ", ")
-        else
-            ValueLabel.Text = "None"
-        end
+        ValueLabel.Text = #selected > 0 and table.concat(selected, ", ") or "None"
     end
 
     -- === เพิ่มไอเท็ม ===
@@ -2597,22 +2579,14 @@ function functionitem:MultiDropdown(...)
     end
 
     function Dropfunc:Clear()
-        -- ลบ items ทั้งหมด
-        for _, btn in Scroll_Items:GetChildren() do
-            if btn:IsA("TextButton") then
-                btn:Destroy()
-            end
-        end
-        
-        -- รีเซ็ต selected
         selected = {}
         updateDisplay()
-        
-        -- รีเซ็ต SearchBox
-        SearchBox.Text = ""
-        
-        -- เรียก callback
         Callback(selected)
+        for _, btn in Scroll_Items:GetChildren() do
+            if btn:IsA("TextButton") then
+                TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            end
+        end
     end
 
     RegisterComponent("MultiDropdown", Name, MainDropDown)

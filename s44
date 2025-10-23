@@ -1,4 +1,4 @@
-print("Loaded[qqq0]")
+print("Loaded[0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -473,7 +473,17 @@ end
 	function VectorHub:Destroy()
 		VectorHub:Destroy()
 	end
-	
+	-- สร้างฟังก์ชันอัปเดตความสูงใน _G
+_G.UpdatePageHeight = function(newHeight)
+    _G.SizePage = newHeight
+    -- จะอัปเดต Left/Right ภายหลังเมื่อสร้างแล้ว
+end
+
+-- ตั้งค่าเริ่มต้น
+if _G.SizePage == nil then
+    _G.SizePage = 335
+end
+
 local function MakeResizable(resizeHandle, object, minSize, maxSize)
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
@@ -492,11 +502,23 @@ local function MakeResizable(resizeHandle, object, minSize, maxSize)
             local newWidth = math.clamp(StartSize.X + Delta.X, minSize.X, maxSize.X)
             local newHeight = math.clamp(StartSize.Y + Delta.Y, minSize.Y, maxSize.Y)
             local newSize = UDim2.new(0, newWidth, 0, newHeight)
+
             local Tween = TweenService:Create(object, TweenInfo.new(0.1), {Size = newSize})
+            
+            -- เมื่อ Tween เสร็จ → อัปเดตความสูง
+            Tween.Completed:Connect(function(playbackState)
+                if playbackState == Enum.PlaybackState.Completed then
+                    if _G.UpdatePageHeight then
+                        _G.UpdatePageHeight(newHeight)  -- แจ้งทุกคนว่า "ความสูงใหม่คือ..."
+                    end
+                end
+            end)
+
             Tween:Play()
         end
     end
 
+    -- ... (InputBegan, InputChanged, etc. เหมือนเดิม)
     resizeHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             Resizing = true
@@ -522,7 +544,7 @@ local function MakeResizable(resizeHandle, object, minSize, maxSize)
             Update(input)
         end
     end)
-end	
+end
 
 function VectorHub:Evil()
     local Main = Instance.new("Frame")
@@ -1037,10 +1059,11 @@ function VectorHub:Evil()
     -- ทำให้สามารถลากเพื่อย้ายได้
     MakeDraggable(ClickFrame,Main)
     -- ทำให้สามารถปรับขนาดได้
-    MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600))
-    -- ==========================================
-    -- TABS SYSTEM WITH AUTO-REGISTER
-    -- ==========================================
+    MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600)) 
+
+    if _G.SizePage == nil then 
+        _G.SizePage = 335
+    end
     local CurrentTabName = ""
     local CurrentSectionName = ""
     
@@ -1138,23 +1161,46 @@ function VectorHub:Evil()
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Page.Visible = false
 
-        Left.Name = "Left"
-        Left.Parent = Page
-        Left.Active = true
-        Left.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Left.BackgroundTransparency = 10
-        Left.Size = UDim2.new(0, 274, 0, 335)
-        Left.ScrollBarThickness = 0
-        Left.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Left.Name = "Left"
+    Left.Parent = Page
+    Left.Active = true
+    Left.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Left.BackgroundTransparency = 10
+    Left.Size = UDim2.new(0, 274, 0, _G.SizePage) 
+    Left.ScrollBarThickness = 0
+    Left.CanvasSize = UDim2.new(0, 0, 0, 0)
 
-        Right.Name = "Right"
-        Right.Parent = Page
-        Right.Active = true
-        Right.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Right.BackgroundTransparency = 10
-        Right.Size = UDim2.new(0, 274, 0, 335)
-        Right.ScrollBarThickness = 0
-        Right.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Right.Name = "Right"
+    Right.Parent = Page
+    Right.Active = true
+    Right.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Right.BackgroundTransparency = 10
+    Right.Size = UDim2.new(0, 274, 0, _G.SizePage)
+    Right.ScrollBarThickness = 0
+    Right.CanvasSize = UDim2.new(0, 0, 0, 0)
+
+    -- สำคัญ: เก็บ Left และ Right ไว้ใน _G เพื่ออัปเดตภายหลัง
+    _G.CurrentLeft = Left
+    _G.CurrentRight = Right
+
+    -- สร้างฟังก์ชันอัปเดตท้องถิ่น
+    local function updateSizes()
+        if _G.CurrentLeft then
+            _G.CurrentLeft.Size = UDim2.new(0, 274, 0, _G.SizePage)
+        end
+        if _G.CurrentRight then
+            _G.CurrentRight.Size = UDim2.new(0, 274, 0, _G.SizePage)
+        end
+    end
+
+    -- เรียกตอนสร้างครั้งแรก
+    updateSizes()
+
+    -- ฟังการเปลี่ยนแปลงจาก MakeResizable
+    _G.UpdatePageHeight = function(newHeight)
+        _G.SizePage = newHeight
+        updateSizes()  -- อัปเดตทันที
+    end
 
         local LeftList = Instance.new("UIListLayout")
         local RightList = Instance.new("UIListLayout")
@@ -2394,6 +2440,7 @@ function functionitem:MultiDropdown(...)
     ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
     ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
     ValueLabel.ZIndex = 16
+    ValueLabel.Visible = false
     ValueLabel.Font = Enum.Font.GothamBold
     ValueLabel.Text = table.concat(selected, ", ")
     ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)

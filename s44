@@ -1,4 +1,4 @@
-print("Loaded[sad]")
+print("Loaded[qqq0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2003,6 +2003,7 @@ function functionitem:Dropdown(...)
 
     local Dropfunc = {}
     local currentValue = default
+    local selectedButton = nil -- เก็บปุ่มที่เลือก
 
     -- === GUI ===
     local MainDropDown = Instance.new("Frame")
@@ -2010,7 +2011,7 @@ function functionitem:Dropdown(...)
     local MainDropDown_2 = Instance.new("Frame")
     local UICorner_8 = Instance.new("UICorner")
     local v = Instance.new("TextButton")
-    local TextLabel = Instance.new("TextLabel")  -- เปลี่ยนชื่อให้ชัด
+    local TextLabel = Instance.new("TextLabel")
     local ImageButton = Instance.new("ImageButton")
     local SearchBox = Instance.new("TextBox")
     local SearchBoxCorner = Instance.new("UICorner")
@@ -2063,11 +2064,10 @@ function functionitem:Dropdown(...)
     v.AutoButtonColor = false
     v.Text = ""
 
-    -- === แสดง Name เต็ม (รองรับ \n) ===
     TextLabel.Name = "DisplayText"
     TextLabel.Parent = MainDropDown
     TextLabel.BackgroundTransparency = 1
-    TextLabel.Size = UDim2.new(1, -40, 0, 35)
+    TextLabel.Size = UDim2.new(0.5, -20, 0, 35)
     TextLabel.Position = UDim2.new(0, 10, 0, 0)
     TextLabel.ZIndex = 16
     TextLabel.Font = Enum.Font.GothamBold
@@ -2076,22 +2076,22 @@ function functionitem:Dropdown(...)
     TextLabel.TextSize = 13
     TextLabel.TextXAlignment = Enum.TextXAlignment.Left
     TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-    TextLabel.TextTransparency = 0.2  -- ชื่อ dropdown
+    TextLabel.TextTransparency = 0.2
 
-    -- === แสดงค่าเลือก ===
     local ValueText = Instance.new("TextLabel")
     ValueText.Name = "ValueText"
     ValueText.Parent = MainDropDown
     ValueText.BackgroundTransparency = 1
-    ValueText.Size = UDim2.new(1, -40, 0, 35)
-    ValueText.Position = UDim2.new(0, 10, 0, 0)
+    ValueText.Size = UDim2.new(0.5, -20, 0, 35)
+    ValueText.Position = UDim2.new(0.5, 10, 0, 0)
     ValueText.ZIndex = 16
     ValueText.Font = Enum.Font.GothamBold
     ValueText.Text = default
-    ValueText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ValueText.TextColor3 = Color3.fromRGB(0, 200, 200)
     ValueText.TextSize = 13
     ValueText.TextXAlignment = Enum.TextXAlignment.Left
     ValueText.TextYAlignment = Enum.TextYAlignment.Center
+    ValueText.ClipsDescendants = true
 
     ImageButton.Parent = MainDropDown_2
     ImageButton.BackgroundTransparency = 1
@@ -2101,7 +2101,6 @@ function functionitem:Dropdown(...)
     ImageButton.ZIndex = 16
     ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
 
-    -- === Search + Scroll ===
     SearchBox.Name = "SearchBox"
     SearchBox.Parent = MainDropDown
     SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -2151,7 +2150,6 @@ function functionitem:Dropdown(...)
     UIPadding_3.PaddingLeft = UDim.new(0, 10)
     UIPadding_3.PaddingTop = UDim.new(0, 5)
 
-    -- === ฟังก์ชันเปิด/ปิด ===
     local isOpen = false
     function Dropfunc:TogglePanel(state)
         isOpen = state
@@ -2176,7 +2174,6 @@ function functionitem:Dropdown(...)
     v.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
     ImageButton.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
 
-    -- === ค้นหา ===
     function Dropfunc:FilterItems(query)
         query = query:lower()
         for _, item in Scroll_Items:GetChildren() do
@@ -2190,7 +2187,6 @@ function functionitem:Dropdown(...)
         Dropfunc:FilterItems(SearchBox.Text)
     end)
 
-    -- === เพิ่มไอเท็ม ===
     function Dropfunc:Add(Text)
         local btn = Instance.new("TextButton")
         local corner = Instance.new("UICorner")
@@ -2223,49 +2219,51 @@ function functionitem:Dropdown(...)
         end)
 
         btn.MouseButton1Click:Connect(function()
+            -- รีเซ็ตสีเก่า
+            if selectedButton then
+                TweenService:Create(selectedButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            end
+
+            -- ตั้งค่าใหม่
             currentValue = Text
             ValueText.Text = Text
+            selectedButton = btn
+            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+            
             Callback(Text)
             Dropfunc:TogglePanel(false)
-
-            -- รีเซ็ตสีเก่า
-            for _, other in Scroll_Items:GetChildren() do
-                if other:IsA("TextButton") and other.TextColor3 == Color3.fromRGB(0, 200, 200) then
-                    TweenService:Create(other, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-                end
-            end
-            -- ตั้งค่าสีใหม่
-            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
         end)
 
         -- ตั้งค่า default
         if Text == default then
             TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+            selectedButton = btn
         end
     end
 
-    -- === เพิ่มรายการทั้งหมด ===
     for _, item in ipairs(list) do
         Dropfunc:Add(item)
     end
 
-    -- === ตั้งค่าเริ่มต้น ===
     ValueText.Text = default
     if default ~= "" then
         Callback(default)
     end
 
-    -- === ฟังก์ชันภายนอก ===
     function Dropfunc:Update(value)
         if table.find(list, value) then
             currentValue = value
             ValueText.Text = value
             Callback(value)
-            -- อัปเดตสี
+            
             for _, btn in Scroll_Items:GetChildren() do
                 if btn:IsA("TextButton") then
-                    local color = (btn.Text == value) and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
-                    TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = color}):Play()
+                    if btn.Text == value then
+                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+                        selectedButton = btn
+                    else
+                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                    end
                 end
             end
         end
@@ -2273,6 +2271,21 @@ function functionitem:Dropdown(...)
 
     function Dropfunc:Get()
         return currentValue
+    end
+
+    function Dropfunc:Clear()
+        for _, btn in Scroll_Items:GetChildren() do
+            if btn:IsA("TextButton") then
+                btn:Destroy()
+            end
+        end
+        
+        currentValue = ""
+        ValueText.Text = ""
+        SearchBox.Text = ""
+        selectedButton = nil
+        
+        Callback("")
     end
 
     RegisterComponent("Dropdown", Name, MainDropDown)
@@ -2363,7 +2376,7 @@ function functionitem:MultiDropdown(...)
     NameLabel.Name = "NameLabel"
     NameLabel.Parent = Header
     NameLabel.BackgroundTransparency = 1
-    NameLabel.Size = UDim2.new(1, -40, 0, 35)
+    NameLabel.Size = UDim2.new(0.5, -20, 0, 35)
     NameLabel.Position = UDim2.new(0, 10, 0, 0)
     NameLabel.ZIndex = 16
     NameLabel.Font = Enum.Font.GothamBold
@@ -2378,15 +2391,16 @@ function functionitem:MultiDropdown(...)
     ValueLabel.Name = "ValueLabel"
     ValueLabel.Parent = Header
     ValueLabel.BackgroundTransparency = 1
-    ValueLabel.Size = UDim2.new(1, -40, 0, 35)
-    ValueLabel.Position = UDim2.new(0, 10, 0, 0)
+    ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
     ValueLabel.ZIndex = 16
     ValueLabel.Font = Enum.Font.GothamBold
     ValueLabel.Text = table.concat(selected, ", ")
-    ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
     ValueLabel.TextSize = 13
     ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
     ValueLabel.TextYAlignment = Enum.TextYAlignment.Center
+    ValueLabel.ClipsDescendants = true
 
     -- === ลูกศร ===
     Arrow.Parent = Header
@@ -2485,7 +2499,11 @@ function functionitem:MultiDropdown(...)
 
     -- === อัปเดตข้อความ ===
     local function updateDisplay()
-        ValueLabel.Text = #selected > 0 and table.concat(selected, ", ") or "None"
+        if #selected > 0 then
+            ValueLabel.Text = table.concat(selected, ", ")
+        else
+            ValueLabel.Text = "None"
+        end
     end
 
     -- === เพิ่มไอเท็ม ===
@@ -2579,20 +2597,27 @@ function functionitem:MultiDropdown(...)
     end
 
     function Dropfunc:Clear()
-        selected = {}
-        updateDisplay()
-        Callback(selected)
+        -- ลบ items ทั้งหมด
         for _, btn in Scroll_Items:GetChildren() do
             if btn:IsA("TextButton") then
-                TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                btn:Destroy()
             end
         end
+        
+        -- รีเซ็ต selected
+        selected = {}
+        updateDisplay()
+        
+        -- รีเซ็ต SearchBox
+        SearchBox.Text = ""
+        
+        -- เรียก callback
+        Callback(selected)
     end
 
     RegisterComponent("MultiDropdown", Name, MainDropDown)
     return Dropfunc
 end
-
 -- ==========================================
 -- 🔥 Slider Function
 -- ==========================================
@@ -2749,7 +2774,7 @@ function functionitem:Slider(...)
     ConneValue.Parent = PartValue
     ConneValue.AnchorPoint = Vector2.new(0.7, 0.7)
     ConneValue.BackgroundColor3 = _G.Color
-    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5, 0)
+    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5,0, 0)
     ConneValue.Size = UDim2.new(0, 10, 0, 10)
     ConneValue.BorderSizePixel = 0
 
@@ -2762,9 +2787,6 @@ function functionitem:Slider(...)
     else
         CustomValue.Text = tostring(de and math.floor((de / max) * (max - min) + min) or 0)
     end
-
-    local UserInputService = game:GetService("UserInputService")
-    local dragging = false
 
     local function move(input)
         local pos = UDim2.new(
@@ -2792,58 +2814,42 @@ function functionitem:Slider(...)
         end
     end
 
-    -- Start drag - รองรับ Mouse และ Touch
+    local dragging = false
     ConneValue.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
         end
     end)
-
-    SliderFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-        end
-    end)
-
-    ValueFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-        end
-    end)
-
-    -- End drag - รองรับ Mouse และ Touch
-    UserInputService.InputEnded:Connect(function(input)
-        if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
+    ConneValue.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
     end)
-
-    -- Mouse Movement
-    UserInputService.InputChanged:Connect(function(input)
+    SliderFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+        end
+    end)
+    SliderFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    ValueFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+        end
+    end)
+    ValueFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             move(input)
         end
     end)
-
-    -- Touch Movement
-    ConneValue.TouchMoved:Connect(function(touch)
-        if dragging then
-            move(touch)
-        end
-    end)
-
-    ValueFrame.TouchMoved:Connect(function(touch)
-        if dragging then
-            move(touch)
-        end
-    end)
-
-    SliderFrame.TouchMoved:Connect(function(touch)
-        if dragging then
-            move(touch)
-        end
-    end)
-
     CustomValue.FocusLost:Connect(function()
         if CustomValue.Text == "" then
             CustomValue.Text = de
@@ -2852,18 +2858,18 @@ function functionitem:Slider(...)
             CustomValue.Text = max
         end
         MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0, 0.6, 0), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
         if floor == true then
-            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min))
+            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min) )
         else
-            CustomValue.Text = tostring(CustomValue.Text and math.floor((CustomValue.Text / max) * (max - min) + min))
+            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
         end
         pcall(Callback, CustomValue.Text)
     end)
 
     function sliderfunc:Update(value)
         MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5, 0), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
         CustomValue.Text = value
         pcall(function()
             Callback(value)
@@ -3029,7 +3035,7 @@ function functionitem:AddColorpicker(...)
     pcall(Callback, PresetClr.BackgroundColor3)
 
     Color.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             if ColorInput then
                 ColorInput:Disconnect()
             end
@@ -3045,7 +3051,7 @@ function functionitem:AddColorpicker(...)
     end)
 
     Color.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             if ColorInput then
                 ColorInput:Disconnect()
             end
@@ -3053,7 +3059,7 @@ function functionitem:AddColorpicker(...)
     end)
 
     Hue.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             if HueInput then
                 HueInput:Disconnect()
             end
@@ -3067,7 +3073,7 @@ function functionitem:AddColorpicker(...)
     end)
 
     Hue.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
             if HueInput then
                 HueInput:Disconnect()
             end

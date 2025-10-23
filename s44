@@ -1,4 +1,4 @@
-print("Loaded[ez]")
+print("Loaded[eeee1]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -1990,7 +1990,6 @@ function functionitem:Textbox(...)
     
     return
 end
-
 -- ==========================================
 -- 🔥 Dropdown Function
 -- ==========================================
@@ -2003,6 +2002,7 @@ function functionitem:Dropdown(...)
 
     local Dropfunc = {}
     local currentValue = default
+    local selectedButtons = {} -- เก็บปุ่มที่เลือก
 
     -- === GUI ===
     local MainDropDown = Instance.new("Frame")
@@ -2010,7 +2010,7 @@ function functionitem:Dropdown(...)
     local MainDropDown_2 = Instance.new("Frame")
     local UICorner_8 = Instance.new("UICorner")
     local v = Instance.new("TextButton")
-    local TextLabel = Instance.new("TextLabel")  -- เปลี่ยนชื่อให้ชัด
+    local TextLabel = Instance.new("TextLabel")
     local ImageButton = Instance.new("ImageButton")
     local SearchBox = Instance.new("TextBox")
     local SearchBoxCorner = Instance.new("UICorner")
@@ -2063,7 +2063,6 @@ function functionitem:Dropdown(...)
     v.AutoButtonColor = false
     v.Text = ""
 
-    -- === แสดง Name เต็ม (รองรับ \n) - ครึ่งซ้าย ===
     TextLabel.Name = "DisplayText"
     TextLabel.Parent = MainDropDown
     TextLabel.BackgroundTransparency = 1
@@ -2076,9 +2075,8 @@ function functionitem:Dropdown(...)
     TextLabel.TextSize = 13
     TextLabel.TextXAlignment = Enum.TextXAlignment.Left
     TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-    TextLabel.TextTransparency = 0.2  -- ชื่อ dropdown
+    TextLabel.TextTransparency = 0.2
 
-    -- === แสดงค่าเลือก - ครึ่งขวา ===
     local ValueText = Instance.new("TextLabel")
     ValueText.Name = "ValueText"
     ValueText.Parent = MainDropDown
@@ -2102,7 +2100,6 @@ function functionitem:Dropdown(...)
     ImageButton.ZIndex = 16
     ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
 
-    -- === Search + Scroll ===
     SearchBox.Name = "SearchBox"
     SearchBox.Parent = MainDropDown
     SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -2229,19 +2226,20 @@ function functionitem:Dropdown(...)
             Callback(Text)
             Dropfunc:TogglePanel(false)
 
-            -- รีเซ็ตสีเก่า
-            for _, other in Scroll_Items:GetChildren() do
-                if other:IsA("TextButton") and other.TextColor3 == Color3.fromRGB(0, 200, 200) then
-                    TweenService:Create(other, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-                end
+            -- รีเซ็ตสีเก่า - ใช้ตัวแปร selectedButtons แทน
+            if selectedButtons[1] then
+                TweenService:Create(selectedButtons[1], TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
             end
+            
             -- ตั้งค่าสีใหม่
+            selectedButtons[1] = btn
             TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
         end)
 
         -- ตั้งค่า default
         if Text == default then
             TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+            selectedButtons[1] = btn
         end
     end
 
@@ -2267,6 +2265,9 @@ function functionitem:Dropdown(...)
                 if btn:IsA("TextButton") then
                     local color = (btn.Text == value) and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
                     TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = color}):Play()
+                    if btn.Text == value then
+                        selectedButtons[1] = btn
+                    end
                 end
             end
         end
@@ -2284,12 +2285,11 @@ function functionitem:Dropdown(...)
             end
         end
         
-        -- รีเซ็ต currentValue
+        -- รีเซ็ต
         currentValue = ""
         ValueText.Text = ""
-        
-        -- รีเซ็ต SearchBox
         SearchBox.Text = ""
+        selectedButtons = {}
         
         -- เรียก callback
         Callback("")

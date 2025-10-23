@@ -1,4 +1,4 @@
-print("Loaded[qqq0]")
+print("Loaded[ez]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2782,7 +2782,7 @@ function functionitem:Slider(...)
     ConneValue.Parent = PartValue
     ConneValue.AnchorPoint = Vector2.new(0.7, 0.7)
     ConneValue.BackgroundColor3 = _G.Color
-    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5,0, 0)
+    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5, 0)
     ConneValue.Size = UDim2.new(0, 10, 0, 10)
     ConneValue.BorderSizePixel = 0
 
@@ -2795,6 +2795,9 @@ function functionitem:Slider(...)
     else
         CustomValue.Text = tostring(de and math.floor((de / max) * (max - min) + min) or 0)
     end
+
+    local UserInputService = game:GetService("UserInputService")
+    local dragging = false
 
     local function move(input)
         local pos = UDim2.new(
@@ -2822,79 +2825,52 @@ function functionitem:Slider(...)
         end
     end
 
-    local dragging = false
-    
+    -- Start drag - รองรับ Mouse และ Touch
     ConneValue.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
         end
     end)
-    ConneValue.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    
+
     SliderFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
         end
     end)
-    SliderFrame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    
+
     ValueFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
         end
     end)
-    ValueFrame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+    -- End drag - รองรับ Mouse และ Touch
+    UserInputService.InputEnded:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
             dragging = false
         end
     end)
 
     -- Mouse Movement
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             move(input)
         end
     end)
 
-    -- Touch Support
-    ConneValue.TouchBegan:Connect(function(touch)
-        dragging = true
-    end)
-    ConneValue.TouchEnded:Connect(function(touch)
-        dragging = false
-    end)
+    -- Touch Movement
     ConneValue.TouchMoved:Connect(function(touch)
         if dragging then
             move(touch)
         end
     end)
 
-    ValueFrame.TouchBegan:Connect(function(touch)
-        dragging = true
-    end)
-    ValueFrame.TouchEnded:Connect(function(touch)
-        dragging = false
-    end)
     ValueFrame.TouchMoved:Connect(function(touch)
         if dragging then
             move(touch)
         end
     end)
 
-    SliderFrame.TouchBegan:Connect(function(touch)
-        dragging = true
-    end)
-    SliderFrame.TouchEnded:Connect(function(touch)
-        dragging = false
-    end)
     SliderFrame.TouchMoved:Connect(function(touch)
         if dragging then
             move(touch)
@@ -2909,18 +2885,18 @@ function functionitem:Slider(...)
             CustomValue.Text = max
         end
         MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0, 0.6, 0), "Out", "Sine", 0.2, true)
         if floor == true then
-            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min) )
+            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min))
         else
-            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
+            CustomValue.Text = tostring(CustomValue.Text and math.floor((CustomValue.Text / max) * (max - min) + min))
         end
         pcall(Callback, CustomValue.Text)
     end)
 
     function sliderfunc:Update(value)
         MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5, 0), "Out", "Sine", 0.2, true)
         CustomValue.Text = value
         pcall(function()
             Callback(value)

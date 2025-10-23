@@ -1,4 +1,4 @@
-print("Loaded[0]")
+print("Loaded[qqq0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2823,9 +2823,7 @@ function functionitem:Slider(...)
     end
 
     local dragging = false
-    local UserInputService = game:GetService("UserInputService")
-
-    -- === Mouse Support ===
+    
     ConneValue.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
@@ -2836,6 +2834,18 @@ function functionitem:Slider(...)
             dragging = false
         end
     end)
+    
+    SliderFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    SliderFrame.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
     ValueFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
@@ -2847,14 +2857,14 @@ function functionitem:Slider(...)
         end
     end)
 
-    -- === Mouse Movement ===
-    UserInputService.InputChanged:Connect(function(input)
+    -- Mouse Movement
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             move(input)
         end
     end)
 
-    -- === Touch Support (Mobile) ===
+    -- Touch Support
     ConneValue.TouchBegan:Connect(function(touch)
         dragging = true
     end)
@@ -2874,6 +2884,18 @@ function functionitem:Slider(...)
         dragging = false
     end)
     ValueFrame.TouchMoved:Connect(function(touch)
+        if dragging then
+            move(touch)
+        end
+    end)
+
+    SliderFrame.TouchBegan:Connect(function(touch)
+        dragging = true
+    end)
+    SliderFrame.TouchEnded:Connect(function(touch)
+        dragging = false
+    end)
+    SliderFrame.TouchMoved:Connect(function(touch)
         if dragging then
             move(touch)
         end

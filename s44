@@ -1,4 +1,4 @@
-print("Loaded[qqq0]")
+print("Loaded[0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2063,11 +2063,11 @@ function functionitem:Dropdown(...)
     v.AutoButtonColor = false
     v.Text = ""
 
-    -- === แสดง Name เต็ม (รองรับ \n) ===
+    -- === แสดง Name เต็ม (รองรับ \n) - ครึ่งซ้าย ===
     TextLabel.Name = "DisplayText"
     TextLabel.Parent = MainDropDown
     TextLabel.BackgroundTransparency = 1
-    TextLabel.Size = UDim2.new(1, -40, 0, 35)
+    TextLabel.Size = UDim2.new(0.5, -20, 0, 35)
     TextLabel.Position = UDim2.new(0, 10, 0, 0)
     TextLabel.ZIndex = 16
     TextLabel.Font = Enum.Font.GothamBold
@@ -2078,20 +2078,21 @@ function functionitem:Dropdown(...)
     TextLabel.TextYAlignment = Enum.TextYAlignment.Center
     TextLabel.TextTransparency = 0.2  -- ชื่อ dropdown
 
-    -- === แสดงค่าเลือก ===
+    -- === แสดงค่าเลือก - ครึ่งขวา ===
     local ValueText = Instance.new("TextLabel")
     ValueText.Name = "ValueText"
     ValueText.Parent = MainDropDown
     ValueText.BackgroundTransparency = 1
-    ValueText.Size = UDim2.new(1, -40, 0, 35)
-    ValueText.Position = UDim2.new(0, 10, 0, 0)
+    ValueText.Size = UDim2.new(0.5, -20, 0, 35)
+    ValueText.Position = UDim2.new(0.5, 10, 0, 0)
     ValueText.ZIndex = 16
     ValueText.Font = Enum.Font.GothamBold
     ValueText.Text = default
-    ValueText.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ValueText.TextColor3 = Color3.fromRGB(0, 200, 200)
     ValueText.TextSize = 13
     ValueText.TextXAlignment = Enum.TextXAlignment.Left
     ValueText.TextYAlignment = Enum.TextYAlignment.Center
+    ValueText.ClipsDescendants = true
 
     ImageButton.Parent = MainDropDown_2
     ImageButton.BackgroundTransparency = 1
@@ -2275,6 +2276,25 @@ function functionitem:Dropdown(...)
         return currentValue
     end
 
+    function Dropfunc:Clear()
+        -- ลบ items ทั้งหมด
+        for _, btn in Scroll_Items:GetChildren() do
+            if btn:IsA("TextButton") then
+                btn:Destroy()
+            end
+        end
+        
+        -- รีเซ็ต currentValue
+        currentValue = ""
+        ValueText.Text = ""
+        
+        -- รีเซ็ต SearchBox
+        SearchBox.Text = ""
+        
+        -- เรียก callback
+        Callback("")
+    end
+
     RegisterComponent("Dropdown", Name, MainDropDown)
     return Dropfunc
 end
@@ -2363,7 +2383,7 @@ function functionitem:MultiDropdown(...)
     NameLabel.Name = "NameLabel"
     NameLabel.Parent = Header
     NameLabel.BackgroundTransparency = 1
-    NameLabel.Size = UDim2.new(1, -40, 0, 35)
+    NameLabel.Size = UDim2.new(0.5, -20, 0, 35)
     NameLabel.Position = UDim2.new(0, 10, 0, 0)
     NameLabel.ZIndex = 16
     NameLabel.Font = Enum.Font.GothamBold
@@ -2378,15 +2398,16 @@ function functionitem:MultiDropdown(...)
     ValueLabel.Name = "ValueLabel"
     ValueLabel.Parent = Header
     ValueLabel.BackgroundTransparency = 1
-    ValueLabel.Size = UDim2.new(1, -40, 0, 35)
-    ValueLabel.Position = UDim2.new(0, 10, 0, 0)
+    ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
     ValueLabel.ZIndex = 16
     ValueLabel.Font = Enum.Font.GothamBold
     ValueLabel.Text = table.concat(selected, ", ")
-    ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
     ValueLabel.TextSize = 13
     ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
     ValueLabel.TextYAlignment = Enum.TextYAlignment.Center
+    ValueLabel.ClipsDescendants = true
 
     -- === ลูกศร ===
     Arrow.Parent = Header
@@ -2485,7 +2506,11 @@ function functionitem:MultiDropdown(...)
 
     -- === อัปเดตข้อความ ===
     local function updateDisplay()
-        ValueLabel.Text = #selected > 0 and table.concat(selected, ", ") or "None"
+        if #selected > 0 then
+            ValueLabel.Text = table.concat(selected, ", ")
+        else
+            ValueLabel.Text = "None"
+        end
     end
 
     -- === เพิ่มไอเท็ม ===
@@ -2579,14 +2604,22 @@ function functionitem:MultiDropdown(...)
     end
 
     function Dropfunc:Clear()
-        selected = {}
-        updateDisplay()
-        Callback(selected)
+        -- ลบ items ทั้งหมด
         for _, btn in Scroll_Items:GetChildren() do
             if btn:IsA("TextButton") then
-                TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                btn:Destroy()
             end
         end
+        
+        -- รีเซ็ต selected
+        selected = {}
+        updateDisplay()
+        
+        -- รีเซ็ต SearchBox
+        SearchBox.Text = ""
+        
+        -- เรียก callback
+        Callback(selected)
     end
 
     RegisterComponent("MultiDropdown", Name, MainDropDown)
@@ -2790,22 +2823,15 @@ function functionitem:Slider(...)
     end
 
     local dragging = false
+    local UserInputService = game:GetService("UserInputService")
+
+    -- === Mouse Support ===
     ConneValue.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
         end
     end)
     ConneValue.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = false
-        end
-    end)
-    SliderFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-        end
-    end)
-    SliderFrame.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
@@ -2820,11 +2846,39 @@ function functionitem:Slider(...)
             dragging = false
         end
     end)
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+
+    -- === Mouse Movement ===
+    UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             move(input)
         end
     end)
+
+    -- === Touch Support (Mobile) ===
+    ConneValue.TouchBegan:Connect(function(touch)
+        dragging = true
+    end)
+    ConneValue.TouchEnded:Connect(function(touch)
+        dragging = false
+    end)
+    ConneValue.TouchMoved:Connect(function(touch)
+        if dragging then
+            move(touch)
+        end
+    end)
+
+    ValueFrame.TouchBegan:Connect(function(touch)
+        dragging = true
+    end)
+    ValueFrame.TouchEnded:Connect(function(touch)
+        dragging = false
+    end)
+    ValueFrame.TouchMoved:Connect(function(touch)
+        if dragging then
+            move(touch)
+        end
+    end)
+
     CustomValue.FocusLost:Connect(function()
         if CustomValue.Text == "" then
             CustomValue.Text = de

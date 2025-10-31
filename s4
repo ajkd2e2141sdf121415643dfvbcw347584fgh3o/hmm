@@ -2671,12 +2671,16 @@ end
 function functionitem:Slider(...)
     local options = ParseArguments(...)
     local text = options.Name
-    local floor = options.floor or false
+    local floor = options.floor or false  -- ถ้า true = ตัดทศนิยม
     local de = options.Value or 1
-    local min = options.Min or 1
+    local min = options.Min or 0
     local max = options.Max or math.huge
-    local Callback = options.Callback or options.Format or function() end
+    local Callback = options.Callback or function() end
     local Flag = options.Flag
+    local precision = options.Precision or 2  -- จำนวนทศนิยม (ใหม่!)
+
+    -- แปลงค่าเริ่มต้นให้อยู่ในช่วง min-max
+    de = math.clamp(de, min, max)
 
     local SliderFrame = Instance.new("Frame")
     local LabelNameSlider = Instance.new("TextLabel")
@@ -2689,37 +2693,30 @@ function functionitem:Slider(...)
     local PartValueUICorner = Instance.new("UICorner")
     local MainValue = Instance.new("Frame")
     local MainValueUICorner = Instance.new("UICorner")
+    local ConneValue = Instance.new("Frame")
+    local ConneValueUICorner = Instance.new("UICorner")
     local sliderfunc = {}
 
+    -- === UI Setup (เหมือนเดิม) ===
     SliderFrame.Name = text
     SliderFrame.Parent = SectionContainer
     SliderFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    SliderFrame.BackgroundTransparency = 0.700
-    SliderFrame.Position = UDim2.new(0.109489053, 0, 0.708609283, 0)
+    SliderFrame.BackgroundTransparency = 0.7
     SliderFrame.Size = UDim2.new(0, 265, 0, 45)
 
     local UIStroke96 = Instance.new("UIStroke")
     UIStroke96.Thickness = 1.2
     UIStroke96.Parent = SliderFrame
-    UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
     UIStroke96.Color = _G.Color
     UIStroke96.Transparency = 1
+    UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
 
     SliderFrame.MouseEnter:Connect(function()
-        TweenService:Create(
-            UIStroke96,
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Transparency = 0.10}
-        ):Play()
+        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 0.1}):Play()
     end)
-
     SliderFrame.MouseLeave:Connect(function()
-        TweenService:Create(
-            UIStroke96,
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Transparency = 1}
-        ):Play()
+        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 1}):Play()
     end)
 
     local UICorner_7 = Instance.new("UICorner")
@@ -2728,20 +2725,19 @@ function functionitem:Slider(...)
 
     LabelNameSlider.Name = "LabelNameSlider"
     LabelNameSlider.Parent = SliderFrame
-    LabelNameSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    LabelNameSlider.BackgroundTransparency = 1.000
-    LabelNameSlider.Position = UDim2.new(0.0729926974, 0, 0.0396823473, 0)
+    LabelNameSlider.BackgroundTransparency = 1
+    LabelNameSlider.Position = UDim2.new(0.07, 0, 0.04, 0)
     LabelNameSlider.Size = UDim2.new(0, 182, 0, 25)
     LabelNameSlider.Font = Enum.Font.GothamBold
-    LabelNameSlider.Text = tostring(text)
+    LabelNameSlider.Text = text
     LabelNameSlider.TextColor3 = Color3.fromRGB(255, 255, 255)
-    LabelNameSlider.TextSize = 11.000
+    LabelNameSlider.TextSize = 11
     LabelNameSlider.TextXAlignment = Enum.TextXAlignment.Left
 
     ShowValueFrame.Name = "ShowValueFrame"
     ShowValueFrame.Parent = SliderFrame
     ShowValueFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    ShowValueFrame.Position = UDim2.new(0.733576655, 0, 0.0656082779, 0)
+    ShowValueFrame.Position = UDim2.new(0.73, 0, 0.07, 0)
     ShowValueFrame.Size = UDim2.new(0, 58, 0, 21)
 
     CustomValue.Name = "CustomValue"
@@ -2751,36 +2747,17 @@ function functionitem:Slider(...)
     CustomValue.Position = UDim2.new(0.5, 0, 0.5, 0)
     CustomValue.Size = UDim2.new(0, 55, 0, 21)
     CustomValue.Font = Enum.Font.GothamBold
-    CustomValue.Text = ""
     CustomValue.TextColor3 = Color3.fromRGB(255, 255, 255)
-    CustomValue.TextSize = 11.000
+    CustomValue.TextSize = 11
+    CustomValue.ClearTextOnFocus = false
 
     local UIStroke965 = Instance.new("UIStroke")
     UIStroke965.Thickness = 1.2
     UIStroke965.Parent = CustomValue
-    UIStroke965.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke965.LineJoinMode = Enum.LineJoinMode.Round
     UIStroke965.Color = _G.Color
-    UIStroke965.Transparency = 0.10
-
-    SliderFrame.MouseEnter:Connect(function()
-        TweenService:Create(
-            UIStroke965,
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Transparency = 0.5}
-        ):Play()
-    end)
-
-    SliderFrame.MouseLeave:Connect(function()
-        TweenService:Create(
-            UIStroke965,
-            TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-            {Transparency = 0.10}
-        ):Play()
-    end)
+    UIStroke965.Transparency = 0.1
 
     ShowValueFrameUICorner.CornerRadius = UDim.new(0, 4)
-    ShowValueFrameUICorner.Name = "ShowValueFrameUICorner"
     ShowValueFrameUICorner.Parent = ShowValueFrame
 
     ValueFrame.Name = "ValueFrame"
@@ -2791,140 +2768,116 @@ function functionitem:Slider(...)
     ValueFrame.Size = UDim2.new(0, 200, 0, 5)
 
     ValueFrameUICorner.CornerRadius = UDim.new(0, 30)
-    ValueFrameUICorner.Name = "ValueFrameUICorner"
     ValueFrameUICorner.Parent = ValueFrame
 
     PartValue.Name = "PartValue"
     PartValue.Parent = ValueFrame
-    PartValue.AnchorPoint = Vector2.new(0.5, 0.5)
-    PartValue.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-    PartValue.BackgroundTransparency = 1.000
-    PartValue.Position = UDim2.new(0.5, 0, 0.8, 0)
-    PartValue.Size = UDim2.new(0, 200, 0, 5)
-
-    PartValueUICorner.CornerRadius = UDim.new(0, 30)
-    PartValueUICorner.Name = "PartValueUICorner"
-    PartValueUICorner.Parent = PartValue
+    PartValue.BackgroundTransparency = 1
+    PartValue.Position = UDim2.new(0, 0, 0, 0)
+    PartValue.Size = UDim2.new(1, 0, 1, 0)
 
     MainValue.Name = "MainValue"
     MainValue.Parent = ValueFrame
     MainValue.BackgroundColor3 = _G.Color
-    MainValue.Size = UDim2.new((de or 0) / max, 0, 0, 5)
+    MainValue.Size = UDim2.new((de - min) / (max - min), 0, 0, 5)
     MainValue.BorderSizePixel = 0
 
     MainValueUICorner.CornerRadius = UDim.new(0, 30)
-    MainValueUICorner.Name = "MainValueUICorner"
     MainValueUICorner.Parent = MainValue
 
-    local ConneValue = Instance.new("Frame")
     ConneValue.Name = "ConneValue"
     ConneValue.Parent = PartValue
-    ConneValue.AnchorPoint = Vector2.new(0.7, 0.7)
+    ConneValue.AnchorPoint = Vector2.new(0.5, 0.5)
     ConneValue.BackgroundColor3 = _G.Color
-    ConneValue.Position = UDim2.new((de or 0)/max, 0.5, 0.5,0, 0)
+    ConneValue.Position = UDim2.new((de - min) / (max - min), 0, 0.5, 0)
     ConneValue.Size = UDim2.new(0, 10, 0, 10)
-    ConneValue.BorderSizePixel = 0
 
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 10)
-    UICorner.Parent = ConneValue
+    ConneValueUICorner = Instance.new("UICorner")
+    ConneValueUICorner.CornerRadius = UDim.new(0, 10)
+    ConneValueUICorner.Parent = ConneValue
 
-    if floor == true then
-        CustomValue.Text = tostring(de and string.format("%0.2f",(de / max) * (max - min) + min) or 0)
-    else
-        CustomValue.Text = tostring(de and math.floor((de / max) * (max - min) + min) or 0)
-    end
-
-    local function move(input)
-        local pos = UDim2.new(
-            math.clamp((input.Position.X - ValueFrame.AbsolutePosition.X) / ValueFrame.AbsoluteSize.X, 0, 1),
-            0,
-            0.5,
-            0
-        )
-        local pos1 = UDim2.new(
-            math.clamp((input.Position.X - ValueFrame.AbsolutePosition.X) / ValueFrame.AbsoluteSize.X, 0, 1),
-            0,
-            0,
-            5
-        )
-        MainValue:TweenSize(pos1, "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(pos, "Out", "Sine", 0.2, true)
-        if floor == true then
-            local value = string.format("%.0f",((pos.X.Scale * max) / max) * (max - min) + min)
-            CustomValue.Text = tostring(value)
-            Callback(value)
+    -- === ฟังก์ชันแปลงค่าเป็นทศนิยม ===
+    local function formatValue(val)
+        if floor then
+            return math.floor(val)
         else
-            local value = math.floor(((pos.X.Scale * max) / max) * (max - min) + min)
-            CustomValue.Text = tostring(value)
-            Callback(value)
+            return tonumber(string.format("%." .. precision .. "f", val)) or val
         end
     end
 
+    -- ตั้งค่าเริ่มต้น
+    CustomValue.Text = tostring(formatValue(de))
+
+    -- === ฟังก์ชันลาก Slider ===
     local dragging = false
-    ConneValue.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+    local function updateSlider(input)
+        local relativeX = math.clamp((input.Position.X - ValueFrame.AbsolutePosition.X) / ValueFrame.AbsoluteSize.X, 0, 1)
+        local value = min + (relativeX * (max - min))
+        value = formatValue(value)
+
+        local percent = (value - min) / (max - min)
+        MainValue:TweenSize(UDim2.new(percent, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new(percent, 0, 0.5, 0), "Out", "Sine", 0.2, true)
+        CustomValue.Text = tostring(value)
+        pcall(Callback, value)
+    end
+
+    -- === Event ลาก ===
+    local function startDrag(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
         end
-    end)
-    ConneValue.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
+    end
+    local function endDrag(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = false
         end
-    end)
-    SliderFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-        end
-    end)
-    SliderFrame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
-    ValueFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-        end
-    end)
-    ValueFrame.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1  or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-        end
-    end)
+    end
+
+    ConneValue.InputBegan:Connect(startDrag)
+    ConneValue.InputEnded:Connect(endDrag)
+    ValueFrame.InputBegan:Connect(startDrag)
+    ValueFrame.InputEnded:Connect(endDrag)
+    SliderFrame.InputBegan:Connect(startDrag)
+    SliderFrame.InputEnded:Connect(endDrag)
+
     game:GetService("UserInputService").InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-            move(input)
+            updateSlider(input)
         end
-    end)
-    CustomValue.FocusLost:Connect(function()
-        if CustomValue.Text == "" then
-            CustomValue.Text = de
-        end
-        if tonumber(CustomValue.Text) > max then
-            CustomValue.Text = max
-        end
-        MainValue:TweenSize(UDim2.new((CustomValue.Text or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((CustomValue.Text or 0)/max, 0,0.6, 0) , "Out", "Sine", 0.2, true)
-        if floor == true then
-            CustomValue.Text = tostring(CustomValue.Text and string.format("%.0f",(CustomValue.Text / max) * (max - min) + min) )
-        else
-            CustomValue.Text = tostring(CustomValue.Text and math.floor( (CustomValue.Text / max) * (max - min) + min) )
-        end
-        pcall(Callback, CustomValue.Text)
     end)
 
+    -- === ป้อนค่าใน TextBox ===
+    CustomValue.FocusLost:Connect(function(enterPressed)
+        if not enterPressed then return end
+        local input = tonumber(CustomValue.Text)
+        if not input then
+            CustomValue.Text = tostring(formatValue(de))
+            return
+        end
+
+        input = math.clamp(input, min, max)
+        input = formatValue(input)
+
+        local percent = (input - min) / (max - min)
+        MainValue:TweenSize(UDim2.new(percent, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new(percent, 0, 0.5, 0), "Out", "Sine", 0.2, true)
+        CustomValue.Text = tostring(input)
+        pcall(Callback, input)
+    end)
+
+    -- === ฟังก์ชันอัปเดตจากภายนอก ===
     function sliderfunc:Update(value)
-        MainValue:TweenSize(UDim2.new((value or 0) / max, 0, 0, 5), "Out", "Sine", 0.2, true)
-        ConneValue:TweenPosition(UDim2.new((value or 0)/max, 0.5, 0.5,0, 0) , "Out", "Sine", 0.2, true)
-        CustomValue.Text = value
-        pcall(function()
-            Callback(value)
-        end)
+        value = math.clamp(value, min, max)
+        value = formatValue(value)
+        local percent = (value - min) / (max - min)
+        MainValue:TweenSize(UDim2.new(percent, 0, 0, 5), "Out", "Sine", 0.2, true)
+        ConneValue:TweenPosition(UDim2.new(percent, 0, 0.5, 0), "Out", "Sine", 0.2, true)
+        CustomValue.Text = tostring(value)
+        pcall(Callback, value)
     end
 
     RegisterComponent("Slider", text, SliderFrame)
-    
     return sliderfunc
 end
 

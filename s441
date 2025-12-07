@@ -1,4 +1,4 @@
-print("Loaded[0]")
+print("Loaded[k]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -1161,37 +1161,37 @@ function VectorHub:Evil()
         Page.CanvasSize = UDim2.new(0, 0, 0, 0)
         Page.Visible = false
 
-        Left.Name = "Left"
-        Left.Parent = Page
-        Left.Active = true
-        Left.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Left.BackgroundTransparency = 10
-        Left.Size = UDim2.new(0, 274, 0, _G.SizePage) 
-        Left.ScrollBarThickness = 2  -- ✅ เปิด ScrollBar!
-        Left.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Left.Name = "Left"
+    Left.Parent = Page
+    Left.Active = true
+    Left.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Left.BackgroundTransparency = 10
+    Left.Size = UDim2.new(0, 274, 0, _G.SizePage) 
+    Left.ScrollBarThickness = 0
+    Left.CanvasSize = UDim2.new(0, 0, 0, 0)
 
-        Right.Name = "Right"
-        Right.Parent = Page
-        Right.Active = true
-        Right.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        Right.BackgroundTransparency = 10
-        Right.Size = UDim2.new(0, 274, 0, _G.SizePage)
-        Right.ScrollBarThickness = 2  -- ✅ เปิด ScrollBar!
-        Right.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Right.Name = "Right"
+    Right.Parent = Page
+    Right.Active = true
+    Right.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Right.BackgroundTransparency = 10
+    Right.Size = UDim2.new(0, 274, 0, _G.SizePage)
+    Right.ScrollBarThickness = 0
+    Right.CanvasSize = UDim2.new(0, 0, 0, 0)
 
     -- สำคัญ: เก็บ Left และ Right ไว้ใน _G เพื่ออัปเดตภายหลัง
-        _G.CurrentLeft = Left
-        _G.CurrentRight = Right
+    _G.CurrentLeft = Left
+    _G.CurrentRight = Right
 
-        -- สร้างฟังก์ชันอัปเดตท้องถิ่น
-        local function updateSizes()
-            if _G.CurrentLeft then
-                _G.CurrentLeft.Size = UDim2.new(0, 274, 0, _G.SizePage)
-            end
-            if _G.CurrentRight then
-                _G.CurrentRight.Size = UDim2.new(0, 274, 0, _G.SizePage)
-            end
+    -- สร้างฟังก์ชันอัปเดตท้องถิ่น
+    local function updateSizes()
+        if _G.CurrentLeft then
+            _G.CurrentLeft.Size = UDim2.new(0, 274, 0, _G.SizePage)
         end
+        if _G.CurrentRight then
+            _G.CurrentRight.Size = UDim2.new(0, 274, 0, _G.SizePage)
+        end
+    end
 
     -- เรียกตอนสร้างครั้งแรก
     updateSizes()

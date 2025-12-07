@@ -1,4 +1,4 @@
-print("Loaded[k]")
+print("Loaded[0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -1284,14 +1284,8 @@ function VectorHub:Evil()
 
         game:GetService("RunService").Stepped:Connect(function()
             pcall(function()
-               LeftList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                    -- ✅ เพิ่ม padding 20px ที่ล่าง
-                    Left.CanvasSize = UDim2.new(0, 0, 0, LeftList.AbsoluteContentSize.Y + 20)
-                end)
-
-                RightList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-                    Right.CanvasSize = UDim2.new(0, 0, 0, RightList.AbsoluteContentSize.Y + 20)
-                end)
+                Right.CanvasSize = UDim2.new(0,0,0,RightList.AbsoluteContentSize.Y)
+                Left.CanvasSize = UDim2.new(0,0,0,LeftList.AbsoluteContentSize.Y)
             end)
         end)
 

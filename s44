@@ -1282,11 +1282,14 @@ function VectorHub:Evil()
             end
         end
 
-        game:GetService("RunService").Stepped:Connect(function()
-            pcall(function()
-                Right.CanvasSize = UDim2.new(0,0,0,RightList.AbsoluteContentSize.Y)
-                Left.CanvasSize = UDim2.new(0,0,0,LeftList.AbsoluteContentSize.Y)
-            end)
+        LeftList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            local buffer = IsOnMobile and 80 or 50  -- Mobile ต้องใหญ่กว่า
+            Left.CanvasSize = UDim2.new(0,0,0,LeftList.AbsoluteContentSize.Y + buffer)
+        end)
+
+        RightList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            local buffer = IsOnMobile and 80 or 50
+            Right.CanvasSize = UDim2.new(0,0,0,RightList.AbsoluteContentSize.Y + buffer)
         end)
 
         -- ==========================================

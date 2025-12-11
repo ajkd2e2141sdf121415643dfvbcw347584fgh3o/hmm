@@ -1,4 +1,4 @@
-print("Loaded[0]")
+print("Loaded[eeeee0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -709,78 +709,65 @@ function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, it
     print("📝 DB Add: " .. category .. " | Tab: " .. tabName .. " | Sec: " .. sectionName .. " | Name: " .. itemName) 
 end
 
--- ===== AUTO-SCAN ALL TABS =====
-function SearchSystem:ScanAllTabs()
-    print("🔍 Starting to scan all tabs...")
-    
-    for _, tab in pairs(TabContainer:GetChildren()) do
-        if tab:IsA("TextButton") and tab.Name == "Tab" then
-            local textLabel = tab:FindFirstChild("TextLabel")
-            if textLabel then
-                local tabName = textLabel.Text
-                print("📑 Scanning Tab: " .. tabName)
-                
-                -- หา Page ของ Tab นี้
-                local tabParent = tab.Parent.Parent  -- TabContainer -> TabHolder -> ?
-                local pageContainer = tabParent:FindFirstChild("PageContainer") or tabParent:FindFirstChild("Main")
-                
-                if pageContainer then
-                    -- หา Page ที่ตรงกับ Tab
-                    for _, page in pairs(pageContainer:GetChildren()) do
-                        if page:IsA("Frame") or page:IsA("ScrollingFrame") then
-                            -- Scan items ใน Page นี้
-                            self:ScanItemsInPage(tabName, "", page)
+
+-- ===== FIX 2: ปรับ ScanItemsInPage =====
+function SearchSystem:ScanItemsInPage(tabName, sectionName, container)
+    for _, item in pairs(container:GetChildren()) do
+        -- หา Section ก่อน (Frame ที่มี SectionContainer)
+        if item:IsA("Frame") and item.Name ~= "Left" and item.Name ~= "Right" then
+            local sectionLabel = item:FindFirstChild("Top") 
+                and item:FindFirstChild("Top"):FindFirstChild("Sectionname")
+            
+            local newSectionName = sectionName
+            if sectionLabel then
+                newSectionName = sectionLabel.Text
+                print("  📂 Section: " .. newSectionName)
+            end
+            
+            -- หา SectionContainer ที่มี items
+            local sectionContainer = item:FindFirstChild("Top") 
+                and item:FindFirstChild("Top"):FindFirstChild("SectionContainer")
+            
+            if sectionContainer then
+                for _, subItem in pairs(sectionContainer:GetChildren()) do
+                    if subItem:IsA("TextButton") or subItem:IsA("ImageButton") then
+                        local itemName = subItem.Name
+                        local itemLabel = subItem:FindFirstChild("TextLabel") 
+                            or subItem:FindFirstChild("Text")
+                        
+                        if itemLabel then
+                            itemName = itemLabel.Text
                         end
+                        
+                        -- ตรวจสอบประเภท
+                        local category = "Button"
+                        local nameLower = subItem.Name:lower()
+                        
+                        if nameLower:find("toggle") then
+                            category = "Toggle"
+                        elseif nameLower:find("slider") then
+                            category = "Slider"
+                        elseif nameLower:find("dropdown") then
+                            category = "Dropdown"
+                        elseif nameLower:find("multidropdown") then
+                            category = "MultiDropdown"
+                        elseif nameLower:find("textbox") or nameLower:find("text") then
+                            category = "Textbox"
+                        elseif nameLower:find("colorpicker") or nameLower:find("color") then
+                            category = "Colorpicker"
+                        elseif nameLower:find("label") then
+                            category = "Label"
+                        end
+                        
+                        self:AddToDatabase(category, itemName, tabName, newSectionName, subItem)
                     end
                 end
             end
         end
     end
-    
-    print("✅ Scan completed! Total items: " .. #self.Database)
 end
 
-function SearchSystem:ScanItemsInPage(tabName, sectionName, container)
-    for _, item in pairs(container:GetChildren()) do
-        if item:IsA("TextButton") or item:IsA("ImageButton") then
-            local itemName = item.Name
-            local itemLabel = item:FindFirstChild("TextLabel")
-            if itemLabel then
-                itemName = itemLabel.Text
-            end
-            
-            -- ตรวจสอบประเภท
-            local category = "Button"
-            if item.Name:lower():find("toggle") then
-                category = "Toggle"
-            elseif item.Name:lower():find("slider") then
-                category = "Slider"
-            elseif item.Name:lower():find("dropdown") then
-                category = "Dropdown"
-            elseif item.Name:lower():find("textbox") then
-                category = "Textbox"
-            elseif item.Name:lower():find("colorpicker") or item.Name:lower():find("color") then
-                category = "Colorpicker"
-            end
-            
-            self:AddToDatabase(category, itemName, tabName, sectionName, item)
-        
-        elseif item:IsA("Frame") or item:IsA("ScrollingFrame") then
-            -- ถ้าเป็น Section ให้ scan ซ้ำอีกชั้น
-            local sectionLabel = item:FindFirstChild("TextLabel")
-            local newSectionName = sectionName
-            
-            if sectionLabel and sectionLabel.Text ~= "" then
-                newSectionName = sectionLabel.Text
-            end
-            
-            self:ScanItemsInPage(tabName, newSectionName, item)
-        end
-    end
-end
 
--- เรียกใช้
-SearchSystem:ScanAllTabs()
 
 -- ===== 3️⃣ PERFORM SEARCH FUNCTION =====
 local searchDebounce = false
@@ -933,34 +920,108 @@ function SearchSystem:PerformSearch(query)
     searchDebounce = false
 end
 
--- ===== 4️⃣ NAVIGATE TO ITEM FUNCTION (THE FIX!) =====
+-- ===== FIX 1: ปรับ ScanAllTabs ให้หาได้ =====
+function SearchSystem:ScanAllTabs()
+    print("🔍 Starting to scan all tabs...")
+    
+    for _, tab in pairs(TabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            local textLabel = tab:FindFirstChild("TextLabel")
+            if textLabel then
+                local tabName = textLabel.Text
+                print("📑 Scanning Tab: " .. tabName)
+                
+                -- หา Page ที่สอดคล้องกับ Tab
+                -- Tab -> TabContainer -> TabHolder -> Top -> Main
+                local mainFrame = tab.Parent.Parent.Parent.Parent -- ขึ้นไปหา Main
+                
+                if mainFrame and mainFrame.Name == "Main" then
+                    -- หา Bottom ที่มี Page สำหรับ Tab นี้
+                    local bottomFrame = mainFrame:FindFirstChild("Bottom")
+                    
+                    if bottomFrame then
+                        -- หา Page ที่ตรงกับ Tab
+                        for _, page in pairs(bottomFrame:GetChildren()) do
+                            if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                                print("  ✓ Found Page, scanning items...")
+                                self:ScanItemsInPage(tabName, "", page)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    
+    print("✅ Scan completed! Total items: " .. #self.Database)
+end
+
+
+
+-- ===== FIX 3: ปรับ NavigateToItem ให้สมบูรณ์ =====
 function SearchSystem:NavigateToItem(item)
+    print("🔍 [NAVIGATE] Starting navigation to: " .. item.Name)
+    print("📂 [NAVIGATE] Looking for Tab: '" .. item.Tab .. "'")
     
     local foundTab = nil
+    local pageToShow = nil
     
+    -- หา Tab ที่ตรงกัน
     for _, tab in pairs(TabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
             local textLabel = tab:FindFirstChild("TextLabel")
             if textLabel then
                 local fullText = textLabel.Text:gsub(" ", ""):lower()
                 local searchTab = item.Tab:lower()
+                
                 if fullText == searchTab or fullText:find(searchTab, 1, true) then
+                    print(" ✅ FOUND TAB!")
                     foundTab = tab
+                    
+                    -- หา Page ที่ตรงกัน
+                    local mainFrame = tab.Parent.Parent.Parent.Parent
+                    if mainFrame and mainFrame.Name == "Main" then
+                        local bottomFrame = mainFrame:FindFirstChild("Bottom")
+                        if bottomFrame then
+                            for _, page in pairs(bottomFrame:GetChildren()) do
+                                if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                                    pageToShow = page
+                                    break
+                                end
+                            end
+                        end
+                    end
                     break
                 end
             end
         end
     end
     
-
+    if not foundTab then
+        print("❌ [NAVIGATE] Tab not found!")
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "❌ Search Error",
+            Text = "Tab '" .. item.Tab .. "' not found",
+            Duration = 3
+        })
+        return
+    end
+    
+    -- ✅ คลิก Tab เพื่อแสดง Page
+    print("🖱️ [NAVIGATE] Clicking Tab...")
+    foundTab.MouseButton1Click:Connect(function() end)
+    foundTab:TweenPosition(foundTab.Position, "Out", "Quad", 0.2, true)
+    
     task.wait(0.6)
     
     -- ตรวจสอบ Object
     if not item.Object then
+        print("❌ [NAVIGATE] Object is nil!")
         return
     end
     
     if not item.Object.Parent then
+        print("❌ [NAVIGATE] Object has no parent!")
         return
     end
     
@@ -969,6 +1030,8 @@ function SearchSystem:NavigateToItem(item)
     
     local originalColor = obj.BackgroundColor3
     
+    -- Flash effect (กระพริบ 3 ครั้ง)
+    print("💫 [NAVIGATE] Starting flash effect...")
     for i = 1, 3 do
         task.spawn(function()
             task.wait(i * 0.25)
@@ -986,13 +1049,24 @@ function SearchSystem:NavigateToItem(item)
     end
     
     if scrollFrame then
+        print("📜 [NAVIGATE] Found ScrollingFrame: " .. scrollFrame.Name)
         local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
         local targetCanvasY = math.max(0, itemPosition - 50)
+        print(" Scrolling to Y: " .. tostring(targetCanvasY))
         TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {CanvasPosition = Vector2.new(0, targetCanvasY)}):Play()
     else
         print("⚠️ [NAVIGATE] ScrollingFrame not found")
     end
     
+    -- Notification
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "✅ Found",
+        Text = item.Name .. " (" .. item.Tab .. ")",
+        Duration = 2,
+        Icon = "rbxassetid://6034509993"
+    })
+    
+    print("✅ [NAVIGATE] Navigation completed!")
 end
 
 function SearchSystem:PerformSearch(query)

@@ -1,4 +1,4 @@
-print("Loaded[eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee]")
+print("Loadedwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -918,10 +918,13 @@ function SearchSystem:NavigateToItem(item)
     end
     
     -- ✅ ซ่อน siblings ของ Object แล้วแสดงแค่เป้าหมาย
-    local objectParent = item.Object.Parent
-    for _, obj in pairs(objectParent:GetChildren()) do
-        obj.Visible = false
+local tabParent = foundTab.Parent
+for _, tab in pairs(tabParent:GetChildren()) do
+    if tab:IsA("GuiObject") then
+        tab.Visible = false
     end
+end
+foundTab.Visible = true
     item.Object.Visible = true
     
     local obj = item.Object

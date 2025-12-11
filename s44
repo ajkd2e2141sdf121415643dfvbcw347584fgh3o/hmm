@@ -613,348 +613,622 @@ function VectorHub:Evil()
     Title2.TextWrapped = true
     Title2.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- ==========================================
-    -- 🔍 GLOBAL SEARCH SYSTEM
-    -- ==========================================
-    local SearchSystem = {}
-    SearchSystem.Database = {}
+local SearchSystem = {}
+SearchSystem.Database = {}
 
-    local SearchContainer = Instance.new("Frame")
-    SearchContainer.Name = "SearchContainer"
-    SearchContainer.Parent = Main
-    SearchContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    SearchContainer.BackgroundTransparency = 0.3
-    SearchContainer.Position = UDim2.new(1, -165, 0, 10)
-    SearchContainer.Size = UDim2.new(0, 155, 0, 30)
-    SearchContainer.ZIndex = 100
+local SearchContainer = Instance.new("Frame")
+SearchContainer.Name = "SearchContainer"
+SearchContainer.Parent = Main
+SearchContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+SearchContainer.BackgroundTransparency = 0.3
+SearchContainer.Position = UDim2.new(1, -165, 0, 10)
+SearchContainer.Size = UDim2.new(0, 155, 0, 30)
+SearchContainer.ZIndex = 100
 
-    local SearchCorner = Instance.new("UICorner")
-    SearchCorner.CornerRadius = UDim.new(0, 6)
-    SearchCorner.Parent = SearchContainer
+local SearchCorner = Instance.new("UICorner")
+SearchCorner.CornerRadius = UDim.new(0, 6)
+SearchCorner.Parent = SearchContainer
 
-    local SearchStroke = Instance.new("UIStroke")
-    SearchStroke.Thickness = 1.5
-    SearchStroke.Color = _G.Color
-    SearchStroke.Transparency = 0.5
-    SearchStroke.Parent = SearchContainer
+local SearchStroke = Instance.new("UIStroke")
+SearchStroke.Thickness = 1.5
+SearchStroke.Color = _G.Color
+SearchStroke.Transparency = 0.5
+SearchStroke.Parent = SearchContainer
 
-    local SearchIcon = Instance.new("ImageLabel")
-    SearchIcon.Name = "SearchIcon"
-    SearchIcon.Parent = SearchContainer
-    SearchIcon.BackgroundTransparency = 1
-    SearchIcon.Position = UDim2.new(0, 8, 0.5, -8)
-    SearchIcon.Size = UDim2.new(0, 16, 0, 16)
-    SearchIcon.Image = "rbxassetid://6034509993"
-    SearchIcon.ImageColor3 = _G.Color
-    SearchIcon.ZIndex = 101
+local SearchIcon = Instance.new("ImageLabel")
+SearchIcon.Name = "SearchIcon"
+SearchIcon.Parent = SearchContainer
+SearchIcon.BackgroundTransparency = 1
+SearchIcon.Position = UDim2.new(0, 8, 0.5, -8)
+SearchIcon.Size = UDim2.new(0, 16, 0, 16)
+SearchIcon.Image = "rbxassetid://6034509993"
+SearchIcon.ImageColor3 = _G.Color
+SearchIcon.ZIndex = 101
 
-    local SearchBox = Instance.new("TextBox")
-    SearchBox.Name = "SearchBox"
-    SearchBox.Parent = SearchContainer
-    SearchBox.BackgroundTransparency = 1
-    SearchBox.Position = UDim2.new(0, 30, 0, 0)
-    SearchBox.Size = UDim2.new(1, -35, 1, 0)
-    SearchBox.ZIndex = 101
-    SearchBox.Font = Enum.Font.GothamBold
-    SearchBox.PlaceholderText = "Search... (Ctrl+F)"
-    SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-    SearchBox.Text = ""
-    SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-    SearchBox.TextSize = 11
-    SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+local SearchBox = Instance.new("TextBox")
+SearchBox.Name = "SearchBox"
+SearchBox.Parent = SearchContainer
+SearchBox.BackgroundTransparency = 1
+SearchBox.Position = UDim2.new(0, 30, 0, 0)
+SearchBox.Size = UDim2.new(1, -35, 1, 0)
+SearchBox.ZIndex = 101
+SearchBox.Font = Enum.Font.GothamBold
+SearchBox.PlaceholderText = "Search... (Ctrl+F)"
+SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+SearchBox.Text = ""
+SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SearchBox.TextSize = 11
+SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+SearchBox.ClipsDescendants = true
 
-    local SearchResults = Instance.new("ScrollingFrame")
-    SearchResults.Name = "SearchResults"
-    SearchResults.Parent = Main
-    SearchResults.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
-    SearchResults.BorderSizePixel = 0
-    SearchResults.Position = UDim2.new(1, -165, 0, 45)
-    SearchResults.Size = UDim2.new(0, 155, 0, 0)
-    SearchResults.Visible = false
-    SearchResults.ZIndex = 105
-    SearchResults.ScrollBarThickness = 3
-    SearchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
-    SearchResults.ScrollBarImageColor3 = _G.Color
+local SearchResults = Instance.new("ScrollingFrame")
+SearchResults.Name = "SearchResults"
+SearchResults.Parent = Main
+SearchResults.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+SearchResults.BorderSizePixel = 0
+SearchResults.Position = UDim2.new(1, -165, 0, 45)
+SearchResults.Size = UDim2.new(0, 155, 0, 0)
+SearchResults.Visible = false
+SearchResults.ZIndex = 105
+SearchResults.ScrollBarThickness = 3
+SearchResults.CanvasSize = UDim2.new(0, 0, 0, 0)
+SearchResults.ScrollBarImageColor3 = _G.Color
+SearchResults.CanvasPosition = Vector2.new(0, 0)
 
-    local ResultsCorner = Instance.new("UICorner")
-    ResultsCorner.CornerRadius = UDim.new(0, 6)
-    ResultsCorner.Parent = SearchResults
+local ResultsCorner = Instance.new("UICorner")
+ResultsCorner.CornerRadius = UDim.new(0, 6)
+ResultsCorner.Parent = SearchResults
 
-    local ResultsStroke = Instance.new("UIStroke")
-    ResultsStroke.Thickness = 1.5
-    ResultsStroke.Color = _G.Color
-    ResultsStroke.Transparency = 0.3
-    ResultsStroke.Parent = SearchResults
+local ResultsStroke = Instance.new("UIStroke")
+ResultsStroke.Thickness = 1.5
+ResultsStroke.Color = _G.Color
+ResultsStroke.Transparency = 0.3
+ResultsStroke.Parent = SearchResults
 
-    local SearchUIList = Instance.new("UIListLayout")
-    SearchUIList.Parent = SearchResults
-    SearchUIList.SortOrder = Enum.SortOrder.LayoutOrder
-    SearchUIList.Padding = UDim.new(0, 3)
+local SearchUIList = Instance.new("UIListLayout")
+SearchUIList.Parent = SearchResults
+SearchUIList.SortOrder = Enum.SortOrder.LayoutOrder
+SearchUIList.Padding = UDim.new(0, 5)
 
-    local ResultsPadding = Instance.new("UIPadding")
-    ResultsPadding.Parent = SearchResults
-    ResultsPadding.PaddingTop = UDim.new(0, 5)
-    ResultsPadding.PaddingLeft = UDim.new(0, 5)
-    ResultsPadding.PaddingRight = UDim.new(0, 5)
-    ResultsPadding.PaddingBottom = UDim.new(0, 5)
+local ResultsPadding = Instance.new("UIPadding")
+ResultsPadding.Parent = SearchResults
+ResultsPadding.PaddingTop = UDim.new(0, 5)
+ResultsPadding.PaddingLeft = UDim.new(0, 5)
+ResultsPadding.PaddingRight = UDim.new(0, 5)
+ResultsPadding.PaddingBottom = UDim.new(0, 5)
 
-    function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, itemObject)
-        table.insert(self.Database, {
-            Category = category,
-            Name = itemName,
-            Tab = tabName,
-            Section = sectionName,
-            Object = itemObject
-        })
-    end
+-- ===== ADD TO DATABASE FUNCTION =====
+function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, itemObject)
+    table.insert(self.Database, {
+        Category = category,
+        Name = itemName,
+        Tab = tabName,
+        Section = sectionName,
+        Object = itemObject
+    })
+end
 
-    function SearchSystem:PerformSearch(query)
-        for _, child in pairs(SearchResults:GetChildren()) do
-            if child:IsA("TextButton") or child:IsA("TextLabel") then
-                if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
-                    child:Destroy()
+
+-- ===== FIX 2: ปรับ ScanItemsInPage =====
+function SearchSystem:ScanItemsInPage(tabName, sectionName, container)
+    for _, item in pairs(container:GetChildren()) do
+        -- หา Section ก่อน (Frame ที่มี SectionContainer)
+        if item:IsA("Frame") and item.Name ~= "Left" and item.Name ~= "Right" then
+            local sectionLabel = item:FindFirstChild("Top") 
+                and item:FindFirstChild("Top"):FindFirstChild("Sectionname")
+            
+            local newSectionName = sectionName
+            if sectionLabel then
+                newSectionName = sectionLabel.Text
+            end
+            
+            -- หา SectionContainer ที่มี items
+            local sectionContainer = item:FindFirstChild("Top") 
+                and item:FindFirstChild("Top"):FindFirstChild("SectionContainer")
+            
+            if sectionContainer then
+                for _, subItem in pairs(sectionContainer:GetChildren()) do
+                    if subItem:IsA("TextButton") or subItem:IsA("ImageButton") then
+                        local itemName = subItem.Name
+                        local itemLabel = subItem:FindFirstChild("TextLabel") 
+                            or subItem:FindFirstChild("Text")
+                        
+                        if itemLabel then
+                            itemName = itemLabel.Text
+                        end
+                        
+                        -- ตรวจสอบประเภท
+                        local category = "Button"
+                        local nameLower = subItem.Name:lower()
+                        
+                        if nameLower:find("toggle") then
+                            category = "Toggle"
+                        elseif nameLower:find("slider") then
+                            category = "Slider"
+                        elseif nameLower:find("dropdown") then
+                            category = "Dropdown"
+                        elseif nameLower:find("multidropdown") then
+                            category = "MultiDropdown"
+                        elseif nameLower:find("textbox") or nameLower:find("text") then
+                            category = "Textbox"
+                        elseif nameLower:find("colorpicker") or nameLower:find("color") then
+                            category = "Colorpicker"
+                        elseif nameLower:find("label") then
+                            category = "Label"
+                        end
+                        
+                        self:AddToDatabase(category, itemName, tabName, newSectionName, subItem)
+                    end
                 end
             end
         end
-        
-        if query == "" or #query < 2 then
-            SearchResults.Visible = false
-            return
-        end
-        
-        query = query:lower()
-        local resultsFound = 0
-        local maxResults = 15
-        
-        for _, item in ipairs(self.Database) do
-            if resultsFound >= maxResults then break end
-            
-            local itemName = item.Name:lower()
-            local tabName = item.Tab:lower()
-            
-            if itemName:find(query, 1, true) or tabName:find(query, 1, true) then
-                resultsFound = resultsFound + 1
-                
-                local ResultButton = Instance.new("TextButton")
-                ResultButton.Parent = SearchResults
-                ResultButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                ResultButton.BorderSizePixel = 0
-                ResultButton.Size = UDim2.new(1, -5, 0, 45)
-                ResultButton.ZIndex = 106
-                ResultButton.Font = Enum.Font.GothamBold
-                ResultButton.Text = ""
-                ResultButton.AutoButtonColor = false
-                
-                local ResultCorner = Instance.new("UICorner")
-                ResultCorner.CornerRadius = UDim.new(0, 4)
-                ResultCorner.Parent = ResultButton
-                
-                local CategoryIcon = Instance.new("TextLabel")
-                CategoryIcon.Parent = ResultButton
-                CategoryIcon.BackgroundTransparency = 1
-                CategoryIcon.Position = UDim2.new(0, 5, 0, 2)
-                CategoryIcon.Size = UDim2.new(0, 20, 0, 12)
-                CategoryIcon.ZIndex = 107
-                CategoryIcon.Font = Enum.Font.GothamBold
-                CategoryIcon.TextColor3 = _G.Color
-                CategoryIcon.TextSize = 10
-                CategoryIcon.TextXAlignment = Enum.TextXAlignment.Left
-                
-                local icons = {
-                    Toggle = "☑", Button = "🔘", Slider = "🎚",
-                    Dropdown = "📋", MultiDropdown = "📋",
-                    Textbox = "📝", Label = "📄"
-                }
-                CategoryIcon.Text = icons[item.Category] or "•"
-                
-                local CategoryLabel = Instance.new("TextLabel")
-                CategoryLabel.Parent = ResultButton
-                CategoryLabel.BackgroundTransparency = 1
-                CategoryLabel.Position = UDim2.new(0, 25, 0, 2)
-                CategoryLabel.Size = UDim2.new(1, -30, 0, 12)
-                CategoryLabel.ZIndex = 107
-                CategoryLabel.Font = Enum.Font.GothamBold
-                CategoryLabel.Text = item.Category
-                CategoryLabel.TextColor3 = _G.Color
-                CategoryLabel.TextSize = 9
-                CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
-                
-                local NameLabel = Instance.new("TextLabel")
-                NameLabel.Parent = ResultButton
-                NameLabel.BackgroundTransparency = 1
-                NameLabel.Position = UDim2.new(0, 5, 0, 16)
-                NameLabel.Size = UDim2.new(1, -10, 0, 14)
-                NameLabel.ZIndex = 107
-                NameLabel.Font = Enum.Font.GothamBold
-                NameLabel.Text = item.Name
-                NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                NameLabel.TextSize = 11
-                NameLabel.TextXAlignment = Enum.TextXAlignment.Left
-                NameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-                
-                local PathLabel = Instance.new("TextLabel")
-                PathLabel.Parent = ResultButton
-                PathLabel.BackgroundTransparency = 1
-                PathLabel.Position = UDim2.new(0, 5, 0, 30)
-                PathLabel.Size = UDim2.new(1, -10, 0, 12)
-                PathLabel.ZIndex = 107
-                PathLabel.Font = Enum.Font.Gotham
-                PathLabel.Text = "📂 " .. item.Tab .. " > " .. item.Section
-                PathLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
-                PathLabel.TextSize = 8
-                PathLabel.TextXAlignment = Enum.TextXAlignment.Left
-                PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
-                
-                ResultButton.MouseEnter:Connect(function()
-                    TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-                        {BackgroundColor3 = Color3.fromRGB(40, 40, 40)}):Play()
-                end)
-                
-                ResultButton.MouseLeave:Connect(function()
-                    TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-                        {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-                end)
-                
-                ResultButton.MouseButton1Click:Connect(function()
-                    SearchSystem:NavigateToItem(item)
-                    SearchBox.Text = ""
-                    SearchResults.Visible = false
-                end)
-            end
-        end
-        
-        if resultsFound > 0 then
-            local maxHeight = math.min(resultsFound * 50, 280)
-            SearchResults.Size = UDim2.new(0, 155, 0, maxHeight)
-            SearchResults.Visible = true
-            SearchResults.CanvasSize = UDim2.new(0, 0, 0, resultsFound * 50 + 10)
-        else
-            local NoResults = Instance.new("TextLabel")
-            NoResults.Parent = SearchResults
-            NoResults.BackgroundTransparency = 1
-            NoResults.Size = UDim2.new(1, 0, 0, 50)
-            NoResults.ZIndex = 106
-            NoResults.Font = Enum.Font.GothamBold
-            NoResults.Text = "No results found\n😔"
-            NoResults.TextColor3 = Color3.fromRGB(150, 150, 150)
-            NoResults.TextSize = 11
-            
-            SearchResults.Size = UDim2.new(0, 155, 0, 60)
-            SearchResults.Visible = true
+    end
+end
+
+
+
+-- ===== 3️⃣ PERFORM SEARCH FUNCTION =====
+local searchDebounce = false
+
+function SearchSystem:PerformSearch(query)
+    if searchDebounce then return end
+    searchDebounce = true
+    task.wait(0.1)
+    
+    for _, child in pairs(SearchResults:GetChildren()) do
+        if child:IsA("TextButton") or child:IsA("TextLabel") then
+            child:Destroy()
         end
     end
+    
+    if query == "" or #query < 1 then
+        SearchResults.Visible = false
+        searchDebounce = false
+        return
+    end
+    
+    query = query:lower()
+    local resultsFound = 0
+    local maxResults = 12
+    
+    for _, item in ipairs(self.Database) do
+        if resultsFound >= maxResults then break end
+        
+        local itemName = item.Name:lower()
+        local tabName = item.Tab:lower()
+        local sectionName = (item.Section or ""):lower()
+        
+        if itemName:find(query, 1, true) or 
+           tabName:find(query, 1, true) or
+           sectionName:find(query, 1, true) then
+            resultsFound = resultsFound + 1
+            
+            local ResultButton = Instance.new("TextButton")
+            ResultButton.Parent = SearchResults
+            ResultButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            ResultButton.BorderSizePixel = 0
+            ResultButton.Size = UDim2.new(1, -5, 0, 50)
+            ResultButton.ZIndex = 106
+            ResultButton.Font = Enum.Font.GothamBold
+            ResultButton.Text = ""
+            ResultButton.AutoButtonColor = false
+            
+            local ResultCorner = Instance.new("UICorner")
+            ResultCorner.CornerRadius = UDim.new(0, 4)
+            ResultCorner.Parent = ResultButton
+            
+            local CategoryIcon = Instance.new("TextLabel")
+            CategoryIcon.Parent = ResultButton
+            CategoryIcon.BackgroundTransparency = 1
+            CategoryIcon.Position = UDim2.new(0, 5, 0, 3)
+            CategoryIcon.Size = UDim2.new(0, 15, 0, 15)
+            CategoryIcon.ZIndex = 107
+            CategoryIcon.Font = Enum.Font.GothamBold
+            CategoryIcon.TextColor3 = _G.Color
+            CategoryIcon.TextSize = 12
+            CategoryIcon.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local icons = {
+                Toggle = "☑", Button = "🔘", Slider = "🎚",
+                Dropdown = "📋", MultiDropdown = "📋",
+                Textbox = "📝", Label = "📄", Colorpicker = "🎨"
+            }
+            CategoryIcon.Text = icons[item.Category] or "•"
+            
+            local CategoryLabel = Instance.new("TextLabel")
+            CategoryLabel.Parent = ResultButton
+            CategoryLabel.BackgroundTransparency = 1
+            CategoryLabel.Position = UDim2.new(0, 22, 0, 3)
+            CategoryLabel.Size = UDim2.new(1, -27, 0, 12)
+            CategoryLabel.ZIndex = 107
+            CategoryLabel.Font = Enum.Font.GothamBold
+            CategoryLabel.Text = item.Category
+            CategoryLabel.TextColor3 = _G.Color
+            CategoryLabel.TextSize = 10
+            CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
+            CategoryLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            local NameLabel = Instance.new("TextLabel")
+            NameLabel.Parent = ResultButton
+            NameLabel.BackgroundTransparency = 1
+            NameLabel.Position = UDim2.new(0, 5, 0, 16)
+            NameLabel.Size = UDim2.new(1, -10, 0, 15)
+            NameLabel.ZIndex = 107
+            NameLabel.Font = Enum.Font.GothamBold
+            NameLabel.Text = item.Name
+            NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            NameLabel.TextSize = 12
+            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            NameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            local PathLabel = Instance.new("TextLabel")
+            PathLabel.Parent = ResultButton
+            PathLabel.BackgroundTransparency = 1
+            PathLabel.Position = UDim2.new(0, 5, 0, 32)
+            PathLabel.Size = UDim2.new(1, -10, 0, 13)
+            PathLabel.ZIndex = 107
+            PathLabel.Font = Enum.Font.Gotham
+            PathLabel.Text = item.Tab .. (item.Section ~= "" and " > " .. item.Section or "")
+            PathLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+            PathLabel.TextSize = 9
+            PathLabel.TextXAlignment = Enum.TextXAlignment.Left
+            PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            ResultButton.MouseEnter:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+            end)
+            
+            ResultButton.MouseLeave:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+            end)
+            
+            ResultButton.MouseButton1Click:Connect(function()
+                SearchSystem:NavigateToItem(item)
+                task.wait(0.2)
+                SearchBox.Text = ""
+                SearchResults.Visible = false
+            end)
+        end
+    end
+    
+    if resultsFound > 0 then
+        local maxHeight = math.min(resultsFound * 55 + 10, 300)
+        SearchResults.Size = UDim2.new(0, 155, 0, maxHeight)
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, resultsFound * 55 + 10)
+        SearchResults.Visible = true
+        SearchResults.CanvasPosition = Vector2.new(0, 0)
+    else
+        local NoResults = Instance.new("TextLabel")
+        NoResults.Parent = SearchResults
+        NoResults.BackgroundTransparency = 1
+        NoResults.Size = UDim2.new(1, 0, 0, 60)
+        NoResults.ZIndex = 106
+        NoResults.Font = Enum.Font.GothamBold
+        NoResults.Text = "No results\nfound 😔"
+        NoResults.TextColor3 = Color3.fromRGB(150, 150, 150)
+        NoResults.TextSize = 11
+        NoResults.TextYAlignment = Enum.TextYAlignment.Center
+        
+        SearchResults.Size = UDim2.new(0, 155, 0, 70)
+        SearchResults.Visible = true
+    end
+    
+    searchDebounce = false
+end
 
-    function SearchSystem:NavigateToItem(item)
-        for _, tab in pairs(TabContainer:GetChildren()) do
-            if tab:IsA("TextButton") and tab:FindFirstChild("TextLabel") then
-                local tabText = tab.TextLabel.Text:gsub(" ", "")
-                if tabText:lower():find(item.Tab:lower(), 1, true) then
-                    for _, x in next, TabContainer:GetChildren() do
-                        if x.Name == "Tab" then
-                            if x.TextLabel then
-                                TweenService:Create(x.TextLabel, TweenInfo.new(0), {TextTransparency = 0.2}):Play()
-                            end
-                            if x.ImageLabel then
-                                TweenService:Create(x.ImageLabel, TweenInfo.new(0), {ImageTransparency = 0.2}):Play()
-                            end
-                            if x.FrameTab then
-                                x.FrameTab.Visible = false
+-- ===== FIX 1: ปรับ ScanAllTabs ให้หาได้ =====
+function SearchSystem:ScanAllTabs()
+    
+    for _, tab in pairs(TabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            local textLabel = tab:FindFirstChild("TextLabel")
+            if textLabel then
+                local tabName = textLabel.Text
+                
+                -- Tab -> TabContainer -> TabHolder -> Top -> Main
+                local mainFrame = tab.Parent.Parent.Parent.Parent -- ขึ้นไปหา Main
+                
+                if mainFrame and mainFrame.Name == "Main" then
+                    -- หา Bottom ที่มี Page สำหรับ Tab นี้
+                    local bottomFrame = mainFrame:FindFirstChild("Bottom")
+                    
+                    if bottomFrame then
+                        -- หา Page ที่ตรงกับ Tab
+                        for _, page in pairs(bottomFrame:GetChildren()) do
+                            if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                                self:ScanItemsInPage(tabName, "", page)
                             end
                         end
                     end
+                end
+            end
+        end
+    end
+    
+end
+
+
+
+-- ===== FIX 3: ปรับ NavigateToItem ให้สมบูรณ์ =====
+function SearchSystem:NavigateToItem(item)
+    
+    local foundTab = nil
+    local pageToShow = nil
+    
+    -- หา Tab ที่ตรงกัน
+    for _, tab in pairs(TabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            local textLabel = tab:FindFirstChild("TextLabel")
+            if textLabel then
+                local fullText = textLabel.Text:gsub(" ", ""):lower()
+                local searchTab = item.Tab:lower()
+                
+                if fullText == searchTab or fullText:find(searchTab, 1, true) then
+                    foundTab = tab
                     
-                    if tab.TextLabel then
-                        TweenService:Create(tab.TextLabel, TweenInfo.new(0), {TextTransparency = 0}):Play()
-                    end
-                    if tab.ImageLabel then
-                        TweenService:Create(tab.ImageLabel, TweenInfo.new(0), {ImageTransparency = 0}):Play()
-                    end
-                    if tab.FrameTab then
-                        tab.FrameTab.Visible = true
-                        TweenService:Create(tab.FrameTab, TweenInfo.new(0), {Size = UDim2.new(0, 50, 0, 1)}):Play()
-                    end
-                    
-                    for _, page in pairs(Bottom:GetChildren()) do
-                        if page.Name == "Page" then
-                            page.Visible = true
-                            page.Position = UDim2.new(0,0,0,0)
+                    -- หา Page ที่ตรงกัน
+                    local mainFrame = tab.Parent.Parent.Parent.Parent
+                    if mainFrame and mainFrame.Name == "Main" then
+                        local bottomFrame = mainFrame:FindFirstChild("Bottom")
+                        if bottomFrame then
+                            for _, page in pairs(bottomFrame:GetChildren()) do
+                                if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                                    pageToShow = page
+                                    break
+                                end
+                            end
                         end
                     end
-                    
                     break
                 end
             end
         end
-        
-        if item.Object and item.Object.Parent then
-            local obj = item.Object
-            local originalColor = obj.BackgroundColor3
-            
-            for i = 1, 3 do
-                task.spawn(function()
-                    wait(i * 0.3)
-                    TweenService:Create(obj, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
-                        {BackgroundColor3 = _G.Color}):Play()
-                    wait(0.2)
-                    TweenService:Create(obj, TweenInfo.new(0.2, Enum.EasingStyle.Quad),
-                        {BackgroundColor3 = originalColor}):Play()
-                end)
-            end
-            
-            local scrollFrame = obj.Parent
-            while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
-                scrollFrame = scrollFrame.Parent
-            end
-            
-            if scrollFrame then
-                local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
-                TweenService:Create(scrollFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quad),
-                    {CanvasPosition = Vector2.new(0, math.max(0, itemPosition - 50))}):Play()
-            end
-        end
-        
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "🔍 Search",
-            Text = "Found: " .. item.Name,
-            Duration = 2,
-        })
+    end
+    
+    if not foundTab then
+        return
+    end
+    
+    foundTab.MouseButton1Click:Connect(function() end)
+    foundTab:TweenPosition(foundTab.Position, "Out", "Quad", 0.2, true)
+    
+    task.wait(0.6)
+    
+    -- ตรวจสอบ Object
+    if not item.Object then
+        return
+    end
+    
+    if not item.Object.Parent then
+        return
+    end
+    
+    local obj = item.Object
+    
+    local originalColor = obj.BackgroundColor3
+
+    for i = 1, 3 do
+        task.spawn(function()
+            task.wait(i * 0.25)
+            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = _G.Color}):Play()
+            task.wait(0.15)
+            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = originalColor}):Play()
+        end)
+    end
+    
+    -- Auto scroll
+    task.wait(0.3)
+    local scrollFrame = obj.Parent
+    while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
+        scrollFrame = scrollFrame.Parent
+    end
+    
+    if scrollFrame then
+        local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
+        local targetCanvasY = math.max(0, itemPosition - 50)
+        TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {CanvasPosition = Vector2.new(0, targetCanvasY)}):Play()
+    else
+        print("⚠️ [!] ScrollingFrame not found")
     end
 
-    SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-        SearchSystem:PerformSearch(SearchBox.Text)
-    end)
+end
 
-    SearchBox.Focused:Connect(function()
-        TweenService:Create(SearchStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-            {Transparency = 0, Thickness = 2}):Play()
-        TweenService:Create(SearchIcon, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-            {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-    end)
-
-    SearchBox.FocusLost:Connect(function()
-        TweenService:Create(SearchStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-            {Transparency = 0.5, Thickness = 1.5}):Play()
-        TweenService:Create(SearchIcon, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
-            {ImageColor3 = _G.Color}):Play()
-        
-        task.wait(0.2)
-        if not SearchBox:IsFocused() then
-            SearchResults.Visible = false
+function SearchSystem:PerformSearch(query)
+    if searchDebounce then return end
+    searchDebounce = true
+    task.wait(0.1)
+    
+    -- Clear old results
+    for _, child in pairs(SearchResults:GetChildren()) do
+        if child:IsA("TextButton") or child:IsA("TextLabel") then
+            child:Destroy()
         end
-    end)
+    end
+    
+    if query == "" or #query < 1 then
+        SearchResults.Visible = false
+        searchDebounce = false
+        return
+    end
+    
+    query = query:lower()
+    local resultsFound = 0
+    local maxResults = 12
+    
+    for _, item in ipairs(self.Database) do
+        if resultsFound >= maxResults then break end
+        
+        local itemName = item.Name:lower()
+        local tabName = item.Tab:lower()
+        local sectionName = (item.Section or ""):lower()
+        
+        -- Improved search: match name, tab, or section
+        if itemName:find(query, 1, true) or 
+           tabName:find(query, 1, true) or
+           sectionName:find(query, 1, true) then
+            resultsFound = resultsFound + 1
+            
+            local ResultButton = Instance.new("TextButton")
+            ResultButton.Parent = SearchResults
+            ResultButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            ResultButton.BorderSizePixel = 0
+            ResultButton.Size = UDim2.new(1, -5, 0, 50)
+            ResultButton.ZIndex = 106
+            ResultButton.Font = Enum.Font.GothamBold
+            ResultButton.Text = ""
+            ResultButton.AutoButtonColor = false
+            
+            local ResultCorner = Instance.new("UICorner")
+            ResultCorner.CornerRadius = UDim.new(0, 4)
+            ResultCorner.Parent = ResultButton
+            
+            -- Category Icon
+            local CategoryIcon = Instance.new("TextLabel")
+            CategoryIcon.Parent = ResultButton
+            CategoryIcon.BackgroundTransparency = 1
+            CategoryIcon.Position = UDim2.new(0, 5, 0, 3)
+            CategoryIcon.Size = UDim2.new(0, 15, 0, 15)
+            CategoryIcon.ZIndex = 107
+            CategoryIcon.Font = Enum.Font.GothamBold
+            CategoryIcon.TextColor3 = _G.Color
+            CategoryIcon.TextSize = 12
+            CategoryIcon.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local icons = {
+                Toggle = "☑", Button = "🔘", Slider = "🎚",
+                Dropdown = "📋", MultiDropdown = "📋",
+                Textbox = "📝", Label = "📄", Colorpicker = "🎨"
+            }
+            CategoryIcon.Text = icons[item.Category] or "•"
+            
+            -- Category Label
+            local CategoryLabel = Instance.new("TextLabel")
+            CategoryLabel.Parent = ResultButton
+            CategoryLabel.BackgroundTransparency = 1
+            CategoryLabel.Position = UDim2.new(0, 22, 0, 3)
+            CategoryLabel.Size = UDim2.new(1, -27, 0, 12)
+            CategoryLabel.ZIndex = 107
+            CategoryLabel.Font = Enum.Font.GothamBold
+            CategoryLabel.Text = item.Category
+            CategoryLabel.TextColor3 = _G.Color
+            CategoryLabel.TextSize = 10
+            CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
+            CategoryLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            -- Item Name
+            local NameLabel = Instance.new("TextLabel")
+            NameLabel.Parent = ResultButton
+            NameLabel.BackgroundTransparency = 1
+            NameLabel.Position = UDim2.new(0, 5, 0, 16)
+            NameLabel.Size = UDim2.new(1, -10, 0, 15)
+            NameLabel.ZIndex = 107
+            NameLabel.Font = Enum.Font.GothamBold
+            NameLabel.Text = item.Name
+            NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            NameLabel.TextSize = 12
+            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            NameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            -- Path Label
+            local PathLabel = Instance.new("TextLabel")
+            PathLabel.Parent = ResultButton
+            PathLabel.BackgroundTransparency = 1
+            PathLabel.Position = UDim2.new(0, 5, 0, 32)
+            PathLabel.Size = UDim2.new(1, -10, 0, 13)
+            PathLabel.ZIndex = 107
+            PathLabel.Font = Enum.Font.Gotham
+            PathLabel.Text = item.Tab .. (item.Section ~= "" and " > " .. item.Section or "")
+            PathLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+            PathLabel.TextSize = 9
+            PathLabel.TextXAlignment = Enum.TextXAlignment.Left
+            PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            ResultButton.MouseEnter:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+            end)
+            
+            ResultButton.MouseLeave:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+            end)
+            
+            ResultButton.MouseButton1Click:Connect(function()
+                SearchSystem:NavigateToItem(item)
+                task.wait(0.2)
+                SearchBox.Text = ""
+                SearchResults.Visible = false
+            end)
+        end
+    end
+    
+    if resultsFound > 0 then
+        local maxHeight = math.min(resultsFound * 55 + 10, 300)
+        SearchResults.Size = UDim2.new(0, 155, 0, maxHeight)
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, resultsFound * 55 + 10)
+        SearchResults.Visible = true
+        SearchResults.CanvasPosition = Vector2.new(0, 0)
+    else
+        local NoResults = Instance.new("TextLabel")
+        NoResults.Parent = SearchResults
+        NoResults.BackgroundTransparency = 1
+        NoResults.Size = UDim2.new(1, 0, 0, 60)
+        NoResults.ZIndex = 106
+        NoResults.Font = Enum.Font.GothamBold
+        NoResults.Text = "No results\nfound 😔"
+        NoResults.TextColor3 = Color3.fromRGB(150, 150, 150)
+        NoResults.TextSize = 11
+        NoResults.TextYAlignment = Enum.TextYAlignment.Center
+        
+        SearchResults.Size = UDim2.new(0, 155, 0, 70)
+        SearchResults.Visible = true
+    end
+    
+    searchDebounce = false
+end
 
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed then
-            if input.KeyCode == Enum.KeyCode.F and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-                SearchBox:CaptureFocus()
-            elseif input.KeyCode == Enum.KeyCode.Escape and SearchBox:IsFocused() then
+
+
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    SearchSystem:PerformSearch(SearchBox.Text)
+end)
+
+SearchBox.Focused:Connect(function()
+    TweenService:Create(SearchStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
+        {Transparency = 0, Thickness = 2}):Play()
+    TweenService:Create(SearchIcon, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
+        {ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+end)
+
+SearchBox.FocusLost:Connect(function()
+    TweenService:Create(SearchStroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
+        {Transparency = 0.5, Thickness = 1.5}):Play()
+    TweenService:Create(SearchIcon, TweenInfo.new(0.3, Enum.EasingStyle.Quad), 
+        {ImageColor3 = _G.Color}):Play()
+    
+    task.wait(0.2)
+    if not SearchBox:IsFocused() then
+        SearchResults.Visible = false
+        SearchBox.Text = ""
+    end
+end)
+
+-- Click outside to close search results
+game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.F and game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode.LeftControl) then
+            SearchBox:CaptureFocus()
+        elseif input.KeyCode == Enum.KeyCode.Escape then
+            if SearchBox:IsFocused() then
                 SearchBox:ReleaseFocus()
                 SearchBox.Text = ""
                 SearchResults.Visible = false
             end
         end
-    end)
-
+    end
+end)
     -- ==========================================
     -- REST OF UI CODE
     -- ==========================================
@@ -1074,6 +1348,7 @@ function VectorHub:Evil()
         local Name = options.Name
         CurrentTabName = Name  -- 🔥 บันทึก Tab Name
         
+		local TabReference = nil
         local FrameTab = Instance.new("Frame")
         local Tab2 = Instance.new("Frame")
         local Tab = Instance.new("TextButton")
@@ -1369,20 +1644,28 @@ function VectorHub:Evil()
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
         end)
-
--- 🔥 Helper Function สำหรับ Register
-    local function RegisterComponent(category, name, object)
-        pcall(function()
-            local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
-            SearchSystem:AddToDatabase(
-                category,
-                cleanName,
-                CurrentTabName,
-                CurrentSectionName,
-                object
-            )
-        end)
-    end
+local function RegisterComponent(category, name, object)
+    pcall(function()
+        if not object then
+            return
+        end
+        
+        if not object.Parent then
+            return
+        end
+        
+        local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
+        
+        
+        SearchSystem:AddToDatabase(
+            category,
+            cleanName,
+            CurrentTabName,
+            CurrentSectionName,
+            object
+        )
+    end)
+end
     local ColorDependents = {}
     -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
     local function UpdateColorDependents(newColor)
@@ -2039,9 +2322,8 @@ function functionitem:Textbox(...)
     
     return
 end
-
 -- ==========================================
--- 🔥 Dropdown Function
+-- 🔥 IMPROVED Dropdown Function
 -- ==========================================
 function functionitem:Dropdown(...)
     local options = ParseArguments(...)
@@ -2052,22 +2334,24 @@ function functionitem:Dropdown(...)
 
     local Dropfunc = {}
     local currentValue = default
-    local selectedButton = nil -- เก็บปุ่มที่เลือก
+    local selectedButton = nil
 
-    -- === GUI ===
+    -- === MAIN CONTAINER ===
     local MainDropDown = Instance.new("Frame")
     local UICorner_7 = Instance.new("UICorner")
-    local MainDropDown_2 = Instance.new("Frame")
+    local Header = Instance.new("Frame")
     local UICorner_8 = Instance.new("UICorner")
-    local v = Instance.new("TextButton")
-    local TextLabel = Instance.new("TextLabel")
-    local ImageButton = Instance.new("ImageButton")
+    local ClickArea = Instance.new("TextButton")
+    local NameLabel = Instance.new("TextLabel")
+    local ValueLabel = Instance.new("TextLabel")
+    local Arrow = Instance.new("ImageButton")
     local SearchBox = Instance.new("TextBox")
-    local SearchBoxCorner = Instance.new("UICorner")
+    local SearchCorner = Instance.new("UICorner")
     local Scroll_Items = Instance.new("ScrollingFrame")
-    local UIListLayout_3 = Instance.new("UIListLayout")
-    local UIPadding_3 = Instance.new("UIPadding")
+    local UIListLayout = Instance.new("UIListLayout")
+    local UIPadding = Instance.new("UIPadding")
 
+    -- === Setup Container ===
     MainDropDown.Name = Name
     MainDropDown.Parent = SectionContainer
     MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -2077,79 +2361,85 @@ function functionitem:Dropdown(...)
     MainDropDown.Size = UDim2.new(0, 265, 0, 35)
     MainDropDown.ZIndex = 16
 
-    local UIStroke96 = Instance.new("UIStroke")
-    UIStroke96.Thickness = 1.2
-    UIStroke96.Parent = MainDropDown
-    UIStroke96.Color = _G.Color
-    UIStroke96.Transparency = 1
-    UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
+    local BorderStroke = Instance.new("UIStroke")
+    BorderStroke.Thickness = 1.2
+    BorderStroke.Parent = MainDropDown
+    BorderStroke.Color = _G.Color
+    BorderStroke.Transparency = 1
+    BorderStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    BorderStroke.LineJoinMode = Enum.LineJoinMode.Round
 
     MainDropDown.MouseEnter:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 0.1}):Play()
+        TweenService:Create(BorderStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Transparency = 0.1}):Play()
     end)
     MainDropDown.MouseLeave:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4), {Transparency = 1}):Play()
+        TweenService:Create(BorderStroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Transparency = 1}):Play()
     end)
 
     UICorner_7.CornerRadius = UDim.new(0, 4)
     UICorner_7.Parent = MainDropDown
 
-    MainDropDown_2.Name = "Header"
-    MainDropDown_2.Parent = MainDropDown
-    MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-    MainDropDown_2.BackgroundTransparency = 0.7
-    MainDropDown_2.Size = UDim2.new(1, 0, 0, 35)
-    MainDropDown_2.ZIndex = 16
+    -- === Header Frame ===
+    Header.Name = "Header"
+    Header.Parent = MainDropDown
+    Header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    Header.BackgroundTransparency = 0.7
+    Header.Size = UDim2.new(1, 0, 0, 35)
+    Header.ZIndex = 16
 
     UICorner_8.CornerRadius = UDim.new(0, 4)
-    UICorner_8.Parent = MainDropDown_2
+    UICorner_8.Parent = Header
 
-    v.Name = "ClickArea"
-    v.Parent = MainDropDown_2
-    v.BackgroundTransparency = 1
-    v.Size = UDim2.new(1, 0, 1, 0)
-    v.ZIndex = 16
-    v.AutoButtonColor = false
-    v.Text = ""
+    ClickArea.Name = "ClickArea"
+    ClickArea.Parent = Header
+    ClickArea.BackgroundTransparency = 1
+    ClickArea.Size = UDim2.new(1, 0, 1, 0)
+    ClickArea.ZIndex = 16
+    ClickArea.AutoButtonColor = false
+    ClickArea.Text = ""
 
-    TextLabel.Name = "DisplayText"
-    TextLabel.Parent = MainDropDown
-    TextLabel.BackgroundTransparency = 1
-    TextLabel.Size = UDim2.new(0.5, -20, 0, 35)
-    TextLabel.Position = UDim2.new(0, 10, 0, 0)
-    TextLabel.ZIndex = 16
-    TextLabel.Font = Enum.Font.GothamBold
-    TextLabel.Text = Name
-    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    TextLabel.TextSize = 13
-    TextLabel.TextXAlignment = Enum.TextXAlignment.Left
-    TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-    TextLabel.TextTransparency = 0.2
+    -- === Name Label (Left Side) ===
+    NameLabel.Name = "NameLabel"
+    NameLabel.Parent = Header
+    NameLabel.BackgroundTransparency = 1
+    NameLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    NameLabel.Position = UDim2.new(0, 10, 0, 0)
+    NameLabel.ZIndex = 16
+    NameLabel.Font = Enum.Font.GothamBold
+    NameLabel.Text = Name
+    NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    NameLabel.TextSize = 13
+    NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    NameLabel.TextYAlignment = Enum.TextYAlignment.Center
+    NameLabel.TextTransparency = 0.2
 
-    local ValueText = Instance.new("TextLabel")
-    ValueText.Name = "ValueText"
-    ValueText.Parent = MainDropDown
-    ValueText.BackgroundTransparency = 1
-    ValueText.Size = UDim2.new(0.5, -20, 0, 35)
-    ValueText.Position = UDim2.new(0.5, 10, 0, 0)
-    ValueText.ZIndex = 16
-    ValueText.Font = Enum.Font.GothamBold
-    ValueText.Text = default
-    ValueText.TextColor3 = Color3.fromRGB(0, 200, 200)
-    ValueText.TextSize = 13
-    ValueText.TextXAlignment = Enum.TextXAlignment.Left
-    ValueText.TextYAlignment = Enum.TextYAlignment.Center
-    ValueText.ClipsDescendants = true
+    -- === Value Label (Right Side) ===
+    ValueLabel.Name = "ValueLabel"
+    ValueLabel.Parent = Header
+    ValueLabel.BackgroundTransparency = 1
+    ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
+    ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
+    ValueLabel.ZIndex = 16
+    ValueLabel.Font = Enum.Font.GothamBold
+    ValueLabel.Text = (default ~= "") and default or "Select..."
+    ValueLabel.TextColor3 = (default ~= "") and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(150, 150, 150)
+    ValueLabel.TextSize = 13
+    ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ValueLabel.TextYAlignment = Enum.TextYAlignment.Center
+    ValueLabel.ClipsDescendants = true
+    ValueLabel.TextTruncate = Enum.TextTruncate.AtEnd
 
-    ImageButton.Parent = MainDropDown_2
-    ImageButton.BackgroundTransparency = 1
-    ImageButton.Position = UDim2.new(1, -25, 0.5, 0)
-    ImageButton.AnchorPoint = Vector2.new(1, 0.5)
-    ImageButton.Size = UDim2.new(0, 13, 0, 13)
-    ImageButton.ZIndex = 16
-    ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
+    -- === Arrow Button ===
+    Arrow.Parent = Header
+    Arrow.BackgroundTransparency = 1
+    Arrow.AnchorPoint = Vector2.new(1, 0.5)
+    Arrow.Position = UDim2.new(1, -10, 0.5, 0)
+    Arrow.Size = UDim2.new(0, 13, 0, 13)
+    Arrow.ZIndex = 16
+    Arrow.Image = "http://www.roblox.com/asset/?id=6282522798"
+    Arrow.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
+    -- === Search Box ===
     SearchBox.Name = "SearchBox"
     SearchBox.Parent = MainDropDown
     SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -2157,7 +2447,7 @@ function functionitem:Dropdown(...)
     SearchBox.Size = UDim2.new(0, 245, 0, 30)
     SearchBox.ZIndex = 17
     SearchBox.Font = Enum.Font.GothamBold
-    SearchBox.PlaceholderText = "Search..."
+    SearchBox.PlaceholderText = "🔍 Search..."
     SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     SearchBox.Text = ""
     SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2169,8 +2459,8 @@ function functionitem:Dropdown(...)
     SearchPadding.Parent = SearchBox
     SearchPadding.PaddingLeft = UDim.new(0, 10)
 
-    SearchBoxCorner.CornerRadius = UDim.new(0, 4)
-    SearchBoxCorner.Parent = SearchBox
+    SearchCorner.CornerRadius = UDim.new(0, 4)
+    SearchCorner.Parent = SearchBox
 
     local SearchStroke = Instance.new("UIStroke")
     SearchStroke.Thickness = 1
@@ -2178,6 +2468,7 @@ function functionitem:Dropdown(...)
     SearchStroke.Color = _G.Color
     SearchStroke.Transparency = 0.5
 
+    -- === Scroll Items ===
     Scroll_Items.Name = "Items"
     Scroll_Items.Parent = MainDropDown
     Scroll_Items.BackgroundTransparency = 1
@@ -2189,28 +2480,32 @@ function functionitem:Dropdown(...)
     Scroll_Items.Visible = false
     Scroll_Items.ZIndex = 17
 
-    UIListLayout_3.Parent = Scroll_Items
-    UIListLayout_3.Padding = UDim.new(0, 5)
-    UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 10)
+    UIListLayout.Parent = Scroll_Items
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Padding = UDim.new(0, 5)
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
     end)
 
-    UIPadding_3.Parent = Scroll_Items
-    UIPadding_3.PaddingLeft = UDim.new(0, 10)
-    UIPadding_3.PaddingTop = UDim.new(0, 5)
+    UIPadding.Parent = Scroll_Items
+    UIPadding.PaddingLeft = UDim.new(0, 10)
+    UIPadding.PaddingTop = UDim.new(0, 5)
 
+    -- === Toggle Panel ===
     local isOpen = false
     function Dropfunc:TogglePanel(state)
         isOpen = state
-        TweenService:Create(MainDropDown, TweenInfo.new(0.2), {
+        TweenService:Create(MainDropDown, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)
         }):Play()
-        TweenService:Create(ImageButton, TweenInfo.new(0.2), {
+        
+        TweenService:Create(Arrow, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
             Rotation = state and 180 or 0
         }):Play()
 
         SearchBox.Visible = state
         Scroll_Items.Visible = state
+        
         if state then
             task.wait(0.1)
             SearchBox:CaptureFocus()
@@ -2220,9 +2515,15 @@ function functionitem:Dropdown(...)
         end
     end
 
-    v.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
-    ImageButton.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
+    ClickArea.MouseButton1Click:Connect(function()
+        Dropfunc:TogglePanel(not isOpen)
+    end)
 
+    Arrow.MouseButton1Click:Connect(function()
+        Dropfunc:TogglePanel(not isOpen)
+    end)
+
+    -- === Filter Items ===
     function Dropfunc:FilterItems(query)
         query = query:lower()
         for _, item in Scroll_Items:GetChildren() do
@@ -2232,10 +2533,12 @@ function functionitem:Dropdown(...)
             end
         end
     end
+
     SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         Dropfunc:FilterItems(SearchBox.Text)
     end)
 
+    -- === Add Item ===
     function Dropfunc:Add(Text)
         local btn = Instance.new("TextButton")
         local corner = Instance.new("UICorner")
@@ -2245,12 +2548,13 @@ function functionitem:Dropdown(...)
         btn.Parent = Scroll_Items
         btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         btn.Size = UDim2.new(1, -10, 0, 30)
+        btn.ZIndex = 17
         btn.Font = Enum.Font.GothamBold
         btn.Text = Text
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 12
         btn.AutoButtonColor = false
-        btn.ZIndex = 17
+        btn.TextTruncate = Enum.TextTruncate.AtEnd
 
         corner.CornerRadius = UDim.new(0, 4)
         corner.Parent = btn
@@ -2259,59 +2563,127 @@ function functionitem:Dropdown(...)
         stroke.Parent = btn
         stroke.Color = _G.Color
         stroke.Transparency = 1
+        stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        stroke.LineJoinMode = Enum.LineJoinMode.Round
 
         btn.MouseEnter:Connect(function()
-            TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 0.1}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Transparency = 0.1}):Play()
+            if btn.TextColor3 ~= Color3.fromRGB(0, 200, 200) then
+                TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+                    BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+                }):Play()
+            end
         end)
+
         btn.MouseLeave:Connect(function()
-            TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
+            TweenService:Create(stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {Transparency = 1}):Play()
+            if btn.TextColor3 ~= Color3.fromRGB(0, 200, 200) then
+                TweenService:Create(btn, TweenInfo.new(0.3, Enum.EasingStyle.Quad), {
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+            end
         end)
 
         btn.MouseButton1Click:Connect(function()
-            -- รีเซ็ตสีเก่า
-            if selectedButton then
-                TweenService:Create(selectedButton, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+            -- Check if clicking same button again (toggle off)
+            if selectedButton == btn then
+                -- Deselect
+                TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+                
+                currentValue = ""
+                selectedButton = nil
+                ValueLabel.Text = "None"
+                ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+                
+                pcall(Callback, "")
+                task.wait(0.1)
+                Dropfunc:TogglePanel(false)
+                return
             end
 
-            -- ตั้งค่าใหม่
+            -- Reset old button
+            if selectedButton then
+                TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+            end
+
+            -- Set new value
             currentValue = Text
-            ValueText.Text = Text
             selectedButton = btn
-            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
             
-            Callback(Text)
+            -- Update display
+            ValueLabel.Text = Text
+            ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
+            
+            -- Highlight selected
+            TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                TextColor3 = Color3.fromRGB(0, 200, 200),
+                BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+            }):Play()
+            
+            pcall(Callback, Text)
+            task.wait(0.1)
             Dropfunc:TogglePanel(false)
         end)
 
-        -- ตั้งค่า default
+        -- Set default
         if Text == default then
-            TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+            btn.TextColor3 = Color3.fromRGB(0, 200, 200)
+            btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
             selectedButton = btn
         end
     end
 
+    -- === Add all items ===
     for _, item in ipairs(list) do
         Dropfunc:Add(item)
     end
 
-    ValueText.Text = default
+    -- === Initialize ===
     if default ~= "" then
-        Callback(default)
+        pcall(Callback, default)
     end
 
+    -- === External Functions ===
     function Dropfunc:Update(value)
-        if table.find(list, value) then
+        if value == "" or value == nil then
+            -- Clear selection
+            if selectedButton then
+                TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+            end
+            currentValue = ""
+            ValueLabel.Text = "None"
+            ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+            selectedButton = nil
+            pcall(Callback, "")
+        elseif table.find(list, value) then
             currentValue = value
-            ValueText.Text = value
-            Callback(value)
+            ValueLabel.Text = value
+            ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
+            pcall(Callback, value)
             
+            -- Update button colors
             for _, btn in Scroll_Items:GetChildren() do
                 if btn:IsA("TextButton") then
                     if btn.Text == value then
-                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+                        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                            TextColor3 = Color3.fromRGB(0, 200, 200),
+                            BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+                        }):Play()
                         selectedButton = btn
                     else
-                        TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+                        TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                            TextColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                        }):Play()
                     end
                 end
             end
@@ -2328,46 +2700,57 @@ function functionitem:Dropdown(...)
                 btn:Destroy()
             end
         end
-        
         currentValue = ""
-        ValueText.Text = ""
+        ValueLabel.Text = "Select..."
+        ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
         SearchBox.Text = ""
         selectedButton = nil
-        
-        Callback("")
+        pcall(Callback, "")
+    end
+
+    function Dropfunc:SetList(newList)
+        Dropfunc:Clear()
+        list = newList
+        for _, item in ipairs(list) do
+            Dropfunc:Add(item)
+        end
     end
 
     RegisterComponent("Dropdown", Name, MainDropDown)
     return Dropfunc
 end
 -- ==========================================
--- 🔥 MultiDropdown Function
+-- 🔥 IMPROVED MultiDropdown Function
 -- ==========================================
 function functionitem:MultiDropdown(...)
     local options = ParseArguments(...)
     local Name = options.Name or "MultiDropdown"
-    local default = options.Value or {}  -- { "Sword", "Axe" }
+    local default = options.Value or {}
     local list = options.List or {}
     local Callback = options.Callback or function() end
 
     local Dropfunc = {}
-    local selected = {}  -- เก็บค่าที่เลือก
+    local selected = {}
 
-    -- โหลด default จาก SaveSettings
-    for _, v in ipairs(default) do
-        if not table.find(selected, v) then
-            table.insert(selected, v)
+    -- Load defaults
+    if type(default) == "table" then
+        for _, v in ipairs(default) do
+            if not table.find(selected, v) then
+                table.insert(selected, v)
+            end
         end
+    elseif type(default) == "string" and default ~= "" then
+        table.insert(selected, default)
     end
 
-    -- === GUI ===
+    -- === MAIN CONTAINER ===
     local MainDropDown = Instance.new("Frame")
     local UICorner_7 = Instance.new("UICorner")
     local Header = Instance.new("Frame")
     local UICorner_8 = Instance.new("UICorner")
     local ClickArea = Instance.new("TextButton")
-    local NameLabel = Instance.new("TextLabel")  -- ชื่อ
-    local ValueLabel = Instance.new("TextLabel") -- ค่าที่เลือก
+    local NameLabel = Instance.new("TextLabel")
+    local ValueLabel = Instance.new("TextLabel")
     local Arrow = Instance.new("ImageButton")
     local SearchBox = Instance.new("TextBox")
     local SearchCorner = Instance.new("UICorner")
@@ -2375,6 +2758,7 @@ function functionitem:MultiDropdown(...)
     local UIListLayout = Instance.new("UIListLayout")
     local UIPadding = Instance.new("UIPadding")
 
+    -- === Setup Container ===
     MainDropDown.Name = Name
     MainDropDown.Parent = SectionContainer
     MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -2402,7 +2786,7 @@ function functionitem:MultiDropdown(...)
     UICorner_7.CornerRadius = UDim.new(0, 4)
     UICorner_7.Parent = MainDropDown
 
-    -- === Header ===
+    -- === Header Frame ===
     Header.Name = "Header"
     Header.Parent = MainDropDown
     Header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -2421,7 +2805,7 @@ function functionitem:MultiDropdown(...)
     ClickArea.AutoButtonColor = false
     ClickArea.Text = ""
 
-    -- === ชื่อ MultiDropdown (รองรับ \n) ===
+    -- === Name Label ===
     NameLabel.Name = "NameLabel"
     NameLabel.Parent = Header
     NameLabel.BackgroundTransparency = 1
@@ -2436,23 +2820,22 @@ function functionitem:MultiDropdown(...)
     NameLabel.TextYAlignment = Enum.TextYAlignment.Center
     NameLabel.TextTransparency = 0.2
 
-    -- === ค่าที่เลือก ===
+    -- === Value Label ===
     ValueLabel.Name = "ValueLabel"
     ValueLabel.Parent = Header
     ValueLabel.BackgroundTransparency = 1
     ValueLabel.Size = UDim2.new(0.5, -20, 0, 35)
     ValueLabel.Position = UDim2.new(0.5, 10, 0, 0)
     ValueLabel.ZIndex = 16
-    ValueLabel.Visible = false
     ValueLabel.Font = Enum.Font.GothamBold
-    ValueLabel.Text = table.concat(selected, ", ")
+    ValueLabel.Text = (#selected > 0) and table.concat(selected, ", ") or "None"
     ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
     ValueLabel.TextSize = 13
     ValueLabel.TextXAlignment = Enum.TextXAlignment.Left
     ValueLabel.TextYAlignment = Enum.TextYAlignment.Center
     ValueLabel.ClipsDescendants = true
 
-    -- === ลูกศร ===
+    -- === Arrow Button ===
     Arrow.Parent = Header
     Arrow.BackgroundTransparency = 1
     Arrow.AnchorPoint = Vector2.new(1, 0.5)
@@ -2460,6 +2843,7 @@ function functionitem:MultiDropdown(...)
     Arrow.Size = UDim2.new(0, 13, 0, 13)
     Arrow.ZIndex = 16
     Arrow.Image = "http://www.roblox.com/asset/?id=6282522798"
+    Arrow.ImageColor3 = Color3.fromRGB(255, 255, 255)
 
     -- === Search Box ===
     SearchBox.Name = "SearchBox"
@@ -2469,7 +2853,7 @@ function functionitem:MultiDropdown(...)
     SearchBox.Size = UDim2.new(0, 245, 0, 30)
     SearchBox.ZIndex = 17
     SearchBox.Font = Enum.Font.GothamBold
-    SearchBox.PlaceholderText = "Search..."
+    SearchBox.PlaceholderText = "🔍 Search..."
     SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     SearchBox.Text = ""
     SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2494,14 +2878,16 @@ function functionitem:MultiDropdown(...)
     Scroll_Items.Name = "Items"
     Scroll_Items.Parent = MainDropDown
     Scroll_Items.BackgroundTransparency = 1
+    Scroll_Items.BorderSizePixel = 0
     Scroll_Items.Position = UDim2.new(0, 0, 0, 75)
-    Scroll_Items.Size = UDim2.new(1, 0, 0, 160)
+    Scroll_Items.Size = UDim2.new(1, 0, 0, 224)
     Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
     Scroll_Items.ScrollBarThickness = 2
     Scroll_Items.Visible = false
     Scroll_Items.ZIndex = 17
 
     UIListLayout.Parent = Scroll_Items
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
     UIListLayout.Padding = UDim.new(0, 5)
     UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
@@ -2511,17 +2897,31 @@ function functionitem:MultiDropdown(...)
     UIPadding.PaddingLeft = UDim.new(0, 10)
     UIPadding.PaddingTop = UDim.new(0, 5)
 
-    -- === เปิด/ปิด Panel ===
+    -- === Update Display Text ===
+    local function updateDisplayText()
+        if #selected > 0 then
+            ValueLabel.Text = table.concat(selected, ", ")
+            ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)
+        else
+            ValueLabel.Text = "None"
+            ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+        end
+    end
+
+    -- === Toggle Panel ===
     local isOpen = false
     function Dropfunc:TogglePanel(state)
         isOpen = state
-        TweenService:Create(MainDropDown, TweenInfo.new(0.2), {
-            Size = state and UDim2.new(0, 265, 0, 250) or UDim2.new(0, 265, 0, 35)
+        TweenService:Create(MainDropDown, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)
         }):Play()
-        TweenService:Create(Arrow, TweenInfo.new(0.2), {Rotation = state and 180 or 0}):Play()
+        TweenService:Create(Arrow, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+            Rotation = state and 180 or 0
+        }):Play()
 
         SearchBox.Visible = state
         Scroll_Items.Visible = state
+        
         if state then
             task.wait(0.1)
             SearchBox:CaptureFocus()
@@ -2531,32 +2931,30 @@ function functionitem:MultiDropdown(...)
         end
     end
 
-    ClickArea.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
-    Arrow.MouseButton1Click:Connect(function() Dropfunc:TogglePanel(not isOpen) end)
+    ClickArea.MouseButton1Click:Connect(function()
+        Dropfunc:TogglePanel(not isOpen)
+    end)
 
-    -- === ค้นหา ===
+    Arrow.MouseButton1Click:Connect(function()
+        Dropfunc:TogglePanel(not isOpen)
+    end)
+
+    -- === Filter Items ===
     function Dropfunc:FilterItems(query)
         query = query:lower()
         for _, item in Scroll_Items:GetChildren() do
             if item:IsA("TextButton") then
-                item.Visible = query == "" or item.Text:lower():find(query, 1, true)
+                local matches = query == "" or item.Text:lower():find(query, 1, true)
+                item.Visible = matches
             end
         end
     end
+
     SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         Dropfunc:FilterItems(SearchBox.Text)
     end)
 
-    -- === อัปเดตข้อความ ===
-    local function updateDisplay()
-        if #selected > 0 then
-            ValueLabel.Text = table.concat(selected, ", ")
-        else
-            ValueLabel.Text = "None"
-        end
-    end
-
-    -- === เพิ่มไอเท็ม ===
+    -- === Add Item ===
     function Dropfunc:Add(Text)
         local btn = Instance.new("TextButton")
         local corner = Instance.new("UICorner")
@@ -2566,12 +2964,113 @@ function functionitem:MultiDropdown(...)
         btn.Parent = Scroll_Items
         btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
         btn.Size = UDim2.new(1, -10, 0, 30)
+        btn.ZIndex = 17
+        btn.Font = Enum.Font.GothamBold
+        btn.Text = Text
+        btn.TextColor3 = table.find(selected, Text) and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
+        btn.TextSize = 12
+        btn.AutoButtonColor = false
+
+        corner.CornerRadius = UDim.new(0, 4)
+        corner.Parent = btn
+
+        stroke.Thickness = 1.2
+        stroke.Parent = btn
+        stroke.Color = _G.Color
+        stroke.Transparency = 1
+
+        btn.MouseEnter:Connect(function()
+            TweenService:Create(stroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Transparency = 0.1}):Play()
+        end)
+
+        btn.MouseLeave:Connect(function()
+            TweenService:Create(stroke, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {Transparency = 1}):Play()
+        end)
+
+        btn.MouseButton1Click:Connect(function()
+            local foundIndex = table.find(selected, Text)
+            if foundIndex then
+                table.remove(selected, foundIndex)
+                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255)
+                }):Play()
+            else
+                table.insert(selected, Text)
+                TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(0, 200, 200)
+                }):Play()
+            end
+            updateDisplayText()
+            Callback(selected)
+        end)
+    end
+
+    -- === Add All Items ===
+    for _, item in ipairs(list) do
+        Dropfunc:Add(item)
+    end
+
+    updateDisplayText()
+    if #selected > 0 then
+        Callback(selected)
+    end
+
+    -- === External Functions ===
+    function Dropfunc:Update(newTable)
+        if type(newTable) == "table" then
+            selected = {}
+            for _, v in ipairs(newTable) do
+                if table.find(list, v) then
+                    table.insert(selected, v)
+                end
+            end
+            updateDisplayText()
+            Callback(selected)
+
+            -- Update button colors
+            for _, btn in Scroll_Items:GetChildren() do
+                if btn:IsA("TextButton") then
+                    local isSelected = table.find(selected, btn.Text)
+                    TweenService:Create(btn, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                        TextColor3 = isSelected and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
+                    }):Play()
+                end
+            end
+        end
+    end
+
+    function Dropfunc:Get()
+        return selected
+    end
+
+    function Dropfunc:Clear()
+        for _, btn in Scroll_Items:GetChildren() do
+            if btn:IsA("TextButton") then
+                btn:Destroy()
+            end
+        end
+        selected = {}
+        updateDisplayText()
+        SearchBox.Text = ""
+        Callback(selected)
+    end
+
+    function Dropfunc:Add(Text)
+        -- This allows adding items dynamically after creation
+        local btn = Instance.new("TextButton")
+        local corner = Instance.new("UICorner")
+        local stroke = Instance.new("UIStroke")
+
+        btn.Name = Text
+        btn.Parent = Scroll_Items
+        btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+        btn.Size = UDim2.new(1, -10, 0, 30)
+        btn.ZIndex = 17
         btn.Font = Enum.Font.GothamBold
         btn.Text = Text
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.TextSize = 12
         btn.AutoButtonColor = false
-        btn.ZIndex = 17
 
         corner.CornerRadius = UDim.new(0, 4)
         corner.Parent = btn
@@ -2588,81 +3087,18 @@ function functionitem:MultiDropdown(...)
             TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
         end)
 
-        -- ตั้งค่าสีเริ่มต้น
-        if table.find(selected, Text) then
-            btn.TextColor3 = Color3.fromRGB(0, 200, 200)
-        end
-
         btn.MouseButton1Click:Connect(function()
-            local index = table.find(selected, Text)
-            if index then
-                table.remove(selected, index)
+            local foundIndex = table.find(selected, Text)
+            if foundIndex then
+                table.remove(selected, foundIndex)
                 TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
             else
                 table.insert(selected, Text)
                 TweenService:Create(btn, TweenInfo.new(0.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
             end
-            updateDisplay()
+            updateDisplayText()
             Callback(selected)
         end)
-    end
-
-    -- === เพิ่มรายการทั้งหมด ===
-    for _, item in ipairs(list) do
-        Dropfunc:Add(item)
-    end
-
-    -- === ตั้งค่าเริ่มต้น ===
-    updateDisplay()
-    if #selected > 0 then
-        Callback(selected)
-    end
-
-    -- === ฟังก์ชันภายนอก ===
-    function Dropfunc:Update(newTable)
-        if type(newTable) == "table" then
-            selected = {}
-            for _, v in ipairs(newTable) do
-                if table.find(list, v) then
-                    table.insert(selected, v)
-                end
-            end
-            updateDisplay()
-            Callback(selected)
-
-            -- อัปเดตสีทุกปุ่ม
-            for _, btn in Scroll_Items:GetChildren() do
-                if btn:IsA("TextButton") then
-                    local isSelected = table.find(selected, btn.Text)
-                    TweenService:Create(btn, TweenInfo.new(0.2), {
-                        TextColor3 = isSelected and Color3.fromRGB(0, 200, 200) or Color3.fromRGB(255, 255, 255)
-                    }):Play()
-                end
-            end
-        end
-    end
-
-    function Dropfunc:Get()
-        return selected
-    end
-
-    function Dropfunc:Clear()
-        -- ลบ items ทั้งหมด
-        for _, btn in Scroll_Items:GetChildren() do
-            if btn:IsA("TextButton") then
-                btn:Destroy()
-            end
-        end
-        
-        -- รีเซ็ต selected
-        selected = {}
-        updateDisplay()
-        
-        -- รีเซ็ต SearchBox
-        SearchBox.Text = ""
-        
-        -- เรียก callback
-        Callback(selected)
     end
 
     RegisterComponent("MultiDropdown", Name, MainDropDown)
@@ -2845,11 +3281,12 @@ function functionitem:Slider(...)
     SliderFrame.InputEnded:Connect(endDrag)
 
     game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             updateSlider(input)
         end
     end)
 
+	
     -- === ป้อนค่าใน TextBox ===
     CustomValue.FocusLost:Connect(function(enterPressed)
         if not enterPressed then return end

@@ -1,4 +1,4 @@
-print("Loaded[0]")
+print("Loaded[sssssssssssssss]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2967,11 +2967,12 @@ function functionitem:Slider(...)
     SliderFrame.InputEnded:Connect(endDrag)
 
     game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             updateSlider(input)
         end
     end)
 
+	
     -- === ป้อนค่าใน TextBox ===
     CustomValue.FocusLost:Connect(function(enterPressed)
         if not enterPressed then return end

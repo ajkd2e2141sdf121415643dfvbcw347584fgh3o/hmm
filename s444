@@ -2023,14 +2023,13 @@ end)
 function functionitem:AddSearchableMultiDropdown(options)
     local text = options.Name
     local Flag = options.Flag
-    local default = options.Value or {}  -- ต้องเป็น table!
+    local default = options.Value or {}
     local list = options.List
     local callback = options.Callback
-    
     local Dropfunc = {}
-    local DropTable = {}  -- เก็บ items ที่เลือก
+    local DropTable = {}
     
-    -- โหลด default values (รองรับ string หรือ table)
+    -- Load default values
     if type(default) == "table" then
         for _, v in ipairs(default) do
             if not table.find(DropTable, v) then
@@ -2049,15 +2048,13 @@ function functionitem:AddSearchableMultiDropdown(options)
     local v = Instance.new("TextButton")
     local Text_2 = Instance.new("TextLabel")
     local ImageButton = Instance.new("ImageButton")
-    
-    -- Search Box
     local SearchBox = Instance.new("TextBox")
     local SearchBoxCorner = Instance.new("UICorner")
-    
     local Scroll_Items = Instance.new("ScrollingFrame")
     local UIListLayout_3 = Instance.new("UIListLayout")
     local UIPadding_3 = Instance.new("UIPadding")
     
+    -- Setup Main Container
     MainDropDown.Name = text
     MainDropDown.Parent = SectionContainer
     MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -2076,18 +2073,16 @@ function functionitem:AddSearchableMultiDropdown(options)
     UIStroke96.Transparency = 1
     
     MainDropDown.MouseEnter:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {Transparency = 0.10}):Play()
+        TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Transparency = 0.10}):Play()
     end)
-    
     MainDropDown.MouseLeave:Connect(function()
-        TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-            {Transparency = 1}):Play()
+        TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Transparency = 1}):Play()
     end)
     
     UICorner_7.CornerRadius = UDim.new(0, 4)
     UICorner_7.Parent = MainDropDown
     
+    -- Setup Header Frame
     MainDropDown_2.Name = "MainDropDown"
     MainDropDown_2.Parent = MainDropDown
     MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
@@ -2109,7 +2104,7 @@ function functionitem:AddSearchableMultiDropdown(options)
     v.AutoButtonColor = false
     v.Text = ""
     
-    -- TextLabel แสดงผลการเลือก
+    -- Display Label
     Text_2.Name = "Text"
     Text_2.Parent = MainDropDown_2
     Text_2.BackgroundTransparency = 1.000
@@ -2123,6 +2118,7 @@ function functionitem:AddSearchableMultiDropdown(options)
     Text_2.Text = "Select items..."
     Text_2.TextColor3 = Color3.fromRGB(200, 200, 200)
     
+    -- Dropdown Arrow
     ImageButton.Parent = MainDropDown_2
     ImageButton.BackgroundTransparency = 1.000
     ImageButton.Position = UDim2.new(1, -25, 0.5, 0)
@@ -2130,16 +2126,17 @@ function functionitem:AddSearchableMultiDropdown(options)
     ImageButton.Size = UDim2.new(0, 13, 0, 13)
     ImageButton.ZIndex = 16
     ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
+    ImageButton.ImageColor3 = Color3.fromRGB(255, 255, 255)
     
     -- Search Box
     SearchBox.Name = "SearchBox"
     SearchBox.Parent = MainDropDown
     SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     SearchBox.Position = UDim2.new(0, 10, 0, 40)
-    SearchBox.Size = UDim2.new(0, 245, 0, 30)  -- แก้ไขแล้ว!
+    SearchBox.Size = UDim2.new(0, 245, 0, 30)
     SearchBox.ZIndex = 17
     SearchBox.Font = Enum.Font.GothamBold
-    SearchBox.PlaceholderText = "🔍 Search items..."
+    SearchBox.PlaceholderText = "🔍 Search..."
     SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
     SearchBox.Text = ""
     SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -2171,7 +2168,6 @@ function functionitem:AddSearchableMultiDropdown(options)
     Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
     Scroll_Items.ScrollBarThickness = 2
     Scroll_Items.Visible = false
-    Scroll_Items.AutomaticCanvasSize = Enum.AutomaticSize.Y  -- เพิ่มเพื่อความเสถียร
     
     UIListLayout_3.Parent = Scroll_Items
     UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2181,7 +2177,7 @@ function functionitem:AddSearchableMultiDropdown(options)
     UIPadding_3.PaddingLeft = UDim.new(0, 10)
     UIPadding_3.PaddingTop = UDim.new(0, 5)
     
-    -- อัปเดตข้อความแสดงผล
+    -- Update Display Text
     local function UpdateDisplayText()
         if #DropTable > 0 then
             Text_2.Text = table.concat(DropTable, ", ")
@@ -2194,14 +2190,10 @@ function functionitem:AddSearchableMultiDropdown(options)
     
     -- Toggle Panel
     function Dropfunc:TogglePanel(state)
-        TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad),
-            {Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
-        TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad),
-            {Rotation = state and 180 or 0}):Play()
-        
+        TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad), {Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
+        TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad), {Rotation = state and 180 or 0}):Play()
         SearchBox.Visible = state
         Scroll_Items.Visible = state
-        
         if state then
             task.wait(0.1)
             SearchBox:CaptureFocus()
@@ -2228,7 +2220,7 @@ function functionitem:AddSearchableMultiDropdown(options)
         for _, item in pairs(Scroll_Items:GetChildren()) do
             if item:IsA("TextButton") then
                 local itemText = item.Text:lower()
-                item.Visible = (query == "" or itemText:find(query, 1, true) ~= nil)
+                item.Visible = (query == "" or itemText:find(query, 1, true))
             end
         end
     end
@@ -2240,7 +2232,9 @@ function functionitem:AddSearchableMultiDropdown(options)
     -- Clear
     function Dropfunc:Clear()
         for _, v in pairs(Scroll_Items:GetChildren()) do
-            if v:IsA("TextButton") then v:Destroy() end
+            if v:IsA("TextButton") then
+                v:Destroy()
+            end
         end
         DropTable = {}
         UpdateDisplayText()
@@ -2287,20 +2281,17 @@ function functionitem:AddSearchableMultiDropdown(options)
                 table.remove(DropTable, foundIndex)
                 TweenService:Create(btn, TweenInfo.new(.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
             end
-            
             UpdateDisplayText()
-            callback(DropTable)
+            pcall(callback, DropTable)
         end)
     end
     
-    -- เพิ่ม items ทั้งหมด
+    -- Add all items
     for _, v in ipairs(list) do
         Dropfunc:Add(v)
     end
     
-    -- ตั้งค่าข้อความเริ่มต้น
     UpdateDisplayText()
-    
     return Dropfunc
 end
 

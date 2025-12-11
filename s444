@@ -1,4 +1,4 @@
-print("Loaded[qqqq]")
+print("Loaded[0]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -613,12 +613,8 @@ function VectorHub:Evil()
     Title2.TextWrapped = true
     Title2.TextXAlignment = Enum.TextXAlignment.Left
 
-  -- ==========================================
--- 🔍 IMPROVED GLOBAL SEARCH SYSTEM
--- ==========================================
 local SearchSystem = {}
 SearchSystem.Database = {}
-SearchSystem.isSearching = false
 
 local SearchContainer = Instance.new("Frame")
 SearchContainer.Name = "SearchContainer"
@@ -701,6 +697,7 @@ ResultsPadding.PaddingLeft = UDim.new(0, 5)
 ResultsPadding.PaddingRight = UDim.new(0, 5)
 ResultsPadding.PaddingBottom = UDim.new(0, 5)
 
+-- ===== 2️⃣ ADD TO DATABASE FUNCTION =====
 function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, itemObject)
     table.insert(self.Database, {
         Category = category,
@@ -709,33 +706,180 @@ function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, it
         Section = sectionName,
         Object = itemObject
     })
+    print("📝 DB Add: " .. category .. " | Tab: " .. tabName .. " | Sec: " .. sectionName .. " | Name: " .. itemName)
 end
 
+-- ===== 3️⃣ PERFORM SEARCH FUNCTION =====
 local searchDebounce = false
+
+function SearchSystem:PerformSearch(query)
+    if searchDebounce then return end
+    searchDebounce = true
+    task.wait(0.1)
+    
+    for _, child in pairs(SearchResults:GetChildren()) do
+        if child:IsA("TextButton") or child:IsA("TextLabel") then
+            child:Destroy()
+        end
+    end
+    
+    if query == "" or #query < 1 then
+        SearchResults.Visible = false
+        searchDebounce = false
+        return
+    end
+    
+    query = query:lower()
+    local resultsFound = 0
+    local maxResults = 12
+    
+    for _, item in ipairs(self.Database) do
+        if resultsFound >= maxResults then break end
+        
+        local itemName = item.Name:lower()
+        local tabName = item.Tab:lower()
+        local sectionName = (item.Section or ""):lower()
+        
+        if itemName:find(query, 1, true) or 
+           tabName:find(query, 1, true) or
+           sectionName:find(query, 1, true) then
+            resultsFound = resultsFound + 1
+            
+            local ResultButton = Instance.new("TextButton")
+            ResultButton.Parent = SearchResults
+            ResultButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            ResultButton.BorderSizePixel = 0
+            ResultButton.Size = UDim2.new(1, -5, 0, 50)
+            ResultButton.ZIndex = 106
+            ResultButton.Font = Enum.Font.GothamBold
+            ResultButton.Text = ""
+            ResultButton.AutoButtonColor = false
+            
+            local ResultCorner = Instance.new("UICorner")
+            ResultCorner.CornerRadius = UDim.new(0, 4)
+            ResultCorner.Parent = ResultButton
+            
+            local CategoryIcon = Instance.new("TextLabel")
+            CategoryIcon.Parent = ResultButton
+            CategoryIcon.BackgroundTransparency = 1
+            CategoryIcon.Position = UDim2.new(0, 5, 0, 3)
+            CategoryIcon.Size = UDim2.new(0, 15, 0, 15)
+            CategoryIcon.ZIndex = 107
+            CategoryIcon.Font = Enum.Font.GothamBold
+            CategoryIcon.TextColor3 = _G.Color
+            CategoryIcon.TextSize = 12
+            CategoryIcon.TextXAlignment = Enum.TextXAlignment.Left
+            
+            local icons = {
+                Toggle = "☑", Button = "🔘", Slider = "🎚",
+                Dropdown = "📋", MultiDropdown = "📋",
+                Textbox = "📝", Label = "📄", Colorpicker = "🎨"
+            }
+            CategoryIcon.Text = icons[item.Category] or "•"
+            
+            local CategoryLabel = Instance.new("TextLabel")
+            CategoryLabel.Parent = ResultButton
+            CategoryLabel.BackgroundTransparency = 1
+            CategoryLabel.Position = UDim2.new(0, 22, 0, 3)
+            CategoryLabel.Size = UDim2.new(1, -27, 0, 12)
+            CategoryLabel.ZIndex = 107
+            CategoryLabel.Font = Enum.Font.GothamBold
+            CategoryLabel.Text = item.Category
+            CategoryLabel.TextColor3 = _G.Color
+            CategoryLabel.TextSize = 10
+            CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
+            CategoryLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            local NameLabel = Instance.new("TextLabel")
+            NameLabel.Parent = ResultButton
+            NameLabel.BackgroundTransparency = 1
+            NameLabel.Position = UDim2.new(0, 5, 0, 16)
+            NameLabel.Size = UDim2.new(1, -10, 0, 15)
+            NameLabel.ZIndex = 107
+            NameLabel.Font = Enum.Font.GothamBold
+            NameLabel.Text = item.Name
+            NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            NameLabel.TextSize = 12
+            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
+            NameLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            local PathLabel = Instance.new("TextLabel")
+            PathLabel.Parent = ResultButton
+            PathLabel.BackgroundTransparency = 1
+            PathLabel.Position = UDim2.new(0, 5, 0, 32)
+            PathLabel.Size = UDim2.new(1, -10, 0, 13)
+            PathLabel.ZIndex = 107
+            PathLabel.Font = Enum.Font.Gotham
+            PathLabel.Text = item.Tab .. (item.Section ~= "" and " > " .. item.Section or "")
+            PathLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
+            PathLabel.TextSize = 9
+            PathLabel.TextXAlignment = Enum.TextXAlignment.Left
+            PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
+            
+            ResultButton.MouseEnter:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+            end)
+            
+            ResultButton.MouseLeave:Connect(function()
+                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
+                    {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
+            end)
+            
+            ResultButton.MouseButton1Click:Connect(function()
+                SearchSystem:NavigateToItem(item)
+                task.wait(0.2)
+                SearchBox.Text = ""
+                SearchResults.Visible = false
+            end)
+        end
+    end
+    
+    if resultsFound > 0 then
+        local maxHeight = math.min(resultsFound * 55 + 10, 300)
+        SearchResults.Size = UDim2.new(0, 155, 0, maxHeight)
+        SearchResults.CanvasSize = UDim2.new(0, 0, 0, resultsFound * 55 + 10)
+        SearchResults.Visible = true
+        SearchResults.CanvasPosition = Vector2.new(0, 0)
+    else
+        local NoResults = Instance.new("TextLabel")
+        NoResults.Parent = SearchResults
+        NoResults.BackgroundTransparency = 1
+        NoResults.Size = UDim2.new(1, 0, 0, 60)
+        NoResults.ZIndex = 106
+        NoResults.Font = Enum.Font.GothamBold
+        NoResults.Text = "No results\nfound 😔"
+        NoResults.TextColor3 = Color3.fromRGB(150, 150, 150)
+        NoResults.TextSize = 11
+        NoResults.TextYAlignment = Enum.TextYAlignment.Center
+        
+        SearchResults.Size = UDim2.new(0, 155, 0, 70)
+        SearchResults.Visible = true
+    end
+    
+    searchDebounce = false
+end
+
+-- ===== 4️⃣ NAVIGATE TO ITEM FUNCTION (THE FIX!) =====
 function SearchSystem:NavigateToItem(item)
-    print("🔍 Navigating to: " .. item.Name) -- Debug
+    print("🔍 [NAVIGATE] Starting navigation to: " .. item.Name)
+    print("📂 [NAVIGATE] Looking for Tab: '" .. item.Tab .. "'")
     
-    local foundTab = false
+    local foundTab = nil
     
-    -- ===== 1️⃣ ค้นหาและคลิก Tab ที่ตรงกัน =====
+    -- หา Tab ที่ตรงกัน
     for _, tab in pairs(TabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
             local textLabel = tab:FindFirstChild("TextLabel")
             if textLabel then
-                -- เอาเฉพาะคำแรก (ก่อน space)
-                local tabName = textLabel.Text:match("^([^%s]+)")
+                local fullText = textLabel.Text:gsub(" ", ""):lower()
+                local searchTab = item.Tab:lower()
                 
-                print("Checking tab: " .. tostring(tabName) .. " vs " .. item.Tab) -- Debug
+                print("  Checking: '" .. fullText .. "' vs '" .. searchTab .. "'")
                 
-                if tabName and tabName:lower() == item.Tab:lower() then
-                    print("✓ Found Tab: " .. tabName) -- Debug
-                    foundTab = true
-                    
-                    -- คลิก Tab ด้วย MouseButton1Click:Fire()
-                    tab.MouseButton1Click:Fire()
-                    
-                    -- รอให้ Tab animation เสร็จ
-                    task.wait(0.3)
+                if fullText == searchTab or fullText:find(searchTab, 1, true) then
+                    print("  ✅ FOUND TAB!")
+                    foundTab = tab
                     break
                 end
             end
@@ -743,62 +887,80 @@ function SearchSystem:NavigateToItem(item)
     end
     
     if not foundTab then
-        print("❌ Tab not found: " .. item.Tab) -- Debug
+        print("❌ [NAVIGATE] Tab not found!")
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "❌ Search Error",
+            Text = "Tab '" .. item.Tab .. "' not found",
+            Duration = 3
+        })
+        return
     end
     
-    -- ===== 2️⃣ Flash Effect (กระพริบ) =====
-    if item.Object and item.Object.Parent then
-        local obj = item.Object
-        local originalColor = obj.BackgroundColor3
+    -- คลิก Tab
+    print("🖱️ [NAVIGATE] Clicking Tab...")
+    foundTab.MouseButton1Click:Fire()
+    task.wait(0.6) -- รอให้ Tab animation + Page visible เสร็จ
+    
+    -- ตรวจสอบ Object
+    if not item.Object then
+        print("❌ [NAVIGATE] Object is nil!")
+        return
+    end
+    
+    if not item.Object.Parent then
+        print("❌ [NAVIGATE] Object has no parent!")
+        return
+    end
+    
+    local obj = item.Object
+    print("✅ [NAVIGATE] Object found: " .. obj.Name)
+    
+    local originalColor = obj.BackgroundColor3
+    
+    -- Flash effect (กระพริบ 3 ครั้ง)
+    print("💫 [NAVIGATE] Starting flash effect...")
+    for i = 1, 3 do
+        task.spawn(function()
+            task.wait(i * 0.25)
+            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+                {BackgroundColor3 = _G.Color}):Play()
+            task.wait(0.15)
+            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+                {BackgroundColor3 = originalColor}):Play()
+        end)
+    end
+    
+    -- Auto scroll
+    task.wait(0.3)
+    
+    local scrollFrame = obj.Parent
+    while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
+        scrollFrame = scrollFrame.Parent
+    end
+    
+    if scrollFrame then
+        print("📜 [NAVIGATE] Found ScrollingFrame: " .. scrollFrame.Name)
         
-        print("✓ Object found: " .. obj.Name) -- Debug
+        local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
+        local targetCanvasY = math.max(0, itemPosition - 50)
         
-        -- กระพริบ 3 ครั้ง
-        for i = 1, 3 do
-            task.spawn(function()
-                task.wait(i * 0.25)
-                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-                    {BackgroundColor3 = _G.Color}):Play()
-                task.wait(0.15)
-                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-                    {BackgroundColor3 = originalColor}):Play()
-            end)
-        end
+        print("  Scrolling to Y: " .. tostring(targetCanvasY))
         
-        -- ===== 3️⃣ Auto Scroll =====
-        task.wait(0.1)
-        
-        local scrollFrame = obj.Parent
-        while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
-            scrollFrame = scrollFrame.Parent
-        end
-        
-        if scrollFrame then
-            print("✓ Found ScrollingFrame: " .. scrollFrame.Name) -- Debug
-            
-            local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
-            local targetCanvasY = math.max(0, itemPosition - 50)
-            
-            print("Scrolling to position: " .. tostring(targetCanvasY)) -- Debug
-            
-            TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad),
-                {CanvasPosition = Vector2.new(0, targetCanvasY)}):Play()
-        else
-            print("❌ ScrollingFrame not found") -- Debug
-        end
+        TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad),
+            {CanvasPosition = Vector2.new(0, targetCanvasY)}):Play()
     else
-        print("❌ Object not found or no parent") -- Debug
+        print("⚠️ [NAVIGATE] ScrollingFrame not found")
     end
     
-    -- ===== 4️⃣ Notification =====
+    -- Notification
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "🔍 Found",
-        Text = item.Name,
+        Title = "✅ Found",
+        Text = item.Name .. " (" .. item.Tab .. ")",
         Duration = 2,
         Icon = "rbxassetid://6034509993"
     })
     
-    print("✓ Navigation completed!") -- Debug
+    print("✅ [NAVIGATE] Navigation completed!")
 end
 
 function SearchSystem:PerformSearch(query)
@@ -1114,6 +1276,7 @@ end)
         local Name = options.Name
         CurrentTabName = Name  -- 🔥 บันทึก Tab Name
         
+		local TabReference = nil
         local FrameTab = Instance.new("Frame")
         local Tab2 = Instance.new("Frame")
         local Tab = Instance.new("TextButton")
@@ -1409,20 +1572,31 @@ end)
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
         end)
-
--- 🔥 Helper Function สำหรับ Register
-    local function RegisterComponent(category, name, object)
-        pcall(function()
-            local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
-            SearchSystem:AddToDatabase(
-                category,
-                cleanName,
-                CurrentTabName,
-                CurrentSectionName,
-                object
-            )
-        end)
-    end
+local function RegisterComponent(category, name, object)
+    pcall(function()
+        if not object then
+            warn("⚠️ [REGISTER] Object is nil for: " .. name)
+            return
+        end
+        
+        if not object.Parent then
+            warn("⚠️ [REGISTER] Object has no parent: " .. name)
+            return
+        end
+        
+        local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
+        
+        print("📝 [REGISTER] " .. category .. " | Tab: " .. CurrentTabName .. " | Sec: " .. CurrentSectionName .. " | Name: " .. cleanName)
+        
+        SearchSystem:AddToDatabase(
+            category,
+            cleanName,
+            CurrentTabName,
+            CurrentSectionName,
+            object
+        )
+    end)
+end
     local ColorDependents = {}
     -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
     local function UpdateColorDependents(newColor)

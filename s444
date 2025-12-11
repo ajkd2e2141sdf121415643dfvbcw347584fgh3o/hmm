@@ -1,4 +1,3 @@
-print("hhh")
 _G.Color = Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -1717,596 +1716,596 @@ end)
 				end)
 			end
 
-		-- ==========================================
-		-- Enhanced Dropdown with Search Feature
-		-- เพิ่มฟีเจอร์ Search ใน Dropdown
-		-- ==========================================
+				-- ==========================================
+	-- Enhanced Dropdown with Search Feature
+	-- เพิ่มฟีเจอร์ Search ใน Dropdown
+	-- ==========================================
 
-		function functionitem:AddSearchableDropdown(options)
-			local text = options.Name
-			local Flag = options.Flag
-			local default = options.Value or ""
-			local list = options.List
-			local callback = options.Callback
+	function functionitem:AddSearchableDropdown(options)
+		local text = options.Name
+		local Flag = options.Flag
+		local default = options.Value or ""
+		local list = options.List
+		local callback = options.Callback
+		
+		local Dropfunc = {}
+		local filteredItems = {}
+		
+		-- Main Container
+		local MainDropDown = Instance.new("Frame")
+		local UICorner_7 = Instance.new("UICorner")
+		local MainDropDown_2 = Instance.new("Frame")
+		local UICorner_8 = Instance.new("UICorner")
+		local v = Instance.new("TextButton")
+		local Text_2 = Instance.new("TextLabel")
+		local ImageButton = Instance.new("ImageButton")
+		
+		-- Search Box (NEW!)
+		local SearchBox = Instance.new("TextBox")
+		local SearchBoxCorner = Instance.new("UICorner")
+		
+		local Scroll_Items = Instance.new("ScrollingFrame")
+		local UIListLayout_3 = Instance.new("UIListLayout")
+		local UIPadding_3 = Instance.new("UIPadding")
+		
+		MainDropDown.Name = text
+		MainDropDown.Parent = SectionContainer
+		MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		MainDropDown.BackgroundTransparency = 0.700
+		MainDropDown.BorderSizePixel = 0
+		MainDropDown.ClipsDescendants = true
+		MainDropDown.Size = UDim2.new(0, 265, 0, 35)
+		MainDropDown.ZIndex = 16
+		
+		local UIStroke96 = Instance.new("UIStroke")
+		UIStroke96.Thickness = 1.2
+		UIStroke96.Parent = MainDropDown
+		UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
+		UIStroke96.Color = _G.Color
+		UIStroke96.Transparency = 1
+		
+		MainDropDown.MouseEnter:Connect(function()
+			TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+				{Transparency = 0.10}):Play()
+		end)
+		
+		MainDropDown.MouseLeave:Connect(function()
+			TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+				{Transparency = 1}):Play()
+		end)
+		
+		UICorner_7.CornerRadius = UDim.new(0, 4)
+		UICorner_7.Parent = MainDropDown
+		
+		MainDropDown_2.Name = "MainDropDown"
+		MainDropDown_2.Parent = MainDropDown
+		MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		MainDropDown_2.BackgroundTransparency = 0.700
+		MainDropDown_2.BorderSizePixel = 0
+		MainDropDown_2.ClipsDescendants = true
+		MainDropDown_2.Size = UDim2.new(1, 0, 0, 35)
+		MainDropDown_2.ZIndex = 16
+		
+		UICorner_8.CornerRadius = UDim.new(0, 4)
+		UICorner_8.Parent = MainDropDown_2
+		
+		v.Name = "v"
+		v.Parent = MainDropDown_2
+		v.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		v.BackgroundTransparency = 1.000
+		v.BorderSizePixel = 0
+		v.Size = UDim2.new(1, 0, 1, 0)
+		v.ZIndex = 16
+		v.AutoButtonColor = false
+		v.Font = Enum.Font.GothamBold
+		v.Text = ""
+		v.TextColor3 = Color3.fromRGB(255, 255, 255)
+		v.TextSize = 12.000
+		
+		Text_2.Name = "Text"
+		Text_2.Parent = MainDropDown
+		Text_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Text_2.BackgroundTransparency = 1.000
+		Text_2.Size = UDim2.new(0, 265, 0, 35)
+		Text_2.ZIndex = 16
+		Text_2.Font = Enum.Font.GothamBold
+		Text_2.Text = default
+		Text_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Text_2.TextSize = 13.000
+		Text_2.TextXAlignment = Enum.TextXAlignment.Center
+		
+		ImageButton.Parent = MainDropDown_2
+		ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		ImageButton.BackgroundTransparency = 1
+		ImageButton.Position = UDim2.new(0, 235, 0, 10)
+		ImageButton.Size = UDim2.new(0, 13, 0, 13)
+		ImageButton.ZIndex = 16
+		ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
+		
+		-- ==========================================
+		-- SEARCH BOX (ช่องค้นหา)
+		-- ==========================================
+		SearchBox.Name = "SearchBox"
+		SearchBox.Parent = MainDropDown
+		SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		SearchBox.Position = UDim2.new(0, 10, 0, 40)
+		SearchBox.Size = UDim2.new(0, 245, 0, 30)
+		SearchBox.ZIndex = 17
+		SearchBox.Font = Enum.Font.GothamBold
+		SearchBox.PlaceholderText = "🔍 Search..."
+		SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+		SearchBox.Text = ""
+		SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SearchBox.TextSize = 12.000
+		SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+		SearchBox.Visible = false
+		
+		local SearchPadding = Instance.new("UIPadding")
+		SearchPadding.Parent = SearchBox
+		SearchPadding.PaddingLeft = UDim.new(0, 10)
+		
+		SearchBoxCorner.CornerRadius = UDim.new(0, 4)
+		SearchBoxCorner.Parent = SearchBox
+		
+		local SearchStroke = Instance.new("UIStroke")
+		SearchStroke.Thickness = 1
+		SearchStroke.Parent = SearchBox
+		SearchStroke.Color = _G.Color
+		SearchStroke.Transparency = 0.5
+		
+		-- ==========================================
+		-- SCROLL ITEMS
+		-- ==========================================
+		Scroll_Items.Name = "Scroll_Items"
+		Scroll_Items.Parent = MainDropDown
+		Scroll_Items.Active = true
+		Scroll_Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Scroll_Items.BackgroundTransparency = 1.000
+		Scroll_Items.BorderSizePixel = 0
+		Scroll_Items.Position = UDim2.new(0, 0, 0, 75)
+		Scroll_Items.Size = UDim2.new(1, 0, 0, 224)
+		Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
+		Scroll_Items.ScrollBarThickness = 2
+		Scroll_Items.Visible = false
+		
+		UIListLayout_3.Parent = Scroll_Items
+		UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout_3.Padding = UDim.new(0, 5)
+		UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 10)
+		end)
+		
+		UIPadding_3.Parent = Scroll_Items
+		UIPadding_3.PaddingLeft = UDim.new(0, 10)
+		UIPadding_3.PaddingTop = UDim.new(0, 5)
+		
+		-- ==========================================
+		-- TOGGLE PANEL
+		-- ==========================================
+		function Dropfunc:TogglePanel(state)
+			TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
+			TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+				{Rotation = state and 180 or 0}):Play()
 			
-			local Dropfunc = {}
-			local filteredItems = {}
+			SearchBox.Visible = state
+			Scroll_Items.Visible = state
 			
-			-- Main Container
-			local MainDropDown = Instance.new("Frame")
-			local UICorner_7 = Instance.new("UICorner")
-			local MainDropDown_2 = Instance.new("Frame")
-			local UICorner_8 = Instance.new("UICorner")
-			local v = Instance.new("TextButton")
-			local Text_2 = Instance.new("TextLabel")
-			local ImageButton = Instance.new("ImageButton")
-			
-			-- Search Box (NEW!)
-			local SearchBox = Instance.new("TextBox")
-			local SearchBoxCorner = Instance.new("UICorner")
-			
-			local Scroll_Items = Instance.new("ScrollingFrame")
-			local UIListLayout_3 = Instance.new("UIListLayout")
-			local UIPadding_3 = Instance.new("UIPadding")
-			
-			MainDropDown.Name = text
-			MainDropDown.Parent = SectionContainer
-			MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-			MainDropDown.BackgroundTransparency = 0.700
-			MainDropDown.BorderSizePixel = 0
-			MainDropDown.ClipsDescendants = true
-			MainDropDown.Size = UDim2.new(0, 265, 0, 35)
-			MainDropDown.ZIndex = 16
-			
-			local UIStroke96 = Instance.new("UIStroke")
-			UIStroke96.Thickness = 1.2
-			UIStroke96.Parent = MainDropDown
-			UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
-			UIStroke96.Color = _G.Color
-			UIStroke96.Transparency = 1
-			
-			MainDropDown.MouseEnter:Connect(function()
-				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-					{Transparency = 0.10}):Play()
-			end)
-			
-			MainDropDown.MouseLeave:Connect(function()
-				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-					{Transparency = 1}):Play()
-			end)
-			
-			UICorner_7.CornerRadius = UDim.new(0, 4)
-			UICorner_7.Parent = MainDropDown
-			
-			MainDropDown_2.Name = "MainDropDown"
-			MainDropDown_2.Parent = MainDropDown
-			MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-			MainDropDown_2.BackgroundTransparency = 0.700
-			MainDropDown_2.BorderSizePixel = 0
-			MainDropDown_2.ClipsDescendants = true
-			MainDropDown_2.Size = UDim2.new(1, 0, 0, 35)
-			MainDropDown_2.ZIndex = 16
-			
-			UICorner_8.CornerRadius = UDim.new(0, 4)
-			UICorner_8.Parent = MainDropDown_2
-			
-			v.Name = "v"
-			v.Parent = MainDropDown_2
-			v.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			v.BackgroundTransparency = 1.000
-			v.BorderSizePixel = 0
-			v.Size = UDim2.new(1, 0, 1, 0)
-			v.ZIndex = 16
-			v.AutoButtonColor = false
-			v.Font = Enum.Font.GothamBold
-			v.Text = ""
-			v.TextColor3 = Color3.fromRGB(255, 255, 255)
-			v.TextSize = 12.000
-			
-			Text_2.Name = "Text"
-			Text_2.Parent = MainDropDown
-			Text_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Text_2.BackgroundTransparency = 1.000
-			Text_2.Size = UDim2.new(0, 265, 0, 35)
-			Text_2.ZIndex = 16
-			Text_2.Font = Enum.Font.GothamBold
-			Text_2.Text = default
-			Text_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-			Text_2.TextSize = 13.000
-			Text_2.TextXAlignment = Enum.TextXAlignment.Center
-			
-			ImageButton.Parent = MainDropDown_2
-			ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			ImageButton.BackgroundTransparency = 1
-			ImageButton.Position = UDim2.new(0, 235, 0, 10)
-			ImageButton.Size = UDim2.new(0, 13, 0, 13)
-			ImageButton.ZIndex = 16
-			ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
-			
-			-- ==========================================
-			-- SEARCH BOX (ช่องค้นหา)
-			-- ==========================================
-			SearchBox.Name = "SearchBox"
-			SearchBox.Parent = MainDropDown
-			SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			SearchBox.Position = UDim2.new(0, 10, 0, 40)
-			SearchBox.Size = UDim2.new(0, 245, 0, 30)
-			SearchBox.ZIndex = 17
-			SearchBox.Font = Enum.Font.GothamBold
-			SearchBox.PlaceholderText = "🔍 Search..."
-			SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-			SearchBox.Text = ""
-			SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-			SearchBox.TextSize = 12.000
-			SearchBox.TextXAlignment = Enum.TextXAlignment.Left
-			SearchBox.Visible = false
-			
-			local SearchPadding = Instance.new("UIPadding")
-			SearchPadding.Parent = SearchBox
-			SearchPadding.PaddingLeft = UDim.new(0, 10)
-			
-			SearchBoxCorner.CornerRadius = UDim.new(0, 4)
-			SearchBoxCorner.Parent = SearchBox
-			
-			local SearchStroke = Instance.new("UIStroke")
-			SearchStroke.Thickness = 1
-			SearchStroke.Parent = SearchBox
-			SearchStroke.Color = _G.Color
-			SearchStroke.Transparency = 0.5
-			
-			-- ==========================================
-			-- SCROLL ITEMS
-			-- ==========================================
-			Scroll_Items.Name = "Scroll_Items"
-			Scroll_Items.Parent = MainDropDown
-			Scroll_Items.Active = true
-			Scroll_Items.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Scroll_Items.BackgroundTransparency = 1.000
-			Scroll_Items.BorderSizePixel = 0
-			Scroll_Items.Position = UDim2.new(0, 0, 0, 75)
-			Scroll_Items.Size = UDim2.new(1, 0, 0, 224)
-			Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
-			Scroll_Items.ScrollBarThickness = 2
-			Scroll_Items.Visible = false
-			
-			UIListLayout_3.Parent = Scroll_Items
-			UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout_3.Padding = UDim.new(0, 5)
-			UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-				Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 10)
-			end)
-			
-			UIPadding_3.Parent = Scroll_Items
-			UIPadding_3.PaddingLeft = UDim.new(0, 10)
-			UIPadding_3.PaddingTop = UDim.new(0, 5)
-			
-			-- ==========================================
-			-- TOGGLE PANEL
-			-- ==========================================
-			function Dropfunc:TogglePanel(state)
-				TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
-				TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-					{Rotation = state and 180 or 0}):Play()
-				
-				SearchBox.Visible = state
-				Scroll_Items.Visible = state
-				
-				if state then
-					SearchBox:CaptureFocus()
-				else
-					SearchBox.Text = ""
-					Dropfunc:FilterItems("")
-				end
+			if state then
+				SearchBox:CaptureFocus()
+			else
+				SearchBox.Text = ""
+				Dropfunc:FilterItems("")
 			end
-			
-			local Tof = false
-			ImageButton.MouseButton1Click:Connect(function()
-				Tof = not Tof
-				Dropfunc:TogglePanel(Tof)
-			end)
-			
-			v.MouseButton1Click:Connect(function()
-				Tof = not Tof
-				Dropfunc:TogglePanel(Tof)
-			end)
-			
-			-- ==========================================
-			-- FILTER ITEMS (ระบบกรอง)
-			-- ==========================================
-			function Dropfunc:FilterItems(query)
-				query = query:lower()
-				
-				for _, item in pairs(Scroll_Items:GetChildren()) do
-					if item:IsA("TextButton") then
-						local itemText = item.Text:lower()
-						if query == "" or itemText:find(query, 1, true) then
-							item.Visible = true
-						else
-							item.Visible = false
-						end
-					end
-				end
-			end
-			
-			-- Search Box Input
-			SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-				Dropfunc:FilterItems(SearchBox.Text)
-			end)
-			
-			-- ==========================================
-			-- CLEAR ITEMS
-			-- ==========================================
-			function Dropfunc:Clear()
-				for i, v in next, Scroll_Items:GetChildren() do
-					if v:IsA("TextButton") then
-						v:Destroy()
-					end
-				end
-			end
-			
-			-- ==========================================
-			-- ADD ITEM
-			-- ==========================================
-			function Dropfunc:Add(Text)
-				local _5 = Instance.new("TextButton")
-				local UICorner_9 = Instance.new("UICorner")
-				
-				_5.Name = Text
-				_5.Parent = Scroll_Items
-				_5.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-				_5.BorderSizePixel = 0
-				_5.ClipsDescendants = true
-				_5.Size = UDim2.new(1, -10, 0, 30)
-				_5.ZIndex = 17
-				_5.AutoButtonColor = false
-				_5.Font = Enum.Font.GothamBold
-				_5.Text = Text
-				_5.TextColor3 = Color3.fromRGB(255, 255, 255)
-				_5.TextSize = 12.000
-				
-				UICorner_9.CornerRadius = UDim.new(0, 4)
-				UICorner_9.Parent = _5
-				
-				local UIStroke96 = Instance.new("UIStroke")
-				UIStroke96.Thickness = 1.2
-				UIStroke96.Parent = _5
-				UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-				UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
-				UIStroke96.Color = _G.Color
-				UIStroke96.Transparency = 1
-				
-				-- Highlight default
-				if Text == default then
-					TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-						{TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
-				end
-				
-				_5.MouseEnter:Connect(function()
-					TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-						{Transparency = 0.10}):Play()
-				end)
-				
-				_5.MouseLeave:Connect(function()
-					TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-						{Transparency = 1}):Play()
-				end)
-				
-				_5.MouseButton1Click:Connect(function()
-					Tof = false
-					Dropfunc:TogglePanel(Tof)
-					callback(Text)
-					Text_2.Text = Text
-					
-					-- Reset colors
-					for i, v in pairs(Scroll_Items:GetChildren()) do
-						if v:IsA("TextButton") and v.TextColor3 == Color3.fromRGB(0, 200, 200) then
-							TweenService:Create(v, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-								{TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
-						end
-					end
-					
-					-- Highlight selected
-					TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-						{TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
-				end)
-			end
-			
-			-- Add initial items
-			for i, v in next, list do
-				Dropfunc:Add(v)
-			end
-			
-			return Dropfunc
 		end
-
-		function functionitem:AddSearchableMultiDropdown(options)
-			local text = options.Name
-			local Flag = options.Flag
-			local default = options.Value or {}  -- รองรับ table ของ default values
-			local list = options.List
-			local callback = options.Callback
+		
+		local Tof = false
+		ImageButton.MouseButton1Click:Connect(function()
+			Tof = not Tof
+			Dropfunc:TogglePanel(Tof)
+		end)
+		
+		v.MouseButton1Click:Connect(function()
+			Tof = not Tof
+			Dropfunc:TogglePanel(Tof)
+		end)
+		
+		-- ==========================================
+		-- FILTER ITEMS (ระบบกรอง)
+		-- ==========================================
+		function Dropfunc:FilterItems(query)
+			query = query:lower()
 			
-			local Dropfunc = {}
-			local DropTable = {}  -- เก็บ items ที่เลือกไว้
-			
-			-- โหลด default values
-			for _, v in ipairs(default) do
-				if not table.find(DropTable, v) then
-					table.insert(DropTable, v)
-				end
-			end
-			
-			-- Main Container
-			local MainDropDown = Instance.new("Frame")
-			local UICorner_7 = Instance.new("UICorner")
-			local MainDropDown_2 = Instance.new("Frame")
-			local UICorner_8 = Instance.new("UICorner")
-			local v = Instance.new("TextButton")
-			local Text_2 = Instance.new("TextLabel")
-			local ImageButton = Instance.new("ImageButton")
-			
-			-- Search Box
-			local SearchBox = Instance.new("TextBox")
-			local SearchBoxCorner = Instance.new("UICorner")
-			
-			local Scroll_Items = Instance.new("ScrollingFrame")
-			local UIListLayout_3 = Instance.new("UIListLayout")
-			local UIPadding_3 = Instance.new("UIPadding")
-			
-			MainDropDown.Name = text
-			MainDropDown.Parent = SectionContainer
-			MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-			MainDropDown.BackgroundTransparency = 0.700
-			MainDropDown.BorderSizePixel = 0
-			MainDropDown.ClipsDescendants = true
-			MainDropDown.Size = UDim2.new(0, 265, 0, 35)
-			MainDropDown.ZIndex = 16
-			
-			local UIStroke96 = Instance.new("UIStroke")
-			UIStroke96.Thickness = 1.2
-			UIStroke96.Parent = MainDropDown
-			UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-			UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
-			UIStroke96.Color = _G.Color
-			UIStroke96.Transparency = 1
-			
-			MainDropDown.MouseEnter:Connect(function()
-				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-					{Transparency = 0.10}):Play()
-			end)
-			
-			MainDropDown.MouseLeave:Connect(function()
-				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
-					{Transparency = 1}):Play()
-			end)
-			
-			UICorner_7.CornerRadius = UDim.new(0, 4)
-			UICorner_7.Parent = MainDropDown
-			
-			MainDropDown_2.Name = "MainDropDown"
-			MainDropDown_2.Parent = MainDropDown
-			MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-			MainDropDown_2.BackgroundTransparency = 0.700
-			MainDropDown_2.BorderSizePixel = 0
-			MainDropDown_2.ClipsDescendants = true
-			MainDropDown_2.Size = UDim2.new(1, 0, 0, 35)
-			MainDropDown_2.ZIndex = 16
-			
-			UICorner_8.CornerRadius = UDim.new(0, 4)
-			UICorner_8.Parent = MainDropDown_2
-			
-			v.Name = "v"
-			v.Parent = MainDropDown_2
-			v.BackgroundTransparency = 1.000
-			v.BorderSizePixel = 0
-			v.Size = UDim2.new(1, 0, 1, 0)
-			v.ZIndex = 16
-			v.AutoButtonColor = false
-			v.Text = ""
-			
-			-- TextLabel ที่แสดงผลการเลือก (ปรับให้ชิดซ้ายและตัดข้อความยาว)
-			Text_2.Name = "Text"
-			Text_2.Parent = MainDropDown_2
-			Text_2.BackgroundTransparency = 1.000
-			Text_2.Position = UDim2.new(0, 12, 0, 0)
-			Text_2.Size = UDim2.new(1, -50, 1, 0)  -- เว้นพื้นที่ให้ลูกศร
-			Text_2.ZIndex = 16
-			Text_2.Font = Enum.Font.GothamBold
-			Text_2.TextSize = 13.000
-			Text_2.TextXAlignment = Enum.TextXAlignment.Left
-			Text_2.TextTruncate = Enum.TextTruncate.AtEnd  -- เพิ่ม ... ถ้ายาวเกิน
-			Text_2.Text = "Select items..."
-			Text_2.TextColor3 = Color3.fromRGB(200, 200, 200)
-			
-			ImageButton.Parent = MainDropDown_2
-			ImageButton.BackgroundTransparency = 1.000
-			ImageButton.Position = UDim2.new(1, -25, 0.5, 0)
-			ImageButton.AnchorPoint = Vector2.new(0.5, 0.5)
-			ImageButton.Size = UDim2.new(0, 13, 0, 13)
-			ImageButton.ZIndex = 16
-			ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
-			
-			-- Search Box
-			SearchBox.Name = "SearchBox"
-			SearchBox.Parent = MainDropDown
-			SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-			SearchBox.Position = UDim2.new(0, 10, 0, 40)
-			SearchBox.Size = UDim2.new(0, 245, 0 30)
-			SearchBox.ZIndex = 17
-			SearchBox.Font = Enum.Font.GothamBold
-			SearchBox.PlaceholderText = "🔍 Search items..."
-			SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-			SearchBox.Text = ""
-			SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-			SearchBox.TextSize = 12.000
-			SearchBox.TextXAlignment = Enum.TextXAlignment.Left
-			SearchBox.Visible = false
-			
-			local SearchPadding = Instance.new("UIPadding")
-			SearchPadding.Parent = SearchBox
-			SearchPadding.PaddingLeft = UDim.new(0, 10)
-			
-			SearchBoxCorner.CornerRadius = UDim.new(0, 4)
-			SearchBoxCorner.Parent = SearchBox
-			
-			local SearchStroke = Instance.new("UIStroke")
-			SearchStroke.Thickness = 1
-			SearchStroke.Color = _G.Color
-			SearchStroke.Transparency = 0.5
-			SearchStroke.Parent = SearchBox
-			
-			-- Scroll Items
-			Scroll_Items.Name = "Scroll_Items"
-			Scroll_Items.Parent = MainDropDown
-			Scroll_Items.Active = true
-			Scroll_Items.BackgroundTransparency = 1.000
-			Scroll_Items.BorderSizePixel = 0
-			Scroll_Items.Position = UDim2.new(0, 0, 0, 75)
-			Scroll_Items.Size = UDim2.new(1, 0, 0, 224)  -- ความสูงพอให้เลื่อนได้
-			Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
-			Scroll_Items.ScrollBarThickness = 2
-			Scroll_Items.Visible = false
-			
-			UIListLayout_3.Parent = Scroll_Items
-			UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
-			UIListLayout_3.Padding = UDim.new(0, 5)
-			UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-				Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 10)
-			end)
-			
-			UIPadding_3.Parent = Scroll_Items
-			UIPadding_3.PaddingLeft = UDim.new(0, 10)
-			UIPadding_3.PaddingTop = UDim.new(0, 5)
-			
-			-- ฟังก์ชันอัปเดตข้อความแสดงผล
-			local function UpdateDisplayText()
-				if #DropTable > 0 then
-					Text_2.Text = table.concat(DropTable, ", ")
-					Text_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-				else
-					Text_2.Text = "Select items..."
-					Text_2.TextColor3 = Color3.fromRGB(200, 200, 200)
-				end
-			end
-			
-			-- Toggle Panel
-			function Dropfunc:TogglePanel(state)
-				TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad),
-					{Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
-				TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad),
-					{Rotation = state and 180 or 0}):Play()
-				
-				SearchBox.Visible = state
-				Scroll_Items.Visible = state
-				
-				if state then
-					task.wait(0.1)
-					SearchBox:CaptureFocus()
-				else
-					SearchBox.Text = ""
-					Dropfunc:FilterItems("")
-				end
-			end
-			
-			local Tof = false
-			ImageButton.MouseButton1Click:Connect(function()
-				Tof = not Tof
-				Dropfunc:TogglePanel(Tof)
-			end)
-			
-			v.MouseButton1Click:Connect(function()
-				Tof = not Tof
-				Dropfunc:TogglePanel(Tof)
-			end)
-			
-			-- Filter Items
-			function Dropfunc:FilterItems(query)
-				query = query:lower()
-				for _, item in pairs(Scroll_Items:GetChildren()) do
-					if item:IsA("TextButton") then
-						local itemText = item.Text:lower()
-						item.Visible = query == "" or itemText:find(query, 1, true) ~= nil
-					end
-				end
-			end
-			
-			SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-				Dropfunc:FilterItems(SearchBox.Text)
-			end)
-			
-			-- Clear
-			function Dropfunc:Clear()
-				for _, v in pairs(Scroll_Items:GetChildren()) do
-					if v:IsA("TextButton") then v:Destroy() end
-				end
-				DropTable = {}
-				UpdateDisplayText()
-			end
-			
-			-- Add Item
-			function Dropfunc:Add(Text)
-				local btn = Instance.new("TextButton")
-				local corner = Instance.new("UICorner")
-				
-				btn.Name = Text
-				btn.Parent = Scroll_Items
-				btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-				btn.Size = UDim2.new(1, -10, 0, 30)
-				btn.ZIndex = 17
-				btn.AutoButtonColor = false
-				btn.Font = Enum.Font.GothamBold
-				btn.Text = Text
-				btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-				btn.TextSize = 12.000
-				
-				corner.CornerRadius = UDim.new(0, 4)
-				corner.Parent = btn
-				
-				local stroke = Instance.new("UIStroke")
-				stroke.Thickness = 1.2
-				stroke.Color = _G.Color
-				stroke.Transparency = 1
-				stroke.Parent = btn
-				
-				-- ไฮไลต์ถ้าถูกเลือกอยู่แล้ว
-				if table.find(DropTable, Text) then
-					btn.TextColor3 = Color3.fromRGB(0, 200, 200)
-				end
-				
-				btn.MouseEnter:Connect(function()
-					TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 0.10}):Play()
-				end)
-				btn.MouseLeave:Connect(function()
-					TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
-				end)
-				
-				btn.MouseButton1Click:Connect(function()
-					local found = table.find(DropTable, Text)
-					if not found then
-						table.insert(DropTable, Text)
-						TweenService:Create(btn, TweenInfo.new(.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+			for _, item in pairs(Scroll_Items:GetChildren()) do
+				if item:IsA("TextButton") then
+					local itemText = item.Text:lower()
+					if query == "" or itemText:find(query, 1, true) then
+						item.Visible = true
 					else
-						table.remove(DropTable, found)
-						TweenService:Create(btn, TweenInfo.new(.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+						item.Visible = false
 					end
-					
-					UpdateDisplayText()
-					callback(DropTable)  -- ส่ง table ทั้งหมดกลับไป
-				end)
+				end
 			end
-			
-			-- เพิ่ม items ทั้งหมด
-			for _, v in ipairs(list) do
-				Dropfunc:Add(v)
-			end
-			
-			-- ตั้งค่าข้อความเริ่มต้นให้ถูกต้อง
-			UpdateDisplayText()
-			
-			return Dropfunc
 		end
+		
+		-- Search Box Input
+		SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+			Dropfunc:FilterItems(SearchBox.Text)
+		end)
+		
+		-- ==========================================
+		-- CLEAR ITEMS
+		-- ==========================================
+		function Dropfunc:Clear()
+			for i, v in next, Scroll_Items:GetChildren() do
+				if v:IsA("TextButton") then
+					v:Destroy()
+				end
+			end
+		end
+		
+		-- ==========================================
+		-- ADD ITEM
+		-- ==========================================
+		function Dropfunc:Add(Text)
+			local _5 = Instance.new("TextButton")
+			local UICorner_9 = Instance.new("UICorner")
+			
+			_5.Name = Text
+			_5.Parent = Scroll_Items
+			_5.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			_5.BorderSizePixel = 0
+			_5.ClipsDescendants = true
+			_5.Size = UDim2.new(1, -10, 0, 30)
+			_5.ZIndex = 17
+			_5.AutoButtonColor = false
+			_5.Font = Enum.Font.GothamBold
+			_5.Text = Text
+			_5.TextColor3 = Color3.fromRGB(255, 255, 255)
+			_5.TextSize = 12.000
+			
+			UICorner_9.CornerRadius = UDim.new(0, 4)
+			UICorner_9.Parent = _5
+			
+			local UIStroke96 = Instance.new("UIStroke")
+			UIStroke96.Thickness = 1.2
+			UIStroke96.Parent = _5
+			UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+			UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
+			UIStroke96.Color = _G.Color
+			UIStroke96.Transparency = 1
+			
+			-- Highlight default
+			if Text == default then
+				TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+			end
+			
+			_5.MouseEnter:Connect(function()
+				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{Transparency = 0.10}):Play()
+			end)
+			
+			_5.MouseLeave:Connect(function()
+				TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{Transparency = 1}):Play()
+			end)
+			
+			_5.MouseButton1Click:Connect(function()
+				Tof = false
+				Dropfunc:TogglePanel(Tof)
+				callback(Text)
+				Text_2.Text = Text
+				
+				-- Reset colors
+				for i, v in pairs(Scroll_Items:GetChildren()) do
+					if v:IsA("TextButton") and v.TextColor3 == Color3.fromRGB(0, 200, 200) then
+						TweenService:Create(v, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+							{TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+					end
+				end
+				
+				-- Highlight selected
+				TweenService:Create(_5, TweenInfo.new(.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+					{TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+			end)
+		end
+		
+		-- Add initial items
+		for i, v in next, list do
+			Dropfunc:Add(v)
+		end
+		
+		return Dropfunc
+	end
+
+	function functionitem:AddSearchableMultiDropdown(options)
+		local text = options.Name
+		local Flag = options.Flag
+		local default = options.Value or {}  -- รองรับ table ของ default values
+		local list = options.List
+		local callback = options.Callback
+		
+		local Dropfunc = {}
+		local DropTable = {}  -- เก็บ items ที่เลือกไว้
+		
+		-- โหลด default values
+		for _, v in ipairs(default) do
+			if not table.find(DropTable, v) then
+				table.insert(DropTable, v)
+			end
+		end
+		
+		-- Main Container
+		local MainDropDown = Instance.new("Frame")
+		local UICorner_7 = Instance.new("UICorner")
+		local MainDropDown_2 = Instance.new("Frame")
+		local UICorner_8 = Instance.new("UICorner")
+		local v = Instance.new("TextButton")
+		local Text_2 = Instance.new("TextLabel")
+		local ImageButton = Instance.new("ImageButton")
+		
+		-- Search Box
+		local SearchBox = Instance.new("TextBox")
+		local SearchBoxCorner = Instance.new("UICorner")
+		
+		local Scroll_Items = Instance.new("ScrollingFrame")
+		local UIListLayout_3 = Instance.new("UIListLayout")
+		local UIPadding_3 = Instance.new("UIPadding")
+		
+		MainDropDown.Name = text
+		MainDropDown.Parent = SectionContainer
+		MainDropDown.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		MainDropDown.BackgroundTransparency = 0.700
+		MainDropDown.BorderSizePixel = 0
+		MainDropDown.ClipsDescendants = true
+		MainDropDown.Size = UDim2.new(0, 265, 0, 35)
+		MainDropDown.ZIndex = 16
+		
+		local UIStroke96 = Instance.new("UIStroke")
+		UIStroke96.Thickness = 1.2
+		UIStroke96.Parent = MainDropDown
+		UIStroke96.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+		UIStroke96.LineJoinMode = Enum.LineJoinMode.Round
+		UIStroke96.Color = _G.Color
+		UIStroke96.Transparency = 1
+		
+		MainDropDown.MouseEnter:Connect(function()
+			TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+				{Transparency = 0.10}):Play()
+		end)
+		
+		MainDropDown.MouseLeave:Connect(function()
+			TweenService:Create(UIStroke96, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), 
+				{Transparency = 1}):Play()
+		end)
+		
+		UICorner_7.CornerRadius = UDim.new(0, 4)
+		UICorner_7.Parent = MainDropDown
+		
+		MainDropDown_2.Name = "MainDropDown"
+		MainDropDown_2.Parent = MainDropDown
+		MainDropDown_2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+		MainDropDown_2.BackgroundTransparency = 0.700
+		MainDropDown_2.BorderSizePixel = 0
+		MainDropDown_2.ClipsDescendants = true
+		MainDropDown_2.Size = UDim2.new(1, 0, 0, 35)
+		MainDropDown_2.ZIndex = 16
+		
+		UICorner_8.CornerRadius = UDim.new(0, 4)
+		UICorner_8.Parent = MainDropDown_2
+		
+		v.Name = "v"
+		v.Parent = MainDropDown_2
+		v.BackgroundTransparency = 1.000
+		v.BorderSizePixel = 0
+		v.Size = UDim2.new(1, 0, 1, 0)
+		v.ZIndex = 16
+		v.AutoButtonColor = false
+		v.Text = ""
+		
+		-- TextLabel ที่แสดงผลการเลือก (ปรับให้ชิดซ้ายและตัดข้อความยาว)
+		Text_2.Name = "Text"
+		Text_2.Parent = MainDropDown_2
+		Text_2.BackgroundTransparency = 1.000
+		Text_2.Position = UDim2.new(0, 12, 0, 0)
+		Text_2.Size = UDim2.new(1, -50, 1, 0)  -- เว้นพื้นที่ให้ลูกศร
+		Text_2.ZIndex = 16
+		Text_2.Font = Enum.Font.GothamBold
+		Text_2.TextSize = 13.000
+		Text_2.TextXAlignment = Enum.TextXAlignment.Left
+		Text_2.TextTruncate = Enum.TextTruncate.AtEnd  -- เพิ่ม ... ถ้ายาวเกิน
+		Text_2.Text = "Select items..."
+		Text_2.TextColor3 = Color3.fromRGB(200, 200, 200)
+		
+		ImageButton.Parent = MainDropDown_2
+		ImageButton.BackgroundTransparency = 1.000
+		ImageButton.Position = UDim2.new(1, -25, 0.5, 0)
+		ImageButton.AnchorPoint = Vector2.new(0.5, 0.5)
+		ImageButton.Size = UDim2.new(0, 13, 0, 13)
+		ImageButton.ZIndex = 16
+		ImageButton.Image = "http://www.roblox.com/asset/?id=6282522798"
+		
+		-- Search Box
+		SearchBox.Name = "SearchBox"
+		SearchBox.Parent = MainDropDown
+		SearchBox.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+		SearchBox.Position = UDim2.new(0, 10, 0, 40)
+		SearchBox.Size = UDim2.new(0, 245, 0 30)
+		SearchBox.ZIndex = 17
+		SearchBox.Font = Enum.Font.GothamBold
+		SearchBox.PlaceholderText = "🔍 Search items..."
+		SearchBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+		SearchBox.Text = ""
+		SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SearchBox.TextSize = 12.000
+		SearchBox.TextXAlignment = Enum.TextXAlignment.Left
+		SearchBox.Visible = false
+		
+		local SearchPadding = Instance.new("UIPadding")
+		SearchPadding.Parent = SearchBox
+		SearchPadding.PaddingLeft = UDim.new(0, 10)
+		
+		SearchBoxCorner.CornerRadius = UDim.new(0, 4)
+		SearchBoxCorner.Parent = SearchBox
+		
+		local SearchStroke = Instance.new("UIStroke")
+		SearchStroke.Thickness = 1
+		SearchStroke.Color = _G.Color
+		SearchStroke.Transparency = 0.5
+		SearchStroke.Parent = SearchBox
+		
+		-- Scroll Items
+		Scroll_Items.Name = "Scroll_Items"
+		Scroll_Items.Parent = MainDropDown
+		Scroll_Items.Active = true
+		Scroll_Items.BackgroundTransparency = 1.000
+		Scroll_Items.BorderSizePixel = 0
+		Scroll_Items.Position = UDim2.new(0, 0, 0, 75)
+		Scroll_Items.Size = UDim2.new(1, 0, 0, 224)  -- ความสูงพอให้เลื่อนได้
+		Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, 0)
+		Scroll_Items.ScrollBarThickness = 2
+		Scroll_Items.Visible = false
+		
+		UIListLayout_3.Parent = Scroll_Items
+		UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout_3.Padding = UDim.new(0, 5)
+		UIListLayout_3:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+			Scroll_Items.CanvasSize = UDim2.new(0, 0, 0, UIListLayout_3.AbsoluteContentSize.Y + 10)
+		end)
+		
+		UIPadding_3.Parent = Scroll_Items
+		UIPadding_3.PaddingLeft = UDim.new(0, 10)
+		UIPadding_3.PaddingTop = UDim.new(0, 5)
+		
+		-- ฟังก์ชันอัปเดตข้อความแสดงผล
+		local function UpdateDisplayText()
+			if #DropTable > 0 then
+				Text_2.Text = table.concat(DropTable, ", ")
+				Text_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+			else
+				Text_2.Text = "Select items..."
+				Text_2.TextColor3 = Color3.fromRGB(200, 200, 200)
+			end
+		end
+		
+		-- Toggle Panel
+		function Dropfunc:TogglePanel(state)
+			TweenService:Create(MainDropDown, TweenInfo.new(.2, Enum.EasingStyle.Quad),
+				{Size = state and UDim2.new(0, 265, 0, 340) or UDim2.new(0, 265, 0, 35)}):Play()
+			TweenService:Create(ImageButton, TweenInfo.new(.2, Enum.EasingStyle.Quad),
+				{Rotation = state and 180 or 0}):Play()
+			
+			SearchBox.Visible = state
+			Scroll_Items.Visible = state
+			
+			if state then
+				task.wait(0.1)
+				SearchBox:CaptureFocus()
+			else
+				SearchBox.Text = ""
+				Dropfunc:FilterItems("")
+			end
+		end
+		
+		local Tof = false
+		ImageButton.MouseButton1Click:Connect(function()
+			Tof = not Tof
+			Dropfunc:TogglePanel(Tof)
+		end)
+		
+		v.MouseButton1Click:Connect(function()
+			Tof = not Tof
+			Dropfunc:TogglePanel(Tof)
+		end)
+		
+		-- Filter Items
+		function Dropfunc:FilterItems(query)
+			query = query:lower()
+			for _, item in pairs(Scroll_Items:GetChildren()) do
+				if item:IsA("TextButton") then
+					local itemText = item.Text:lower()
+					item.Visible = query == "" or itemText:find(query, 1, true) ~= nil
+				end
+			end
+		end
+		
+		SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+			Dropfunc:FilterItems(SearchBox.Text)
+		end)
+		
+		-- Clear
+		function Dropfunc:Clear()
+			for _, v in pairs(Scroll_Items:GetChildren()) do
+				if v:IsA("TextButton") then v:Destroy() end
+			end
+			DropTable = {}
+			UpdateDisplayText()
+		end
+		
+		-- Add Item
+		function Dropfunc:Add(Text)
+			local btn = Instance.new("TextButton")
+			local corner = Instance.new("UICorner")
+			
+			btn.Name = Text
+			btn.Parent = Scroll_Items
+			btn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+			btn.Size = UDim2.new(1, -10, 0, 30)
+			btn.ZIndex = 17
+			btn.AutoButtonColor = false
+			btn.Font = Enum.Font.GothamBold
+			btn.Text = Text
+			btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+			btn.TextSize = 12.000
+			
+			corner.CornerRadius = UDim.new(0, 4)
+			corner.Parent = btn
+			
+			local stroke = Instance.new("UIStroke")
+			stroke.Thickness = 1.2
+			stroke.Color = _G.Color
+			stroke.Transparency = 1
+			stroke.Parent = btn
+			
+			-- ไฮไลต์ถ้าถูกเลือกอยู่แล้ว
+			if table.find(DropTable, Text) then
+				btn.TextColor3 = Color3.fromRGB(0, 200, 200)
+			end
+			
+			btn.MouseEnter:Connect(function()
+				TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 0.10}):Play()
+			end)
+			btn.MouseLeave:Connect(function()
+				TweenService:Create(stroke, TweenInfo.new(0.4), {Transparency = 1}):Play()
+			end)
+			
+			btn.MouseButton1Click:Connect(function()
+				local found = table.find(DropTable, Text)
+				if not found then
+					table.insert(DropTable, Text)
+					TweenService:Create(btn, TweenInfo.new(.2), {TextColor3 = Color3.fromRGB(0, 200, 200)}):Play()
+				else
+					table.remove(DropTable, found)
+					TweenService:Create(btn, TweenInfo.new(.2), {TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+				end
+				
+				UpdateDisplayText()
+				callback(DropTable)  -- ส่ง table ทั้งหมดกลับไป
+			end)
+		end
+		
+		-- เพิ่ม items ทั้งหมด
+		for _, v in ipairs(list) do
+			Dropfunc:Add(v)
+		end
+		
+		-- ตั้งค่าข้อความเริ่มต้นให้ถูกต้อง
+		UpdateDisplayText()
+		
+		return Dropfunc
+	end
 
 
 			function functionitem:AddSlider(options)
@@ -2764,7 +2763,6 @@ end)
 					end
 				end)
 			end
-
 			return functionitem
 		end
 		return sections

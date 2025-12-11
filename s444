@@ -1,4 +1,4 @@
-print("Loaded[wwwww]")
+print("Loaded[ewew]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -713,6 +713,60 @@ end
 
 local searchDebounce = false
 
+function SearchSystem:NavigateToItem(item)
+    local targetTab = nil
+    
+    -- Find and click the tab
+    for _, tab in pairs(TabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab:FindFirstChild("TextLabel") then
+            local tabText = tab.TextLabel.Text:match("^([^%s]+)")
+            if tabText and tabText:lower() == item.Tab:lower() then
+                targetTab = tab
+                -- Simulate tab click
+                tab.MouseButton1Click:Fire()
+                break
+            end
+        end
+    end
+    
+    if item.Object and item.Object.Parent then
+        local obj = item.Object
+        local originalColor = obj.BackgroundColor3
+        
+        -- Flash effect
+        for i = 1, 3 do
+            task.spawn(function()
+                task.wait(i * 0.25)
+                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+                    {BackgroundColor3 = _G.Color}):Play()
+                task.wait(0.15)
+                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
+                    {BackgroundColor3 = originalColor}):Play()
+            end)
+        end
+        
+        -- Auto scroll to item
+        local scrollFrame = obj.Parent
+        while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
+            scrollFrame = scrollFrame.Parent
+        end
+        
+        if scrollFrame then
+            local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
+            task.wait(0.1)
+            TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad),
+                {CanvasPosition = Vector2.new(0, math.max(0, itemPosition - 50))}):Play()
+        end
+    end
+    
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "🔍 Found",
+        Text = item.Name,
+        Duration = 2,
+        Icon = "rbxassetid://6034509993"
+    })
+end
+
 function SearchSystem:PerformSearch(query)
     if searchDebounce then return end
     searchDebounce = true
@@ -867,59 +921,7 @@ function SearchSystem:PerformSearch(query)
     searchDebounce = false
 end
 
-function SearchSystem:NavigateToItem(item)
-    local targetTab = nil
-    
-    -- Find and click the tab
-    for _, tab in pairs(TabContainer:GetChildren()) do
-        if tab:IsA("TextButton") and tab:FindFirstChild("TextLabel") then
-            local tabText = tab.TextLabel.Text:match("^([^%s]+)")
-            if tabText and tabText:lower() == item.Tab:lower() then
-                targetTab = tab
-                -- Simulate tab click
-                tab.MouseButton1Click:Fire()
-                break
-            end
-        end
-    end
-    
-    if item.Object and item.Object.Parent then
-        local obj = item.Object
-        local originalColor = obj.BackgroundColor3
-        
-        -- Flash effect
-        for i = 1, 3 do
-            task.spawn(function()
-                task.wait(i * 0.25)
-                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-                    {BackgroundColor3 = _G.Color}):Play()
-                task.wait(0.15)
-                TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad),
-                    {BackgroundColor3 = originalColor}):Play()
-            end)
-        end
-        
-        -- Auto scroll to item
-        local scrollFrame = obj.Parent
-        while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
-            scrollFrame = scrollFrame.Parent
-        end
-        
-        if scrollFrame then
-            local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
-            task.wait(0.1)
-            TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad),
-                {CanvasPosition = Vector2.new(0, math.max(0, itemPosition - 50))}):Play()
-        end
-    end
-    
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "🔍 Found",
-        Text = item.Name,
-        Duration = 2,
-        Icon = "rbxassetid://6034509993"
-    })
-end
+
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     SearchSystem:PerformSearch(SearchBox.Text)

@@ -1,4 +1,4 @@
-print("Loaded[sssssssssssssss]")
+print("Loaded[ddddddddd]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -2039,7 +2039,6 @@ function functionitem:Textbox(...)
     
     return
 end
-
 -- ==========================================
 -- 🔥 IMPROVED Dropdown Function
 -- ==========================================
@@ -2303,6 +2302,25 @@ function functionitem:Dropdown(...)
         end)
 
         btn.MouseButton1Click:Connect(function()
+            -- Check if clicking same button again (toggle off)
+            if selectedButton == btn then
+                -- Deselect
+                TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+                
+                currentValue = ""
+                selectedButton = nil
+                ValueLabel.Text = "None"
+                ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+                
+                pcall(Callback, "")
+                task.wait(0.1)
+                Dropfunc:TogglePanel(false)
+                return
+            end
+
             -- Reset old button
             if selectedButton then
                 TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
@@ -2350,7 +2368,20 @@ function functionitem:Dropdown(...)
 
     -- === External Functions ===
     function Dropfunc:Update(value)
-        if table.find(list, value) then
+        if value == "" or value == nil then
+            -- Clear selection
+            if selectedButton then
+                TweenService:Create(selectedButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), {
+                    TextColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+                }):Play()
+            end
+            currentValue = ""
+            ValueLabel.Text = "None"
+            ValueLabel.TextColor3 = Color3.fromRGB(150, 150, 150)
+            selectedButton = nil
+            pcall(Callback, "")
+        elseif table.find(list, value) then
             currentValue = value
             ValueLabel.Text = value
             ValueLabel.TextColor3 = Color3.fromRGB(0, 200, 200)

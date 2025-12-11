@@ -1,4 +1,4 @@
-print("Loadedwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0]")
+print("Loaded[kuyyyyyyyyyyyyyyyyyyyyyy]")
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
@@ -866,6 +866,7 @@ function SearchSystem:NavigateToItem(item)
     print("📂 [NAVIGATE] Looking for Tab: '" .. item.Tab .. "'")
     
     local foundTab = nil
+    local foundPage = nil
     
     -- หา Tab ที่ตรงกัน
     for _, tab in pairs(TabContainer:GetChildren()) do
@@ -874,7 +875,6 @@ function SearchSystem:NavigateToItem(item)
             if textLabel then
                 local fullText = textLabel.Text:gsub(" ", ""):lower()
                 local searchTab = item.Tab:lower()
-                print(" Checking: '" .. fullText .. "' vs '" .. searchTab .. "'")
                 if fullText == searchTab or fullText:find(searchTab, 1, true) then
                     print(" ✅ FOUND TAB!")
                     foundTab = tab
@@ -894,14 +894,13 @@ function SearchSystem:NavigateToItem(item)
         return
     end
     
-    -- ✅ ซ่อนทั้งหมด แล้วแสดงแค่ Tab และ Object ที่เป้าหมาย
+    -- ✅ แสดง Tab ทั้งหมด (กลับสภาพเดิม)
     local tabParent = foundTab.Parent
     for _, tab in pairs(tabParent:GetChildren()) do
-        if tab:IsA("TextButton") and tab.Name == "Tab" then
-            tab.Visible = false
+        if tab:IsA("GuiObject") then
+            tab.Visible = true
         end
     end
-    foundTab.Visible = true
     
     print("🖱️ [NAVIGATE] Tab set to visible")
     task.wait(0.6)
@@ -917,15 +916,13 @@ function SearchSystem:NavigateToItem(item)
         return
     end
     
-    -- ✅ ซ่อน siblings ของ Object แล้วแสดงแค่เป้าหมาย
-local tabParent = foundTab.Parent
-for _, tab in pairs(tabParent:GetChildren()) do
-    if tab:IsA("GuiObject") then
-        tab.Visible = false
+    -- ✅ หา Page ของ Object และแสดงทั้งหมด
+    local objectParent = item.Object.Parent
+    for _, obj in pairs(objectParent:GetChildren()) do
+        if obj:IsA("GuiObject") then
+            obj.Visible = true
+        end
     end
-end
-foundTab.Visible = true
-    item.Object.Visible = true
     
     local obj = item.Object
     print("✅ [NAVIGATE] Object found: " .. obj.Name)

@@ -1639,7 +1639,7 @@ end)
         UIListLayout_2.Padding = UDim.new(0, 10)
 
         UIPadding_2.Parent = SectionContainer
-        UIPadding_2.PaddingLeft = UDim.new(0, 5)
+        UIPadding_2.PaddingLeft = UDim.new(0, 15)
 
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)

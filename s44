@@ -1482,11 +1482,11 @@ end)
 
         LeftList.Parent = Left
         LeftList.SortOrder = Enum.SortOrder.LayoutOrder
-        LeftList.Padding = UDim.new(0, 5)
+        LeftList.Padding = UDim.new(0, 15)
 
         RightList.Parent = Right
         RightList.SortOrder = Enum.SortOrder.LayoutOrder
-        RightList.Padding = UDim.new(0, 5)
+        RightList.Padding = UDim.new(0, 15) --ค????
 
         UIListLayout_5.Parent = Page
         UIListLayout_5.FillDirection = Enum.FillDirection.Horizontal

@@ -90,7 +90,7 @@ local Mouse = LocalPlayer:GetMouse()
 local GuiService = game:GetService("GuiService")
 local SoundClick2 = Instance.new("Sound")
 SoundClick2.Name = "Sound Effect"
-SoundClick2.SoundId = "rbxassetid://81776513890582"
+SoundClick2.SoundId = "rbxassetid://3398620867"
 SoundClick2.Volume = 1
 SoundClick2.Parent = game.Workspace
 local UIStroke = Instance.new("UIStroke")
@@ -106,7 +106,7 @@ ImageButton.Size = UDim2.new(0, 65, 0, 65)
 ImageButton.Draggable = true
 ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BackgroundTransparency = 1
-ImageButton.Image = "rbxassetid://16129235054"
+ImageButton.Image = "rbxassetid://81776513890582"
 function LoadFunction()    
         ImageButton.MouseEnter:Connect(function()
         TweenService:Create(

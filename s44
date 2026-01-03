@@ -1,4 +1,92 @@
-print("Loaded[0]")
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "CustomNotifications"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.DisplayOrder = 999
+ScreenGui.Parent = PlayerGui
+
+local Padding = Instance.new("UIPadding", ScreenGui)
+Padding.PaddingTop = UDim.new(0, 60)  
+
+local NotificationTemplate = Instance.new("Frame")
+NotificationTemplate.Name = "NotificationTemplate"
+NotificationTemplate.Size = UDim2.new(0, 600, 0, 80)
+NotificationTemplate.Position = UDim2.new(0.5, -300, 0, 4)
+NotificationTemplate.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+NotificationTemplate.BackgroundTransparency = 1
+NotificationTemplate.BorderSizePixel = 0
+NotificationTemplate.Visible = false  
+NotificationTemplate.Parent = ScreenGui
+
+local Corner = Instance.new("UICorner", NotificationTemplate)
+Corner.CornerRadius = UDim.new(0, 12)
+
+local Stroke = Instance.new("UIStroke", NotificationTemplate)
+Stroke.Color = Color3.fromRGB(255, 255, 255)
+Stroke.Transparency = 1
+Stroke.Thickness = 2
+
+local TextLabel = Instance.new("TextLabel", NotificationTemplate)
+TextLabel.Size = UDim2.new(1, -20, 1, -20)
+TextLabel.Position = UDim2.new(0, 10, 0, 10)
+TextLabel.BackgroundTransparency = 1
+TextLabel.TextColor3 = Color3.new(1, 1, 1)
+TextLabel.TextStrokeTransparency = 0.5
+TextLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
+TextLabel.Font = Enum.Font.SourceSansSemibold
+TextLabel.TextSize = 32
+TextLabel.TextYAlignment = Enum.TextYAlignment.Center
+TextLabel.TextXAlignment = Enum.TextXAlignment.Center
+TextLabel.RichText = true
+TextLabel.Text = ""
+
+local Notifications = {}
+local Y_PADDING = 90  
+
+local function UpdatePositions()
+    for i, noti in ipairs(Notifications) do
+        local targetPos = UDim2.new(0.5, -300, 0, Padding.PaddingTop.Offset + (i-1) * Y_PADDING)
+        TweenService:Create(noti.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = targetPos}):Play()
+    end
+end
+
+local function RemoveNotification(noti)
+    local index = table.find(Notifications, noti)
+    if index then table.remove(Notifications, index) end
+    
+    local tweenOut = TweenService:Create(noti.Frame, TweenInfo.new(0.5), {Position = UDim2.new(1.5, 0, noti.Frame.Position.Y.Scale, noti.Frame.Position.Y.Offset)})
+    tweenOut:Play()
+    tweenOut.Completed:Wait()
+    noti.Frame:Destroy()
+    UpdatePositions()
+end
+
+function Notify(message, duration)
+    duration = duration or 6
+    
+    local clone = NotificationTemplate:Clone()
+    clone.Visible = true
+    clone.TextLabel.Text = tostring(message)
+    clone.Parent = ScreenGui
+    
+    local noti = {Frame = clone, Duration = duration, StartTime = tick()}
+    table.insert(Notifications, noti)
+    
+    UpdatePositions()
+    
+    -- หายเองหลังหมดเวลา
+    task.delay(duration, function()
+        if noti.Frame and noti.Frame.Parent then
+            RemoveNotification(noti)
+        end
+    end)
+end
+
+Notify("<font color='rgb(255,255,0)'>Loading...</font>", 3)
 _G.Color = _G.Color or Color3.fromRGB(0, 86, 255)
 local UserInputService = game:GetService("UserInputService")
 local VirtualInputManager = game:GetService("VirtualInputManager")

@@ -191,7 +191,7 @@ ScreenGui.Parent =  game:GetService("CoreGui").RobloxGui.Modules
 ScreenGui.Name = "dsfwefwfwdfsfasdadaxczcw"
 ImageButton.Parent = ScreenGui
 ImageButton.Position = UDim2.new(0.120833337, 0, 0.0952890813, 0)
-ImageButton.Size = UDim2.new(0, 65, 0, 65)
+ImageButton.Size = UDim2.new(0, 55, 0, 55)
 ImageButton.Draggable = true
 ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 ImageButton.BackgroundTransparency = 1
@@ -203,14 +203,14 @@ function LoadFunction()
         TweenService:Create(
             ImageButton,
             TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(0, 80, 0, 80)}
+            {Size = UDim2.new(0, 60, 0, 60)}
         ):Play()
     end)
     ImageButton.MouseLeave:Connect(function()
         TweenService:Create(
             ImageButton,
             TweenInfo.new(.2, Enum.EasingStyle.Back, Enum.EasingDirection.InOut),
-            {Size = UDim2.new(0, 65, 0, 65)}
+            {Size = UDim2.new(0, 55, 0, 55)}
         ):Play()
     end)
     

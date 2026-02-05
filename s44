@@ -659,12 +659,8 @@ function VectorHub:Evil()
     Main.ClipsDescendants = true
     Main.AnchorPoint = Vector2.new(0.5, 0.5)
 
-    IsOnMobile = table.find({Enum.Platform.Android, Enum.Platform.IOS}, game:GetService("UserInputService"):GetPlatform())
-    if IsOnMobile then 
-    Main:TweenSize(UDim2.new(0,588,0,370),"Out","Quad",0.5,false)
-    else
-    Main:TweenSize(UDim2.new(0,588,0,450),"Out","Quad",0.5,false)
-    end
+	local IsOnMobile = table.find({Enum.Platform.IOS, Enum.Platform.Android}, game:GetService("UserInputService"):GetPlatform())
+	if IsOnMobile then Main:TweenSize(UDim2.new(0,588,0,350),"Out","Quad",0.5,false) else Main:TweenSize(UDim2.new(0,588,0,450),"Out","Quad",0.5,false) end
 
     Logo.Name = "Logo"
     Logo.Parent = Main

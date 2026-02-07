@@ -3635,3 +3635,4 @@ RegisterColorDependent("SearchStroke",SearchStroke,"Color")
 		return tabs
 	end
 return VectorHub
+Notify("<font color='rgb(255,0,0)'>ไม่รองรับตัวรันXENOมันกาก\nNot Support xeno</font> ", 5)

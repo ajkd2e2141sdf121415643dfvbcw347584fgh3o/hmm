@@ -2000,7 +2000,7 @@ function functionitem:Toggle(...)
         SoundClick.Name = "SoundEffect"
         SoundClick.SoundId = "rbxassetid://130785805"
         SoundClick.Volume = 1
-        SoundClick.Parent = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        SoundClick.Parent = game.Players.LocalPlayer.Character::FindFirstChild("HumanoidRootPart")
         SoundClick:Play()
         if Tgo == false then
             Tgo = true

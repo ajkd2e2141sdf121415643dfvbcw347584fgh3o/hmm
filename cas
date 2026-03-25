@@ -86,7 +86,6 @@ function Notify(message, duration)
 end
 
 Notify("<font color='rgb(255,255,0)'>Loading...</font>", 3)
-Notify("<font color='rgb(255,0,0)'>ไม่รองรับตัวรันXENOมันกาก\nNot Support xeno</font> ", 5)
 
   --!nolint
 --!nocheck

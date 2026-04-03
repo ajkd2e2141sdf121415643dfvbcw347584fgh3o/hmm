@@ -1277,7 +1277,7 @@ return {
 	Lighting = cast("Lighting") :: Lighting,
 }
 end function __DIST.e():typeof(__modImpl())local v=__DIST.cache.e if not v then v={c=__modImpl()}__DIST.cache.e=v end return v.c end end do local function __modImpl()
-return {
+local symbolData = {
   ["abc"] = "rbxassetid://100440409146443",
   ["abs"] = "rbxassetid://92363621005271",
   ["absBrakesignal"] = "rbxassetid://96650934172241",
@@ -4413,6 +4413,18 @@ return {
   ["zrButtonRoundedtopHorizontal"] = "rbxassetid://107608277098590",
   ["zzz"] = "rbxassetid://137515429343264",
 }
+local cache = {}
+return setmetatable({}, {
+    __index = function(_, key)
+        if cache[key] then return cache[key] end
+        local v = symbolData[key]
+        cache[key] = v
+        return v
+    end,
+    __newindex = function(_, key, value)
+        cache[key] = value
+    end,
+})
 end function __DIST.f():typeof(__modImpl())local v=__DIST.cache.f if not v then v={c=__modImpl()}__DIST.cache.f=v end return v.c end end do local function __modImpl()--[[
 	@original dawid-script/Fluent/src/modules/Acrylic
 ]]
@@ -4554,34 +4566,56 @@ local function createBlur(distance: number?)
 end
 
 return function(frame: GuiObject, distance: number?)
-	local blur = {}
-	local onChange, model = createBlur(distance)
+    -- ✅ เช็คว่าเป็นมือถือไหม (เน้นอุปกรณ์ที่มี Touch เป็นหลัก)
+    local UIS = game:GetService("UserInputService")
+    local isMobile = UIS.TouchEnabled 
+    
+    if isMobile then
+        -- คืนค่า Dummy Object ที่มีโครงสร้างเหมือนตัวจริง แต่ "ไม่ทำงาน"
+        -- วิธีนี้จะช่วยให้สคริปต์ส่วนอื่นที่เรียกใช้ .Model หรือ .SetVisibility ไม่ Error
+        return {
+            SetVisibility = function(value) 
+                -- ไม่ต้องทำอะไร (ประหยัด CPU)
+            end,
+            Model = { 
+                -- ใช้ Table เปล่าหลอกไว้ แทนการสร้าง Part จริง
+                Destroy = function() end,
+                Transparency = 1
+            }
+        }
+    end 
 
-	blur.SetVisibility = function(Value)
-		model.Transparency = Value and 0.98 or 1
-	end
+    -- [ โค้ดส่วน Blur ปกติสำหรับ PC ] --
+    local blur = {}
+    local onChange, model = createBlur(distance)
 
-	frame:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
-		onChange(frame)
-	end)
+    blur.SetVisibility = function(Value)
+        if model then
+            model.Transparency = Value and 0.98 or 1
+        end
+    end
 
-	frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-		onChange(frame)
-	end)
+    -- เชื่อมต่อ Signal ตามปกติ
+    frame:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
+        onChange(frame)
+    end)
 
-	frame:GetPropertyChangedSignal("Visible"):Connect(function()
-		blur.SetVisibility(frame.Visible)
-	end)
+    frame:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
+        onChange(frame)
+    end)
 
-	frame.Destroying:Connect(function()
-		model:Destroy()
-	end)
+    frame:GetPropertyChangedSignal("Visible"):Connect(function()
+        blur.SetVisibility(frame.Visible)
+    end)
 
-	blur.Model = model
+    frame.Destroying:Connect(function()
+        if model then model:Destroy() end
+    end)
 
-	onChange(frame)
+    blur.Model = model
+    onChange(frame)
 
-	return blur
+    return blur
 end
 end function __DIST.g():typeof(__modImpl())local v=__DIST.cache.g if not v then v={c=__modImpl()}__DIST.cache.g=v end return v.c end end do local function __modImpl()
 return {
@@ -6206,19 +6240,19 @@ local effects = __DIST.h()
 
 	do -- Page searching
 		local field = structures.Titlebar.SearchField.Field
-		local pageCaches = {}
+           -- ✅ ใช้ WeakTable ป้องกัน memory leak
+            local pageCaches = setmetatable({}, { __mode = "k" })  -- weak keys
 
-		local function toCache(page, descendants)
-			local cache = {}
-
-			for _, child in ipairs(descendants) do
-				if child:IsA("GuiObject") then
-					cache[child] = child.Visible
-				end
-			end
-			
-			pageCaches[page] = cache
-		end
+            -- ส่วน toCache เหมือนเดิม แต่ cache ข้างในก็ weak ด้วย
+            local function toCache(page, descendants)
+                local cache = setmetatable({}, { __mode = "k" })  -- ✅ weak references
+                for _, child in ipairs(descendants) do
+                    if child:IsA("GuiObject") then
+                        cache[child] = child.Visible
+                    end
+                end
+                pageCaches[page] = cache
+            end
 
 		local function fromCache(page, descendants)
 			local cache = pageCaches[page]
@@ -6405,24 +6439,22 @@ local effects = __DIST.h()
 
 	binder.Apply(properties, object)
 
-	local function recheck() -- Due to roblox resizing issues
-		-- If there's a better way to do this please tell me or make a PR
-		for i, v in pairs(structures.Body:GetDescendants()) do
-			if not pcall(function()
-				return v.Size
-			end) then
-				continue
-			end
-
-			local original = v.Size
-
-			v.Size = UDim2.fromOffset(0, 0)
-			v.Size = original
-		end
-	end
-
-	task.defer(recheck)
-	task.delay(1, recheck)
+        local isMobile =  game:GetService("UserInputService").TouchEnabled and not  game:GetService("UserInputService").KeyboardEnabled
+        if not isMobile then
+            local function recheck()
+                local descendants = structures.Body:GetDescendants()
+                for i = 1, #descendants do
+                    local v = descendants[i]
+                    local ok, size = pcall(function() return v.Size end)
+                    if not ok then continue end
+                    v.Size = UDim2.fromOffset(0, 0)
+                    v.Size = size
+                    -- yield ทุก 50 items ป้องกัน freeze แม้บน PC
+                    if i % 50 == 0 then task.wait() end
+                end
+            end
+            task.defer(recheck)
+        end
 
 	return object
 end
@@ -6612,46 +6644,45 @@ local creator = __DIST.d()
 			structures.Disclosure.Visible = state
 			structures.SidebarGroup.Active = state
 		end,
-		Expanded = function(state: boolean, tween: boolean?)
-			tween = (tween == nil and true) or false
+        -- ✅ แก้ Expanded binding ใน __DIST.m()
+        Expanded = function(state: boolean, tween: boolean?)
+            -- แก้ไข logic ให้รองรับทั้ง true/false/nil
+            local useTween = (tween == nil) or tween 
 
-			local sidebarGroup = structures.SidebarGroup.__instance
-			local disclosureImage = structures.DisclosureImage
+            local sidebarGroup = structures.SidebarGroup.__instance
+            local disclosureImage = structures.DisclosureImage
 
-			sidebarGroup.AutomaticSize = Enum.AutomaticSize.None
+            sidebarGroup.AutomaticSize = Enum.AutomaticSize.None
 
-			for index, connection: RBXScriptConnection in pairs(connections) do
-				connection:Disconnect()
-				table.remove(connections, index)
-			end
+            -- ✅ Disconnect แบบปลอดภัยและสะอาดที่สุด
+            for _, connection in ipairs(connections) do
+                if connection then connection:Disconnect() end
+            end
+            table.clear(connections) 
 
-			local updateSize = function(useTween: boolean)
-				local targetHeight = state and structures.Layout.AbsoluteContentSize.Y or 23
-				local tween = tweenService:Create(
-					sidebarGroup,
-					TweenInfo.new(useTween and 0.35 or 0, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
-					{
-						Size = UDim2.new(1, 0, 0, targetHeight),
-					}
-				)
-				tween:Play()
-			end
+            local updateSize = function(shouldTween: boolean)
+                local targetHeight = state and structures.Layout.AbsoluteContentSize.Y or 23
+                -- เปลี่ยนชื่อตัวแปรข้างในไม่ให้ซ้ำกับข้างนอก
+                local tweenObject = tweenService:Create(
+                    sidebarGroup,
+                    TweenInfo.new(shouldTween and 0.35 or 0, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
+                    { Size = UDim2.new(1, 0, 0, targetHeight) }
+                )
+                tweenObject:Play()
+            end
 
-			if state then
-				watchAutosize(sidebarGroup, connections, updateSize, false)
-			end
+            if state then
+                watchAutosize(sidebarGroup, connections, updateSize, false)
+            end
 
-			updateSize(tween)
-			tweenService
-				:Create(
-					disclosureImage,
-					TweenInfo.new(tween and 0.35 or 0, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
-					{
-						Rotation = state and 0 or -90,
-					}
-				)
-				:Play()
-		end,
+            updateSize(useTween)
+            
+            tweenService:Create(
+                disclosureImage,
+                TweenInfo.new(useTween and 0.35 or 0, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
+                { Rotation = state and 0 or -90 }
+            ):Play()
+        end,
 	}
 	local object = binder.Wrap(properties, bindings, structures.SidebarGroup)
 
@@ -8832,36 +8863,50 @@ local create = creator.Create
 		object.Value = math.clamp(newValue, properties.Minimum, properties.Maximum)
 	end
 
-	local function stepStart(direction: string)
-		holding = true
+    local MAX_REPEAT = 200
 
-		local action = (direction == "Up") and object.Increment or object.Decrement
+    local function stepStart(direction: string)
+        -- 1. เคลียร์ Thread เก่าทิ้งก่อนเสมอ (กัน Spam)
+        if stepConnections[direction] then
+            task.cancel(stepConnections[direction])
+            stepConnections[direction] = nil
+        end
 
-		stepConnections[direction] = task.spawn(function()
-			if  holding then
-				task.wait(repeatDelay)
-			end
+        holding = true
+        local action = (direction == "Up") and object.Increment or object.Decrement
 
-			if not  holding then return end
+        stepConnections[direction] = task.spawn(function()
+            -- รอดีเลย์ช่วงแรก
+            task.wait(repeatDelay)
+            
+            -- เช็คอีกรอบว่ายังกดค้างอยู่ไหม
+            if not holding then return end
+            
+            local count = 0
+            -- ใช้ Loop ที่เช็คทั้งสถานะการกดและ Limit
+            while holding and count < MAX_REPEAT do
+                -- ทำงานก่อนแล้วค่อยรอ จะทำให้ความรู้สึกตอนกดมันติดมือกว่า (Responsive)
+                action()
+                count += 1
+                
+                task.wait(repeatInterval)
+            end
+            
+            -- ✅ จบการทำงานให้เคลียร์ทิ้ง
+            stepConnections[direction] = nil
+            -- ถ้าชน Max Repeat จริงๆ อาจจะใส่ Notify บอกผู้เล่นนิดนึงก็ได้ครับพี่
+        end)
+    end
 
-			action()
+    -- อย่าลืมฟังก์ชันหยุด (Stop)
+    local function stepStop(direction: string)
+        holding = false
+        if stepConnections[direction] then
+            task.cancel(stepConnections[direction])
+            stepConnections[direction] = nil
+        end
+    end
 
-			while  holding do
-				task.wait(repeatInterval)
-				if  holding then
-					action()
-				end
-			end
-		end)
-	end
-
-	local function stepStop(direction: string)
-		 holding = false
-		if stepConnections[direction] then
-			task.cancel(stepConnections[direction])
-			stepConnections[direction] = nil
-		end
-	end
 
 	structures.IPlus.MouseButton1Down:Connect(function()
 		object.Increment()
@@ -9763,36 +9808,37 @@ local creator = __DIST.d()
 	structures.Body:GetPropertyChangedSignal("AbsoluteSize"):Connect(anchor)
 	structures.Menu:GetPropertyChangedSignal("AbsoluteSize"):Connect(anchor)
 
-	userInputService.InputBegan:Connect(function(input)
-		if
-			object.Expanded
-			and (
-				input.UserInputType == Enum.UserInputType.MouseButton1
-				or input.UserInputType == Enum.UserInputType.Touch
-			)
-		then
-			local mouse = userInputService:GetMouseLocation()
-			local inset = guiService:GetGuiInset()
-			local menuFrame = structures.Menu
-			local pos = menuFrame.AbsolutePosition
-			local size = menuFrame.AbsoluteSize
+-- ✅ แก้ทั้ง __DIST.F() และ __DIST.G()
 
-			local adjustedMouseY = mouse.Y - inset.Y
+-- เพิ่ม connection variable
+    local inputConn = userInputService.InputBegan:Connect(function(input)
+        if
+            object.Expanded
+            and (
+                input.UserInputType == Enum.UserInputType.MouseButton1
+                or input.UserInputType == Enum.UserInputType.Touch
+            )
+        then
+            local mouse = userInputService:GetMouseLocation()
+            local inset = guiService:GetGuiInset()
+            local menuFrame = structures.Menu
+            local pos = menuFrame.AbsolutePosition
+            local size = menuFrame.AbsoluteSize
+            local adjustedMouseY = mouse.Y - inset.Y
 
-			if
-				mouse.X < pos.X
-				or mouse.X > pos.X + size.X
-				or adjustedMouseY < pos.Y
-				or adjustedMouseY > pos.Y + size.Y
-			then
-				object.Expanded = false
-			end
-		end
-	end)
+            if
+                mouse.X < pos.X or mouse.X > pos.X + size.X
+                or adjustedMouseY < pos.Y or adjustedMouseY > pos.Y + size.Y
+            then
+                object.Expanded = false
+            end
+        end
+    end)
 
-	structures.Body.MouseButton1Click:Connect(function()
-		object.Expanded = not object.Expanded
-	end)
+    -- ✅ disconnect เมื่อ frame ถูก destroy
+    structures.Body.Destroying:Connect(function()
+        inputConn:Disconnect()
+    end)
 
 	return object
 end

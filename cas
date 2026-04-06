@@ -77,7 +77,6 @@ function Notify(message, duration)
     
     UpdatePositions()
     
-    -- หายเองหลังหมดเวลา
     task.delay(duration, function()
         if noti.Frame and noti.Frame.Parent then
             RemoveNotification(noti)
@@ -4566,26 +4565,20 @@ local function createBlur(distance: number?)
 end
 
 return function(frame: GuiObject, distance: number?)
-    -- ✅ เช็คว่าเป็นมือถือไหม (เน้นอุปกรณ์ที่มี Touch เป็นหลัก)
     local UIS = game:GetService("UserInputService")
     local isMobile = UIS.TouchEnabled 
     
     if isMobile then
-        -- คืนค่า Dummy Object ที่มีโครงสร้างเหมือนตัวจริง แต่ "ไม่ทำงาน"
-        -- วิธีนี้จะช่วยให้สคริปต์ส่วนอื่นที่เรียกใช้ .Model หรือ .SetVisibility ไม่ Error
         return {
             SetVisibility = function(value) 
-                -- ไม่ต้องทำอะไร (ประหยัด CPU)
             end,
             Model = { 
-                -- ใช้ Table เปล่าหลอกไว้ แทนการสร้าง Part จริง
                 Destroy = function() end,
                 Transparency = 1
             }
         }
     end 
 
-    -- [ โค้ดส่วน Blur ปกติสำหรับ PC ] --
     local blur = {}
     local onChange, model = createBlur(distance)
 
@@ -4595,7 +4588,6 @@ return function(frame: GuiObject, distance: number?)
         end
     end
 
-    -- เชื่อมต่อ Signal ตามปกติ
     frame:GetPropertyChangedSignal("AbsolutePosition"):Connect(function()
         onChange(frame)
     end)
@@ -6240,10 +6232,8 @@ local effects = __DIST.h()
 
 	do -- Page searching
 		local field = structures.Titlebar.SearchField.Field
-           -- ✅ ใช้ WeakTable ป้องกัน memory leak
             local pageCaches = setmetatable({}, { __mode = "k" })  -- weak keys
 
-            -- ส่วน toCache เหมือนเดิม แต่ cache ข้างในก็ weak ด้วย
             local function toCache(page, descendants)
                 local cache = setmetatable({}, { __mode = "k" })  -- ✅ weak references
                 for _, child in ipairs(descendants) do
@@ -6449,7 +6439,6 @@ local effects = __DIST.h()
                     if not ok then continue end
                     v.Size = UDim2.fromOffset(0, 0)
                     v.Size = size
-                    -- yield ทุก 50 items ป้องกัน freeze แม้บน PC
                     if i % 50 == 0 then task.wait() end
                 end
             end
@@ -6644,9 +6633,7 @@ local creator = __DIST.d()
 			structures.Disclosure.Visible = state
 			structures.SidebarGroup.Active = state
 		end,
-        -- ✅ แก้ Expanded binding ใน __DIST.m()
         Expanded = function(state: boolean, tween: boolean?)
-            -- แก้ไข logic ให้รองรับทั้ง true/false/nil
             local useTween = (tween == nil) or tween 
 
             local sidebarGroup = structures.SidebarGroup.__instance
@@ -6654,7 +6641,6 @@ local creator = __DIST.d()
 
             sidebarGroup.AutomaticSize = Enum.AutomaticSize.None
 
-            -- ✅ Disconnect แบบปลอดภัยและสะอาดที่สุด
             for _, connection in ipairs(connections) do
                 if connection then connection:Disconnect() end
             end
@@ -6662,7 +6648,6 @@ local creator = __DIST.d()
 
             local updateSize = function(shouldTween: boolean)
                 local targetHeight = state and structures.Layout.AbsoluteContentSize.Y or 23
-                -- เปลี่ยนชื่อตัวแปรข้างในไม่ให้ซ้ำกับข้างนอก
                 local tweenObject = tweenService:Create(
                     sidebarGroup,
                     TweenInfo.new(shouldTween and 0.35 or 0, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out),
@@ -8866,7 +8851,6 @@ local create = creator.Create
     local MAX_REPEAT = 200
 
     local function stepStart(direction: string)
-        -- 1. เคลียร์ Thread เก่าทิ้งก่อนเสมอ (กัน Spam)
         if stepConnections[direction] then
             task.cancel(stepConnections[direction])
             stepConnections[direction] = nil
@@ -8876,29 +8860,22 @@ local create = creator.Create
         local action = (direction == "Up") and object.Increment or object.Decrement
 
         stepConnections[direction] = task.spawn(function()
-            -- รอดีเลย์ช่วงแรก
             task.wait(repeatDelay)
             
-            -- เช็คอีกรอบว่ายังกดค้างอยู่ไหม
             if not holding then return end
             
             local count = 0
-            -- ใช้ Loop ที่เช็คทั้งสถานะการกดและ Limit
             while holding and count < MAX_REPEAT do
-                -- ทำงานก่อนแล้วค่อยรอ จะทำให้ความรู้สึกตอนกดมันติดมือกว่า (Responsive)
                 action()
                 count += 1
                 
                 task.wait(repeatInterval)
             end
             
-            -- ✅ จบการทำงานให้เคลียร์ทิ้ง
             stepConnections[direction] = nil
-            -- ถ้าชน Max Repeat จริงๆ อาจจะใส่ Notify บอกผู้เล่นนิดนึงก็ได้ครับพี่
         end)
     end
 
-    -- อย่าลืมฟังก์ชันหยุด (Stop)
     local function stepStop(direction: string)
         holding = false
         if stepConnections[direction] then
@@ -9808,9 +9785,7 @@ local creator = __DIST.d()
 	structures.Body:GetPropertyChangedSignal("AbsoluteSize"):Connect(anchor)
 	structures.Menu:GetPropertyChangedSignal("AbsoluteSize"):Connect(anchor)
 
--- ✅ แก้ทั้ง __DIST.F() และ __DIST.G()
 
--- เพิ่ม connection variable
     local inputConn = userInputService.InputBegan:Connect(function(input)
         if
             object.Expanded
@@ -9835,7 +9810,6 @@ local creator = __DIST.d()
         end
     end)
 
-    -- ✅ disconnect เมื่อ frame ถูก destroy
     structures.Body.Destroying:Connect(function()
         inputConn:Disconnect()
     end)

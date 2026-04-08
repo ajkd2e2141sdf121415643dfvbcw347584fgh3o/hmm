@@ -576,48 +576,125 @@ end
 if _G.SizePage == nil then
     _G.SizePage = 335
 end
-
-local function MakeResizable(resizeHandle, object, minSize, maxSize)
+function MakeResizable(resizeHandle, mainFrame, minSize, maxSize)
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
-
+    
     local Resizing = false
-    local ResizeInput = nil
     local ResizeStart = nil
     local StartSize = nil
-
-    minSize = minSize or Vector2.new(200, 200)
-    maxSize = maxSize or Vector2.new(800, 600)
-
-    local function Update(input)
-        if Resizing then
-            local Delta = input.Position - ResizeStart
-            local newWidth = math.clamp(StartSize.X + Delta.X, minSize.X, maxSize.X)
-            local newHeight = math.clamp(StartSize.Y + Delta.Y, minSize.Y, maxSize.Y)
-            local newSize = UDim2.new(0, newWidth, 0, newHeight)
-
-            local Tween = TweenService:Create(object, TweenInfo.new(0.1), {Size = newSize})
-            
-            -- เมื่อ Tween เสร็จ → อัปเดตความสูง
-            Tween.Completed:Connect(function(playbackState)
-                if playbackState == Enum.PlaybackState.Completed then
-                    if _G.UpdatePageHeight then
-                        _G.UpdatePageHeight(newHeight)  -- แจ้งทุกคนว่า "ความสูงใหม่คือ..."
-                    end
-                end
-            end)
-
-            Tween:Play()
+    
+    -- เก็บขนาดเดิมของทุกส่วนที่จะปรับ
+    local childrenToResize = {}
+    local originalSizes = {}
+    
+    -- ค้นหา child components ที่จำเป็น
+    local bottomFrame = mainFrame:FindFirstChild("Bottom")
+    local topFrame = mainFrame:FindFirstChild("Top")
+    local clickFrame = mainFrame:FindFirstChild("ClickFrame") or mainFrame:FindFirstChild("Top") -- ชื่ออาจต่างกัน
+    local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
+    local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
+    
+    -- หา Left, Right จาก Page แรกที่เจอ (ถือว่าโครงสร้างเหมือนกันทุก Page)
+    local leftFrame, rightFrame
+    if bottomFrame then
+        for _, page in pairs(bottomFrame:GetChildren()) do
+            if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                leftFrame = page:FindFirstChild("Left")
+                rightFrame = page:FindFirstChild("Right")
+                if leftFrame and rightFrame then break end
+            end
         end
     end
-
-    -- ... (InputBegan, InputChanged, etc. เหมือนเดิม)
+    
+    -- บันทึก components ที่ต้อง resize พร้อมขนาดเดิม (UDim2)
+    if bottomFrame then
+        table.insert(childrenToResize, bottomFrame)
+        originalSizes[bottomFrame] = bottomFrame.Size
+    end
+    if topFrame then
+        table.insert(childrenToResize, topFrame)
+        originalSizes[topFrame] = topFrame.Size
+    end
+    if leftFrame then
+        table.insert(childrenToResize, leftFrame)
+        originalSizes[leftFrame] = leftFrame.Size
+    end
+    if rightFrame then
+        table.insert(childrenToResize, rightFrame)
+        originalSizes[rightFrame] = rightFrame.Size
+    end
+    if clickFrame then
+        table.insert(childrenToResize, clickFrame)
+        originalSizes[clickFrame] = clickFrame.Size
+    end
+    if tabContainer then
+        table.insert(childrenToResize, tabContainer)
+        originalSizes[tabContainer] = tabContainer.Size
+    end
+    
+    -- ฟังก์ชันคำนวณขนาดใหม่ตามสัดส่วน
+    local function getNewSize(originalUDim2, widthRatio, heightRatio)
+        local newXOffset = originalUDim2.X.Offset * widthRatio
+        local newYOffset = originalUDim2.Y.Offset * heightRatio
+        return UDim2.new(originalUDim2.X.Scale, newXOffset, originalUDim2.Y.Scale, newYOffset)
+    end
+    
+    local function Update(input)
+        if not Resizing then return end
+        
+        local Delta = input.Position - ResizeStart
+        local newWidth = math.clamp(StartSize.X + Delta.X, minSize.X, maxSize.X)
+        local newHeight = math.clamp(StartSize.Y + Delta.Y, minSize.Y, maxSize.Y)
+        
+        local widthRatio = newWidth / StartSize.X
+        local heightRatio = newHeight / StartSize.Y
+        
+        -- ปรับ Main Frame
+        local newMainSize = UDim2.new(0, newWidth, 0, newHeight)
+        TweenService:Create(mainFrame, TweenInfo.new(0.1), {Size = newMainSize}):Play()
+        
+        -- ปรับทุก child ตามสัดส่วน
+        for _, child in ipairs(childrenToResize) do
+            local orig = originalSizes[child]
+            if orig then
+                local newSize = getNewSize(orig, widthRatio, heightRatio)
+                TweenService:Create(child, TweenInfo.new(0.1), {Size = newSize}):Play()
+            end
+        end
+        
+        -- อัปเดตความสูงของ Left/Right ผ่าน _G.UpdatePageHeight (ถ้ามี)
+        if _G.UpdatePageHeight and leftFrame and rightFrame then
+            local newSideHeight = leftFrame.Size.Y.Offset
+            _G.UpdatePageHeight(newSideHeight)
+        end
+        
+        -- อัปเดต CanvasSize ของ Left/Right เพื่อให้ Scroll ทำงานถูกต้อง
+        if leftFrame and leftFrame:IsA("ScrollingFrame") then
+            local leftList = leftFrame:FindFirstChild("UIListLayout")
+            if leftList then
+                task.defer(function()
+                    leftFrame.CanvasSize = UDim2.new(0, 0, 0, leftList.AbsoluteContentSize.Y + 50)
+                end)
+            end
+        end
+        if rightFrame and rightFrame:IsA("ScrollingFrame") then
+            local rightList = rightFrame:FindFirstChild("UIListLayout")
+            if rightList then
+                task.defer(function()
+                    rightFrame.CanvasSize = UDim2.new(0, 0, 0, rightList.AbsoluteContentSize.Y + 50)
+                end)
+            end
+        end
+    end
+    
+    -- Event handlers
     resizeHandle.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             Resizing = true
             ResizeStart = input.Position
-            StartSize = Vector2.new(object.Size.X.Offset, object.Size.Y.Offset)
-
+            StartSize = Vector2.new(mainFrame.Size.X.Offset, mainFrame.Size.Y.Offset)
+            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     Resizing = false
@@ -625,15 +702,15 @@ local function MakeResizable(resizeHandle, object, minSize, maxSize)
             end)
         end
     end)
-
+    
     resizeHandle.InputChanged:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            ResizeInput = input
+            -- เก็บ input ล่าสุด ไว้ใช้ใน InputChanged ของ UserInputService
         end
     end)
-
+    
     UserInputService.InputChanged:Connect(function(input)
-        if input == ResizeInput and Resizing then
+        if Resizing and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             Update(input)
         end
     end)
@@ -1441,7 +1518,7 @@ end)
     -- ทำให้สามารถลากเพื่อย้ายได้
     MakeDraggable(ClickFrame,Main)
     -- ทำให้สามารถปรับขนาดได้
-    MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600)) 
+MakeResizable(ResizeHandle, Main, Vector2.new(300, 200), Vector2.new(800, 600))
 
     if _G.SizePage == nil then 
         _G.SizePage = 335

@@ -584,70 +584,32 @@ function MakeResizable(resizeHandle, mainFrame, minSize, maxSize)
     local ResizeStart = nil
     local StartSize = nil
     
-    -- เก็บ components ที่ต้องปรับขนาด
-    local childrenToResize = {}
-    local originalSizes = {}
-    
-    -- ค้นหา components สำคัญ
+    -- หา Bottom
     local bottomFrame = mainFrame:FindFirstChild("Bottom")
-    local topFrame = mainFrame:FindFirstChild("Top")
-    local clickFrame = mainFrame:FindFirstChild("ClickFrame") or mainFrame:FindFirstChild("Top")
-    local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
-    local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
-    
-    -- เพิ่ม Bottom, Top, ClickFrame, TabContainer
-    if bottomFrame then
-        table.insert(childrenToResize, bottomFrame)
-        originalSizes[bottomFrame] = bottomFrame.Size
-    end
-    if topFrame then
-        table.insert(childrenToResize, topFrame)
-        originalSizes[topFrame] = topFrame.Size
-    end
-    if clickFrame then
-        table.insert(childrenToResize, clickFrame)
-        originalSizes[clickFrame] = clickFrame.Size
-    end
-    if tabContainer then
-        table.insert(childrenToResize, tabContainer)
-        originalSizes[tabContainer] = tabContainer.Size
+    if not bottomFrame then
+        warn("MakeResizable: Cannot find Bottom")
+        return
     end
     
-    -- หา Page และ Left/Right
-    local pageFrame = nil
-    local leftFrame = nil
-    local rightFrame = nil
+    -- รวบรวมทุก Page และ Left/Right
+    local pages = {}
+    local leftFrames = {}
+    local rightFrames = {}
     
-    if bottomFrame then
-        for _, child in pairs(bottomFrame:GetChildren()) do
-            if child:IsA("ScrollingFrame") and child.Name == "Page" then
-                pageFrame = child
-                -- เพิ่ม Page เข้าไปใน childrenToResize
-                table.insert(childrenToResize, pageFrame)
-                originalSizes[pageFrame] = pageFrame.Size
-                
-                -- หา Left และ Right ข้างใน Page
-                leftFrame = pageFrame:FindFirstChild("Left")
-                rightFrame = pageFrame:FindFirstChild("Right")
-                if leftFrame then
-                    table.insert(childrenToResize, leftFrame)
-                    originalSizes[leftFrame] = leftFrame.Size
-                end
-                if rightFrame then
-                    table.insert(childrenToResize, rightFrame)
-                    originalSizes[rightFrame] = rightFrame.Size
-                end
-                break -- สมมติว่าเจอ Page แรกก็พอ (ทุก Page มีโครงสร้างเหมือนกัน)
-            end
+    for _, page in pairs(bottomFrame:GetChildren()) do
+        if page:IsA("ScrollingFrame") and page.Name == "Page" then
+            table.insert(pages, page)
+            local left = page:FindFirstChild("Left")
+            local right = page:FindFirstChild("Right")
+            if left then table.insert(leftFrames, left) end
+            if right then table.insert(rightFrames, right) end
         end
     end
     
-    -- ฟังก์ชันคำนวณขนาดใหม่ตามสัดส่วน
-    local function getNewSize(originalUDim2, widthRatio, heightRatio)
-        local newXOffset = originalUDim2.X.Offset * widthRatio
-        local newYOffset = originalUDim2.Y.Offset * heightRatio
-        return UDim2.new(originalUDim2.X.Scale, newXOffset, originalUDim2.Y.Scale, newYOffset)
-    end
+    -- เก็บขนาดเดิมของ Left/Right (ถือว่าทุก Left มีขนาดเท่ากัน)
+    local originalLeftSize = #leftFrames > 0 and leftFrames[1].Size or nil
+    local originalRightSize = #rightFrames > 0 and rightFrames[1].Size or nil
+    local originalBottomSize = bottomFrame.Size
     
     local function Update(input)
         if not Resizing then return end
@@ -659,39 +621,70 @@ function MakeResizable(resizeHandle, mainFrame, minSize, maxSize)
         local widthRatio = newWidth / StartSize.X
         local heightRatio = newHeight / StartSize.Y
         
-        -- ปรับ Main Frame
-        local newMainSize = UDim2.new(0, newWidth, 0, newHeight)
-        TweenService:Create(mainFrame, TweenInfo.new(0.1), {Size = newMainSize}):Play()
+        -- ปรับ Main
+        TweenService:Create(mainFrame, TweenInfo.new(0.1), {Size = UDim2.new(0, newWidth, 0, newHeight)}):Play()
         
-        -- ปรับทุก child ตามสัดส่วน
-        for _, child in ipairs(childrenToResize) do
-            local orig = originalSizes[child]
-            if orig and child.Parent then
-                local newSize = getNewSize(orig, widthRatio, heightRatio)
-                TweenService:Create(child, TweenInfo.new(0.1), {Size = newSize}):Play()
+        -- ปรับ Bottom ตามสัดส่วน (ใช้ Scale + Offset)
+        if originalBottomSize then
+            local newBottomSize = UDim2.new(
+                originalBottomSize.X.Scale,
+                originalBottomSize.X.Offset * widthRatio,
+                originalBottomSize.Y.Scale,
+                originalBottomSize.Y.Offset * heightRatio
+            )
+            TweenService:Create(bottomFrame, TweenInfo.new(0.1), {Size = newBottomSize}):Play()
+        end
+        
+        -- ปรับ Left ทุกอัน
+        if originalLeftSize then
+            local newLeftSize = UDim2.new(
+                originalLeftSize.X.Scale,
+                originalLeftSize.X.Offset * widthRatio,
+                originalLeftSize.Y.Scale,
+                originalLeftSize.Y.Offset * heightRatio
+            )
+            for _, left in ipairs(leftFrames) do
+                TweenService:Create(left, TweenInfo.new(0.1), {Size = newLeftSize}):Play()
             end
         end
         
-        -- อัปเดต CanvasSize ของ Left/Right (ScrollingFrame) หลังจากปรับขนาด
+        -- ปรับ Right ทุกอัน
+        if originalRightSize then
+            local newRightSize = UDim2.new(
+                originalRightSize.X.Scale,
+                originalRightSize.X.Offset * widthRatio,
+                originalRightSize.Y.Scale,
+                originalRightSize.Y.Offset * heightRatio
+            )
+            for _, right in ipairs(rightFrames) do
+                TweenService:Create(right, TweenInfo.new(0.1), {Size = newRightSize}):Play()
+            end
+        end
+        
+        -- อัปเดต CanvasSize ของ Left/Right (ให้ Scrollbar ทำงาน)
         task.defer(function()
-            if leftFrame and leftFrame:IsA("ScrollingFrame") then
-                local leftList = leftFrame:FindFirstChild("UIListLayout")
-                if leftList then
-                    leftFrame.CanvasSize = UDim2.new(0, 0, 0, leftList.AbsoluteContentSize.Y + 50)
+            for _, left in ipairs(leftFrames) do
+                if left:IsA("ScrollingFrame") then
+                    local list = left:FindFirstChild("UIListLayout")
+                    if list then
+                        left.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 50)
+                    end
                 end
             end
-            if rightFrame and rightFrame:IsA("ScrollingFrame") then
-                local rightList = rightFrame:FindFirstChild("UIListLayout")
-                if rightList then
-                    rightFrame.CanvasSize = UDim2.new(0, 0, 0, rightList.AbsoluteContentSize.Y + 50)
+            for _, right in ipairs(rightFrames) do
+                if right:IsA("ScrollingFrame") then
+                    local list = right:FindFirstChild("UIListLayout")
+                    if list then
+                        right.CanvasSize = UDim2.new(0, 0, 0, list.AbsoluteContentSize.Y + 50)
+                    end
                 end
             end
         end)
         
-        -- อัปเดต _G.SizePage ผ่านฟังก์ชันที่มีอยู่
-        if _G.UpdatePageHeight and leftFrame then
-            local newSideHeight = leftFrame.Size.Y.Offset
-            _G.UpdatePageHeight(newSideHeight)
+        -- อัปเดต _G.SizePage (ถ้ามี)
+        if _G.UpdatePageHeight and #leftFrames > 0 then
+            local newHeightVal = leftFrames[1].Size.Y.Offset
+            _G.UpdatePageHeight(newHeightVal)
         end
     end
     
@@ -701,7 +694,6 @@ function MakeResizable(resizeHandle, mainFrame, minSize, maxSize)
             Resizing = true
             ResizeStart = input.Position
             StartSize = Vector2.new(mainFrame.Size.X.Offset, mainFrame.Size.Y.Offset)
-            
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     Resizing = false
@@ -716,7 +708,7 @@ function MakeResizable(resizeHandle, mainFrame, minSize, maxSize)
         end
     end)
 end
-print("เย้")
+print("เย้222")
 function VectorHub:Evil()
     local Main = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")

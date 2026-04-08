@@ -790,14 +790,15 @@ ResultsPadding.PaddingBottom = UDim.new(0, 5)
 function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, containerObject, controlObject)
     table.insert(self.Database, {
         Category = category,
-        Name = itemName,
+        Name = itemName,  
         Tab = tabName,
         Section = sectionName,
-        Container = containerObject,  -- frame ที่ห่อหุ้ม
-        Control = controlObject,       -- object ที่ใช้คลิกจริง
+        Container = containerObject,
+        Control = controlObject,
         FullPath = tabName .. " > " .. sectionName .. " > " .. itemName
     })
-end 
+end
+
 
 
 -- ===== FIX 2: ปรับ ScanItemsInPage =====
@@ -946,7 +947,8 @@ function SearchSystem:PerformSearch(query)
             NameLabel.Size = UDim2.new(1, -10, 0, 15)
             NameLabel.ZIndex = 107
             NameLabel.Font = Enum.Font.GothamBold
-            NameLabel.Text = item.Name
+            local displayName = item.Name:gsub("\n", " "):gsub("\\n", " ")
+            NameLabel.Text = displayName
             NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
             NameLabel.TextSize = 12
             NameLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1750,24 +1752,13 @@ end)
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
         end)
-local function RegisterComponent(category, name, componentObject, realItemObject)
-    -- componentObject คือ container frame (MainToggle, Button Frame ฯลฯ)
-    -- realItemObject คือ object ที่ใช้เรียก callback (TextButton ข้างใน)
-    
-    if not componentObject then return end
-    
-    local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
-    
-    -- 🔥 สำคัญ: เก็บทั้ง container และ actual control object
-    SearchSystem:AddToDatabase(
-        category,
-        cleanName,
-        CurrentTabName,
-        CurrentSectionName,
-        componentObject,     -- container
-        realItemObject       -- actual control (optional)
-    )
-end
+
+    local function RegisterComponent(category, name, componentObject, realItemObject)
+        if not componentObject then return end
+        local fullName = name  
+        SearchSystem:AddToDatabase(category, fullName, CurrentTabName, CurrentSectionName, componentObject, realItemObject)
+    end
+
     local ColorDependents = {}
     -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
     local function UpdateColorDependents(newColor)

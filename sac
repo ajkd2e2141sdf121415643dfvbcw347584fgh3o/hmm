@@ -1096,208 +1096,138 @@ function SearchSystem:NavigateToItem(item)
     SearchResults.Visible = false
     SearchBox.Text = ""
     
-    -- หา Main Frame
+    -- 1️⃣ หา Main Frame
     local mainFrame = SearchResults.Parent
     if not mainFrame or mainFrame.Name ~= "Main" then
         mainFrame = TabContainer and TabContainer.Parent.Parent.Parent
     end
     if not mainFrame then
-        print("❌ Main frame not found")
+        print("❌ Cannot find Main frame")
         return
     end
     
+    -- 2️⃣ หา Bottom
     local bottomFrame = mainFrame:FindFirstChild("Bottom")
     if not bottomFrame then
-        print("❌ Bottom frame not found")
+        print("❌ Cannot find Bottom frame")
         return
     end
     
-    -- หา TabContainer และสร้าง mapping ลำดับ Tab -> Page
-    local topFrame = mainFrame:FindFirstChild("Top")
-    local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
-    local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
-    if not tabContainer then
-        print("❌ TabContainer not found")
-        return
-    end
-    
-    -- สร้าง list ของ tabs ตามลำดับ
-    local tabsList = {}
-    for _, tab in pairs(tabContainer:GetChildren()) do
-        if tab:IsA("TextButton") and tab.Name == "Tab" then
-            table.insert(tabsList, tab)
+    -- 3️⃣ หา Page ที่ Item Container อยู่ (โดยไล่จาก Container ขึ้นไปหา ScrollingFrame ที่เป็น Page)
+    local current = item.Container
+    local targetPage = nil
+    while current do
+        if current:IsA("ScrollingFrame") and current.Name == "Page" then
+            targetPage = current
+            break
         end
+        current = current.Parent
     end
     
-    -- สร้าง list ของ pages ตามลำดับจาก bottomFrame
-    local pagesList = {}
+    if not targetPage then
+        print("❌ Cannot find target page from container")
+        return
+    end
+    
+    -- 4️⃣ หา Tab Index ที่ตรงกับ Page นี้ (เทียบลำดับใน Bottom)
+    local targetTabIndex = nil
+    local pageIndex = 0
     for _, page in pairs(bottomFrame:GetChildren()) do
         if page:IsA("ScrollingFrame") and page.Name == "Page" then
-            table.insert(pagesList, page)
-        end
-    end
-    
-    -- หา index ของ tab ที่ตรงกับ item.Tab
-    local targetTabIndex = nil
-    for i, tab in ipairs(tabsList) do
-        local textLabel = tab:FindFirstChild("TextLabel")
-        if textLabel then
-            local tabName = textLabel.Text:gsub("%s+$", "")
-            if tabName:lower() == item.Tab:lower() then
-                targetTabIndex = i
+            pageIndex = pageIndex + 1
+            if page == targetPage then
+                targetTabIndex = pageIndex
                 break
             end
         end
     end
     
     if not targetTabIndex then
-        print("❌ Cannot find tab index for:", item.Tab)
+        print("❌ Cannot determine tab index for page")
         return
     end
     
-    -- ได้ targetPage จาก pagesList ที่ index เดียวกัน
-    local targetPage = pagesList[targetTabIndex]
-    if not targetPage then
-        print("❌ Cannot find page at index", targetTabIndex)
+    -- 5️⃣ หา TabContainer และ Tab ที่ index ตรงกัน
+    local topFrame = mainFrame:FindFirstChild("Top")
+    local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
+    local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
+    if not tabContainer then
+        print("❌ Cannot find TabContainer")
         return
     end
     
-    -- จำลองการเลือก Tab (เปลี่ยนสี, แสดง FrameTab)
-    for i, tab in ipairs(tabsList) do
-        local frameTab = tab:FindFirstChild("FrameTab")
-        local textLabel = tab:FindFirstChild("TextLabel")
-        local imageLabel = tab:FindFirstChild("ImageLabel")
-        
-        if i == targetTabIndex then
-            if frameTab then
-                frameTab.Visible = true
-                frameTab.Size = UDim2.new(0, 50, 0, 1)
-            end
-            if textLabel then
-                textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                textLabel.TextTransparency = 0
-            end
-            if imageLabel then
-                imageLabel.ImageTransparency = 0
-                imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
-            end
-        else
-            if frameTab then
-                frameTab.Visible = false
-                frameTab.Size = UDim2.new(0, 0, 0, 1)
-            end
-            if textLabel then
-                textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                textLabel.TextTransparency = 0.2
-            end
-            if imageLabel then
-                imageLabel.ImageTransparency = 0.2
+    local targetTab = nil
+    local currentTabIndex = 0
+    for _, tab in pairs(tabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            currentTabIndex = currentTabIndex + 1
+            if currentTabIndex == targetTabIndex then
+                targetTab = tab
+                break
             end
         end
     end
     
-    -- แสดงเฉพาะ targetPage และซ่อน pages อื่น
-    for _, page in ipairs(pagesList) do
-        page.Visible = (page == targetPage)
-        if page == targetPage then
-            page.Position = UDim2.new(0, 0, 0, 0)
-        end
+    if not targetTab then
+        print("❌ Cannot find tab at index", targetTabIndex)
+        return
     end
     
-    task.wait(0.3)
-    
-    -- หา Section และ Item ใน targetPage
-    local clean = function(str)
-        if not str then return "" end
-        return str:gsub("[\n\r]", ""):gsub("%s+$", ""):gsub("^%s+", ""):lower()
-    end
-    
-    local cleanItemName = clean(item.Name)
-    local cleanSectionName = clean(item.Section)
-    
-    local targetItem = nil
-    
-    -- วนซ้ายและขวา
-    for _, sideName in ipairs({"Left", "Right"}) do
-        local side = targetPage:FindFirstChild(sideName)
-        if side then
-            for _, section in pairs(side:GetChildren()) do
-                if section:IsA("Frame") then
-                    -- ชื่อ section อาจอยู่ใน section.Name หรือใน Sectionname TextLabel
-                    local sectionName = section.Name
-                    local sectionNameLabel = section:FindFirstChild("Top") and section.Top:FindFirstChild("Sectionname")
-                    if sectionNameLabel then
-                        sectionName = sectionNameLabel.Text
-                    end
-                    
-                    if clean(sectionName) == cleanSectionName then
-                        -- หา SectionContainer
-                        local topFrameInner = section:FindFirstChild("Top")
-                        local sectionContainer = topFrameInner and topFrameInner:FindFirstChild("SectionContainer")
-                        if sectionContainer then
-                            for _, child in pairs(sectionContainer:GetChildren()) do
-                                -- ตรวจสอบหลายรูปแบบ
-                                local match = false
-                                
-                                -- 1. เปรียบเทียบ child.Name
-                                if clean(child.Name) == cleanItemName then
-                                    match = true
-                                end
-                                
-                                -- 2. Toggle: child มี TextLabel ชื่อ "Text"
-                                local textLabel = child:FindFirstChild("Text")
-                                if textLabel and textLabel:IsA("TextLabel") and clean(textLabel.Text) == cleanItemName then
-                                    match = true
-                                end
-                                
-                                -- 3. Button: child มี TextLabel ชื่อ "Text" (เหมือนกัน)
-                                if not match then
-                                    local btnText = child:FindFirstChild("Text")
-                                    if btnText and btnText:IsA("TextLabel") and clean(btnText.Text) == cleanItemName then
-                                        match = true
-                                    end
-                                end
-                                
-                                -- 4. Dropdown: child มี NameLabel
-                                if not match then
-                                    local nameLabel = child:FindFirstChild("NameLabel")
-                                    if nameLabel and nameLabel:IsA("TextLabel") and clean(nameLabel.Text) == cleanItemName then
-                                        match = true
-                                    end
-                                end
-                                
-                                -- 5. Slider: child มี LabelNameSlider
-                                if not match then
-                                    local sliderLabel = child:FindFirstChild("LabelNameSlider")
-                                    if sliderLabel and sliderLabel:IsA("TextLabel") and clean(sliderLabel.Text) == cleanItemName then
-                                        match = true
-                                    end
-                                end
-                                
-                                if match then
-                                    targetItem = child
-                                    break
-                                end
-                            end
-                        end
-                        if targetItem then break end
-                    end
+    -- 6️⃣ จำลองการคลิก Tab และแสดง Page ที่ถูกต้อง
+    for _, tab in pairs(tabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            local frameTab = tab:FindFirstChild("FrameTab")
+            local textLabel = tab:FindFirstChild("TextLabel")
+            local imageLabel = tab:FindFirstChild("ImageLabel")
+            
+            if tab == targetTab then
+                if frameTab then
+                    frameTab.Visible = true
+                    frameTab.Size = UDim2.new(0, 50, 0, 1)
+                end
+                if textLabel then
+                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    textLabel.TextTransparency = 0
+                end
+                if imageLabel then
+                    imageLabel.ImageTransparency = 0
+                    imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+                end
+            else
+                if frameTab then
+                    frameTab.Visible = false
+                    frameTab.Size = UDim2.new(0, 0, 0, 1)
+                end
+                if textLabel then
+                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    textLabel.TextTransparency = 0.2
+                end
+                if imageLabel then
+                    imageLabel.ImageTransparency = 0.2
                 end
             end
         end
-        if targetItem then break end
     end
     
-    if not targetItem then
-        print("❌ Cannot find item:", item.Name, "in section:", item.Section)
-        return
+    -- แสดงเฉพาะ targetPage
+    for _, page in pairs(bottomFrame:GetChildren()) do
+        if page:IsA("ScrollingFrame") and page.Name == "Page" then
+            page.Visible = (page == targetPage)
+            if page == targetPage then
+                page.Position = UDim2.new(0, 0, 0, 0)
+            end
+        end
     end
     
-    -- เลื่อน scroll และไฮไลท์
-    self:ScrollToElement(targetItem)
-    self:HighlightElement(targetItem)
+    -- รอ UI อัปเดต
+    task.wait(0.3)
+    
+    -- 7️⃣ เลื่อน Scroll ไปหา Item Container และไฮไลท์
+    self:ScrollToElement(item.Container)
+    self:HighlightElement(item.Container)
 end
 function SearchSystem:ScrollToElement(element)
+    if not element then return end
     task.wait(0.2)
     
     -- หา ScrollingFrame ที่ห่อหุ้ม element นี้
@@ -1307,9 +1237,10 @@ function SearchSystem:ScrollToElement(element)
     end
     
     if scrollFrame and scrollFrame:IsA("ScrollingFrame") then
+        -- คำนวณตำแหน่ง
         local elementPos = element.AbsolutePosition.Y
         local scrollFramePos = scrollFrame.AbsolutePosition.Y
-        local offset = elementPos - scrollFramePos - 50  -- เลื่อนมาให้เห็นพอดี
+        local offset = elementPos - scrollFramePos - 50
         
         local currentPos = scrollFrame.CanvasPosition.Y
         local targetPos = math.max(0, currentPos + offset)
@@ -1319,7 +1250,6 @@ function SearchSystem:ScrollToElement(element)
         }):Play()
     end
 end
-
 function SearchSystem:HighlightElement(element)
     if not element then return end
     

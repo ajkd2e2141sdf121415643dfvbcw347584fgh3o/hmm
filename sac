@@ -1086,7 +1086,6 @@ function SearchSystem:ScanSideItems(tabName, sideName, side)
     end
 end
 
-
 function SearchSystem:NavigateToItem(item)
     if not item or not item.Container then
         print("❌ Invalid item")
@@ -1097,12 +1096,23 @@ function SearchSystem:NavigateToItem(item)
     SearchResults.Visible = false
     SearchBox.Text = ""
     
-    -- 2️⃣ หา Main Frame และ Bottom
-    local mainFrame = SearchResults.Parent.Parent  -- Main Frame
-    local bottomFrame = mainFrame and mainFrame:FindFirstChild("Bottom")
+    -- 2️⃣ หา Main Frame และ Bottom ให้ถูกต้อง
+    local mainFrame = SearchResults.Parent  -- ✅ SearchResults อยู่ใต้ Main โดยตรง
+    if not mainFrame or mainFrame.Name ~= "Main" then
+        -- Fallback: ค้นหา Main จาก TabContainer
+        mainFrame = TabContainer and TabContainer.Parent.Parent.Parent
+    end
     
+    local bottomFrame = mainFrame and mainFrame:FindFirstChild("Bottom")
     if not bottomFrame then
         print("❌ Cannot find Bottom frame")
+        -- Debug: แสดงโครงสร้างเพื่อหาสาเหตุ
+        print("Main frame:", mainFrame and mainFrame.Name)
+        if mainFrame then
+            for _, child in pairs(mainFrame:GetChildren()) do
+                print(" - Child:", child.Name, child.ClassName)
+            end
+        end
         return
     end
     
@@ -1110,22 +1120,30 @@ function SearchSystem:NavigateToItem(item)
     local targetTab = nil
     local targetPage = nil
     
-    for _, tab in pairs(TabContainer:GetChildren()) do
+    -- หา TabContainer (อยู่ใต้ Main > Top > TabHolder > TabContainer)
+    local topFrame = mainFrame:FindFirstChild("Top")
+    local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
+    local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
+    
+    if not tabContainer then
+        print("❌ Cannot find TabContainer")
+        return
+    end
+    
+    for _, tab in pairs(tabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
             local textLabel = tab:FindFirstChild("TextLabel")
             if textLabel then
-                local tabName = textLabel.Text:gsub("%s+$", "")  -- trim space
+                local tabName = textLabel.Text:gsub("%s+$", "")
                 if tabName:lower() == item.Tab:lower() then
                     targetTab = tab
                     
-                    -- หา Page ที่ตรงกับ Tab นี้
+                    -- หา Page ที่ตรงกับ Tab นี้ (Page อยู่ใน Bottom)
                     for _, page in pairs(bottomFrame:GetChildren()) do
                         if page:IsA("ScrollingFrame") and page.Name == "Page" then
-                            -- ตรวจสอบว่า page นี้เชื่อมกับ tab นี้ไหม
-                            if page.Visible == false then
-                                -- page นี้ซ่อนอยู่ แสดงว่าไม่ใช่ tab ที่เลือก
-                                continue
-                            end
+                            -- ตรวจสอบว่า page นี้เชื่อมกับ tab นี้ไหม? 
+                            -- โดยปกติ page จะถูกซ่อน/แสดงตาม tab ที่เลือก
+                            -- ถ้าไม่แน่ใจ ให้เลือก page แรกที่เจอ หรือจับคู่ตามลำดับ
                             targetPage = page
                             break
                         end
@@ -1141,16 +1159,14 @@ function SearchSystem:NavigateToItem(item)
         return
     end
     
-    -- 4️⃣ จำลองการคลิก Tab (โดยไม่ต้องคลิกจริง)
-    local oldSelected = nil
-    for _, tab in pairs(TabContainer:GetChildren()) do
+    -- 4️⃣ จำลองการคลิก Tab
+    for _, tab in pairs(tabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
+            local frameTab = tab:FindFirstChild("FrameTab")
+            local textLabel = tab:FindFirstChild("TextLabel")
+            local imageLabel = tab:FindFirstChild("ImageLabel")
+            
             if tab == targetTab then
-                -- ทำให้ Tab นี้เป็น selected
-                local frameTab = tab:FindFirstChild("FrameTab")
-                local textLabel = tab:FindFirstChild("TextLabel")
-                local imageLabel = tab:FindFirstChild("ImageLabel")
-                
                 if frameTab then
                     frameTab.Visible = true
                     frameTab.Size = UDim2.new(0, 50, 0, 1)
@@ -1163,24 +1179,7 @@ function SearchSystem:NavigateToItem(item)
                     imageLabel.ImageTransparency = 0
                     imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
                 end
-                
-                -- แสดง Page ที่ถูกต้อง
-                if targetPage then
-                    for _, page in pairs(bottomFrame:GetChildren()) do
-                        if page:IsA("ScrollingFrame") then
-                            page.Visible = (page == targetPage)
-                            if page == targetPage then
-                                page.Position = UDim2.new(0, 0, 0, 0)
-                            end
-                        end
-                    end
-                end
             else
-                -- ทำให้ Tab อื่นไม่ถูกเลือก
-                local frameTab = tab:FindFirstChild("FrameTab")
-                local textLabel = tab:FindFirstChild("TextLabel")
-                local imageLabel = tab:FindFirstChild("ImageLabel")
-                
                 if frameTab then
                     frameTab.Visible = false
                     frameTab.Size = UDim2.new(0, 0, 0, 1)
@@ -1196,6 +1195,18 @@ function SearchSystem:NavigateToItem(item)
         end
     end
     
+    -- แสดง Page ที่ถูกต้อง (ซ่อนทุก Page แล้วแสดง targetPage)
+    if targetPage then
+        for _, page in pairs(bottomFrame:GetChildren()) do
+            if page:IsA("ScrollingFrame") then
+                page.Visible = (page == targetPage)
+                if page == targetPage then
+                    page.Position = UDim2.new(0, 0, 0, 0)
+                end
+            end
+        end
+    end
+    
     -- รอให้ UI อัปเดต
     task.wait(0.3)
     
@@ -1205,9 +1216,6 @@ function SearchSystem:NavigateToItem(item)
         return
     end
     
-    -- หา Side (Left/Right)
-    local targetSide = nil
-    local targetSection = nil
     local targetItem = nil
     
     -- ตรวจสอบทั้ง Left และ Right
@@ -1221,32 +1229,23 @@ function SearchSystem:NavigateToItem(item)
                     local sectionName = sectionNameLabel and sectionNameLabel.Text or ""
                     
                     if sectionName:lower() == item.Section:lower() then
-                        targetSide = side
-                        targetSection = section
-                        
-                        -- หา SectionContainer
                         local sectionContainer = section:FindFirstChild("Top") and 
                                                 section.Top:FindFirstChild("SectionContainer")
-                        
                         if sectionContainer then
-                            -- ค้นหา Item ใน SectionContainer
                             for _, child in pairs(sectionContainer:GetChildren()) do
-                                -- เปรียบเทียบชื่อ
                                 local childName = child.Name
-                                if childName:lower() == item.Name:lower() or 
-                                   (childName == item.Name) then
+                                -- เปรียบเทียบชื่อ
+                                if childName:lower() == item.Name:lower() or childName == item.Name then
                                     targetItem = child
                                     break
                                 end
-                                
-                                -- ถ้าเป็น Toggle ให้ดูที่ TextLabel
+                                -- Toggle
                                 local textLabel = child:FindFirstChild("Text")
                                 if textLabel and textLabel.Text:lower() == item.Name:lower() then
                                     targetItem = child
                                     break
                                 end
-                                
-                                -- ถ้าเป็น Button ให้ดูที่ Text
+                                -- Button
                                 local btnText = child:FindFirstChild("Text")
                                 if btnText and btnText:IsA("TextLabel") and 
                                    btnText.Text:lower() == item.Name:lower() then
@@ -1265,23 +1264,13 @@ function SearchSystem:NavigateToItem(item)
     
     if not targetItem then
         print("❌ Cannot find item:", item.Name)
-        -- พยายามเลื่อนไปที่ Section แทน
-        if targetSection then
-            self:ScrollToElement(targetSection)
-        end
         return
     end
     
-    -- 6️⃣ เลื่อน Scroll ไปหา Item
+    -- 6️⃣ เลื่อน Scroll และไฮไลท์
     self:ScrollToElement(targetItem)
-    
-    -- 7️⃣ แสดง Highlight Effect
     self:HighlightElement(targetItem)
-    
-    -- 8️⃣ ถ้าเป็น Toggle/Button ให้จำลองการกด (optional)
-    -- self:SimulateClick(targetItem, item.Control)
 end
-
 function SearchSystem:ScrollToElement(element)
     task.wait(0.2)
     

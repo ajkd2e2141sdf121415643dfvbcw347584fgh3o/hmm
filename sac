@@ -1011,7 +1011,7 @@ end
 
 -- ===== FIX 1: ปรับ ScanAllTabs ให้หาได้ =====
 function SearchSystem:ScanAllTabs()
-    self.Database = {} -- Reset database
+ 
     
     for _, tab in pairs(TabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
@@ -1350,16 +1350,7 @@ function SearchSystem:SimulateClick(container, control)
     end
 end
 
-task.spawn(function()
-    task.wait(1)  -- รอให้ UI สร้างเสร็จ
-    SearchSystem:ScanAllTabs()
-    print("✅ Search System Ready - Found", #SearchSystem.Database, "items")
-    
-    -- ทดสอบ
-    for _, item in ipairs(SearchSystem.Database) do
-        print(string.format("[%s] %s (%s)", item.Category, item.Name, item.FullPath))
-    end
-end)
+ 
 
 function SearchSystem:PerformSearch(query)
     if searchDebounce then return end

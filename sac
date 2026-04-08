@@ -1,18 +1,8 @@
--- == OPTIMIZED NOTIFICATION SYSTEM ==
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-local NotificationManager = {
-    Notifications = {},
-    MaxNotifications = 5,
-    Y_PADDING = 90,
-    AnimationDuration = 0.3,
-    Queue = {}
-}
-
--- Create main container
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "CustomNotifications"
 ScreenGui.ResetOnSpawn = false
@@ -20,203 +10,80 @@ ScreenGui.DisplayOrder = 999
 ScreenGui.Parent = PlayerGui
 
 local Padding = Instance.new("UIPadding", ScreenGui)
-Padding.PaddingTop = UDim.new(0, 60)
+Padding.PaddingTop = UDim.new(0, 60)  
 
--- Create template (hidden)
 local NotificationTemplate = Instance.new("Frame")
 NotificationTemplate.Name = "NotificationTemplate"
 NotificationTemplate.Size = UDim2.new(0, 600, 0, 80)
 NotificationTemplate.Position = UDim2.new(0.5, -300, 0, 4)
 NotificationTemplate.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-NotificationTemplate.BackgroundTransparency = 0.15
+NotificationTemplate.BackgroundTransparency = 1
 NotificationTemplate.BorderSizePixel = 0
-NotificationTemplate.Visible = false
+NotificationTemplate.Visible = false  
 NotificationTemplate.Parent = ScreenGui
-NotificationTemplate.BackgroundTransparency = 0
-
--- Apply blur effect
-local BlurEffect = Instance.new("BlurEffect")
-BlurEffect.Size = 8
-BlurEffect.Parent = NotificationTemplate
 
 local Corner = Instance.new("UICorner", NotificationTemplate)
 Corner.CornerRadius = UDim.new(0, 12)
 
 local Stroke = Instance.new("UIStroke", NotificationTemplate)
 Stroke.Color = Color3.fromRGB(255, 255, 255)
-Stroke.Transparency = 0.7
-Stroke.Thickness = 1.5
-
--- Add progress bar
-local ProgressBar = Instance.new("Frame", NotificationTemplate)
-ProgressBar.Name = "ProgressBar"
-ProgressBar.Size = UDim2.new(0, 0, 0, 3)
-ProgressBar.Position = UDim2.new(0, 0, 1, -3)
-ProgressBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-ProgressBar.BackgroundTransparency = 0.5
-
-local ProgressCorner = Instance.new("UICorner", ProgressBar)
-ProgressCorner.CornerRadius = UDim.new(0, 2)
+Stroke.Transparency = 1
+Stroke.Thickness = 2
 
 local TextLabel = Instance.new("TextLabel", NotificationTemplate)
-TextLabel.Size = UDim2.new(1, -20, 1, -10)
-TextLabel.Position = UDim2.new(0, 10, 0, 5)
+TextLabel.Size = UDim2.new(1, -20, 1, -20)
+TextLabel.Position = UDim2.new(0, 10, 0, 10)
 TextLabel.BackgroundTransparency = 1
 TextLabel.TextColor3 = Color3.new(1, 1, 1)
 TextLabel.TextStrokeTransparency = 0.5
 TextLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
 TextLabel.Font = Enum.Font.SourceSansSemibold
-TextLabel.TextSize = 28
+TextLabel.TextSize = 32
 TextLabel.TextYAlignment = Enum.TextYAlignment.Center
 TextLabel.TextXAlignment = Enum.TextXAlignment.Center
 TextLabel.RichText = true
 TextLabel.Text = ""
 
--- Close button
-local CloseButton = Instance.new("ImageButton", NotificationTemplate)
-CloseButton.Name = "CloseButton"
-CloseButton.Size = UDim2.new(0, 24, 0, 24)
-CloseButton.Position = UDim2.new(1, -32, 0, 8)
-CloseButton.BackgroundTransparency = 1
-CloseButton.Image = "rbxassetid://3926305904"
-CloseButton.ImageColor3 = Color3.fromRGB(200, 200, 200)
-CloseButton.ImageTransparency = 0.5
-CloseButton.Visible = false
+local Notifications = {}
+local Y_PADDING = 90  
 
--- Progress animation function
-local function animateProgress(noti, duration)
-    local progress = noti.Frame:FindFirstChild("ProgressBar")
-    if not progress then return end
-    
-    local startTime = tick()
-    local connection
-    
-    connection = game:GetService("RunService").Heartbeat:Connect(function()
-        local elapsed = tick() - startTime
-        local percent = math.max(0, 1 - (elapsed / duration))
-        
-        if percent <= 0 then
-            connection:Disconnect()
-            return
-        end
-        
-        progress:TweenSize(UDim2.new(percent, 0, 0, 3), "Linear", "Out", 0.05, true)
-    end)
-    
-    return connection
-end
-
-function NotificationManager:UpdatePositions()
-    for i, noti in ipairs(self.Notifications) do
-        local targetPos = UDim2.new(0.5, -300, 0, Padding.PaddingTop.Offset + (i-1) * self.Y_PADDING)
-        TweenService:Create(noti.Frame, TweenInfo.new(self.AnimationDuration, Enum.EasingStyle.Quart), {Position = targetPos}):Play()
+local function UpdatePositions()
+    for i, noti in ipairs(Notifications) do
+        local targetPos = UDim2.new(0.5, -300, 0, Padding.PaddingTop.Offset + (i-1) * Y_PADDING)
+        TweenService:Create(noti.Frame, TweenInfo.new(0.4, Enum.EasingStyle.Quart), {Position = targetPos}):Play()
     end
 end
 
-function NotificationManager:RemoveNotification(noti, instant)
-    local index = table.find(self.Notifications, noti)
-    if index then table.remove(self.Notifications, index) end
+local function RemoveNotification(noti)
+    local index = table.find(Notifications, noti)
+    if index then table.remove(Notifications, index) end
     
-    if noti.ProgressConnection then
-        noti.ProgressConnection:Disconnect()
-    end
-    
-    local targetPos = UDim2.new(1.5, 0, noti.Frame.Position.Y.Scale, noti.Frame.Position.Y.Offset)
-    
-    if instant then
-        noti.Frame:Destroy()
-        self:UpdatePositions()
-        return
-    end
-    
-    local tweenOut = TweenService:Create(noti.Frame, TweenInfo.new(0.4), {Position = targetPos, BackgroundTransparency = 1})
+    local tweenOut = TweenService:Create(noti.Frame, TweenInfo.new(0.5), {Position = UDim2.new(1.5, 0, noti.Frame.Position.Y.Scale, noti.Frame.Position.Y.Offset)})
     tweenOut:Play()
-    tweenOut.Completed:Connect(function()
-        noti.Frame:Destroy()
-        self:UpdatePositions()
-    end)
+    tweenOut.Completed:Wait()
+    noti.Frame:Destroy()
+    UpdatePositions()
 end
 
-function NotificationManager:Notify(message, duration, options)
-    duration = duration or 5
-    options = options or {}
-    
-    -- Queue system for many notifications
-    if #self.Notifications >= self.MaxNotifications then
-        table.insert(self.Queue, {message = message, duration = duration, options = options})
-        return
-    end
+function Notify(message, duration)
+    duration = duration or 6
     
     local clone = NotificationTemplate:Clone()
     clone.Visible = true
     clone.TextLabel.Text = tostring(message)
     clone.Parent = ScreenGui
     
-    -- Custom styling options
-    if options.type then
-        if options.type == "success" then
-            clone.BackgroundColor3 = Color3.fromRGB(40, 167, 69)
-            clone.BackgroundTransparency = 0.1
-            Stroke.Color = Color3.fromRGB(40, 167, 69)
-        elseif options.type == "error" then
-            clone.BackgroundColor3 = Color3.fromRGB(220, 53, 69)
-            clone.BackgroundTransparency = 0.1
-            Stroke.Color = Color3.fromRGB(220, 53, 69)
-        elseif options.type == "warning" then
-            clone.BackgroundColor3 = Color3.fromRGB(255, 193, 7)
-            clone.BackgroundTransparency = 0.1
-            Stroke.Color = Color3.fromRGB(255, 193, 7)
-            clone.TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
-        end
-    end
+    local noti = {Frame = clone, Duration = duration, StartTime = tick()}
+    table.insert(Notifications, noti)
     
-    if options.icon then
-        -- Add icon support if needed
-    end
+    UpdatePositions()
     
-    if options.progress ~= false then
-        clone.ProgressBar.Visible = true
-    end
-    
-    if options.closable then
-        clone.CloseButton.Visible = true
-        clone.CloseButton.MouseButton1Click:Connect(function()
-            self:RemoveNotification(noti)
-        end)
-    end
-    
-    local noti = {
-        Frame = clone, 
-        Duration = duration, 
-        StartTime = tick(),
-        ProgressConnection = options.progress ~= false and animateProgress({Frame = clone}, duration) or nil
-    }
-    table.insert(self.Notifications, noti)
-    
-    self:UpdatePositions()
-    
-    -- Auto-remove after duration
+    -- หายเองหลังหมดเวลา
     task.delay(duration, function()
         if noti.Frame and noti.Frame.Parent then
-            self:RemoveNotification(noti)
-            
-            -- Process queue
-            if #self.Queue > 0 then
-                local nextNoti = table.remove(self.Queue, 1)
-                task.wait(0.2)
-                self:Notify(nextNoti.message, nextNoti.duration, nextNoti.options)
-            end
+            RemoveNotification(noti)
         end
     end)
-end
-
--- Example usage
-NotificationManager:Notify("<font color='rgb(255,255,0)'>Loading...</font>", 3, {type = "warning"})
-NotificationManager:Notify("Successfully loaded!", 4, {type = "success", closable = true})
-NotificationManager:Notify("Something went wrong", 5, {type = "error"})
-
-_G.Notify = function(msg, duration, opts)
-    NotificationManager:Notify(msg, duration or 5, opts or {})
 end
 
 Notify("<font color='rgb(255,255,0)'>Loading...</font>", 3)
@@ -1142,33 +1009,79 @@ end
 
 -- ===== FIX 1: ปรับ ScanAllTabs ให้หาได้ =====
 function SearchSystem:ScanAllTabs()
+    self.Database = {} -- Reset database
     
     for _, tab in pairs(TabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
             local textLabel = tab:FindFirstChild("TextLabel")
             if textLabel then
-                local tabName = textLabel.Text
+                local tabName = textLabel.Text:match("^(.+)%s+$") or textLabel.Text
                 
-                -- Tab -> TabContainer -> TabHolder -> Top -> Main
-                local mainFrame = tab.Parent.Parent.Parent.Parent -- ขึ้นไปหา Main
-                
-                if mainFrame and mainFrame.Name == "Main" then
-                    -- หา Bottom ที่มี Page สำหรับ Tab นี้
-                    local bottomFrame = mainFrame:FindFirstChild("Bottom")
-                    
-                    if bottomFrame then
-                        -- หา Page ที่ตรงกับ Tab
-                        for _, page in pairs(bottomFrame:GetChildren()) do
-                            if page:IsA("ScrollingFrame") and page.Name == "Page" then
-                                self:ScanItemsInPage(tabName, "", page)
-                            end
+                -- Find the corresponding page
+                local bottomFrame = tab.Parent.Parent.Parent:FindFirstChild("Bottom")
+                if bottomFrame then
+                    for _, page in pairs(bottomFrame:GetChildren()) do
+                        if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                            self:ScanPageItems(tabName, page)
+                            break
                         end
                     end
                 end
             end
         end
     end
+end
+
+function SearchSystem:ScanPageItems(tabName, page)
+    -- Scan Left side
+    local left = page:FindFirstChild("Left")
+    if left then
+        self:ScanSideItems(tabName, "Left", left)
+    end
     
+    -- Scan Right side
+    local right = page:FindFirstChild("Right")
+    if right then
+        self:ScanSideItems(tabName, "Right", right)
+    end
+end
+
+function SearchSystem:ScanSideItems(tabName, sideName, side)
+    for _, section in pairs(side:GetChildren()) do
+        if section:IsA("Frame") and section:FindFirstChild("Top") then
+            local sectionNameLabel = section.Top:FindFirstChild("Sectionname")
+            local sectionName = sectionNameLabel and sectionNameLabel.Text or "General"
+            
+            local sectionContainer = section.Top:FindFirstChild("SectionContainer")
+            if sectionContainer then
+                for _, item in pairs(sectionContainer:GetChildren()) do
+                    local itemName = item.Name
+                    local category = "Unknown"
+                    
+                    -- Detect item type
+                    if item:FindFirstChild("MainToggle") then
+                        category = "Toggle"
+                        local textLabel = item:FindFirstChild("Text")
+                        if textLabel then itemName = textLabel.Text end
+                    elseif item:FindFirstChild("Button") and item.Button:IsA("Frame") then
+                        category = "Button"
+                        local textLabel = item.Button:FindFirstChild("Text")
+                        if textLabel then itemName = textLabel.Text end
+                    elseif item:FindFirstChild("SliderFrame") then
+                        category = "Slider"
+                    elseif item:FindFirstChild("HeadTitle") then
+                        category = "Textbox"
+                    elseif item.Name == "Dropdown" or item.Name == "MultiDropdown" then
+                        category = item.Name == "Dropdown" and "Dropdown" or "MultiDropdown"
+                    elseif item.Name == "Colorpicker" then
+                        category = "Colorpicker"
+                    end
+                    
+                    self:AddToDatabase(category, itemName, tabName, sectionName, item)
+                end
+            end
+        end
+    end
 end
 
 

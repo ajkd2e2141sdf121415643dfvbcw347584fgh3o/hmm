@@ -1092,169 +1092,195 @@ function SearchSystem:NavigateToItem(item)
         return
     end
     
-    -- 1️⃣ ปิด search results
+    -- ปิด search results
     SearchResults.Visible = false
     SearchBox.Text = ""
     
-    -- 2️⃣ หา Main Frame และ Bottom ให้ถูกต้อง
-    local mainFrame = SearchResults.Parent  -- ✅ SearchResults อยู่ใต้ Main โดยตรง
+    -- หา Main Frame
+    local mainFrame = SearchResults.Parent
     if not mainFrame or mainFrame.Name ~= "Main" then
-        -- Fallback: ค้นหา Main จาก TabContainer
         mainFrame = TabContainer and TabContainer.Parent.Parent.Parent
     end
-    
-    local bottomFrame = mainFrame and mainFrame:FindFirstChild("Bottom")
-    if not bottomFrame then
-        print("❌ Cannot find Bottom frame")
-        -- Debug: แสดงโครงสร้างเพื่อหาสาเหตุ
-        print("Main frame:", mainFrame and mainFrame.Name)
-        if mainFrame then
-            for _, child in pairs(mainFrame:GetChildren()) do
-                print(" - Child:", child.Name, child.ClassName)
-            end
-        end
+    if not mainFrame then
+        print("❌ Main frame not found")
         return
     end
     
-    -- 3️⃣ หา Tab ที่ตรงกับ item.Tab
-    local targetTab = nil
-    local targetPage = nil
+    local bottomFrame = mainFrame:FindFirstChild("Bottom")
+    if not bottomFrame then
+        print("❌ Bottom frame not found")
+        return
+    end
     
-    -- หา TabContainer (อยู่ใต้ Main > Top > TabHolder > TabContainer)
+    -- หา TabContainer และสร้าง mapping ลำดับ Tab -> Page
     local topFrame = mainFrame:FindFirstChild("Top")
     local tabHolder = topFrame and topFrame:FindFirstChild("TabHolder")
     local tabContainer = tabHolder and tabHolder:FindFirstChild("TabContainer")
-    
     if not tabContainer then
-        print("❌ Cannot find TabContainer")
+        print("❌ TabContainer not found")
         return
     end
     
+    -- สร้าง list ของ tabs ตามลำดับ
+    local tabsList = {}
     for _, tab in pairs(tabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
-            local textLabel = tab:FindFirstChild("TextLabel")
+            table.insert(tabsList, tab)
+        end
+    end
+    
+    -- สร้าง list ของ pages ตามลำดับจาก bottomFrame
+    local pagesList = {}
+    for _, page in pairs(bottomFrame:GetChildren()) do
+        if page:IsA("ScrollingFrame") and page.Name == "Page" then
+            table.insert(pagesList, page)
+        end
+    end
+    
+    -- หา index ของ tab ที่ตรงกับ item.Tab
+    local targetTabIndex = nil
+    for i, tab in ipairs(tabsList) do
+        local textLabel = tab:FindFirstChild("TextLabel")
+        if textLabel then
+            local tabName = textLabel.Text:gsub("%s+$", "")
+            if tabName:lower() == item.Tab:lower() then
+                targetTabIndex = i
+                break
+            end
+        end
+    end
+    
+    if not targetTabIndex then
+        print("❌ Cannot find tab index for:", item.Tab)
+        return
+    end
+    
+    -- ได้ targetPage จาก pagesList ที่ index เดียวกัน
+    local targetPage = pagesList[targetTabIndex]
+    if not targetPage then
+        print("❌ Cannot find page at index", targetTabIndex)
+        return
+    end
+    
+    -- จำลองการเลือก Tab (เปลี่ยนสี, แสดง FrameTab)
+    for i, tab in ipairs(tabsList) do
+        local frameTab = tab:FindFirstChild("FrameTab")
+        local textLabel = tab:FindFirstChild("TextLabel")
+        local imageLabel = tab:FindFirstChild("ImageLabel")
+        
+        if i == targetTabIndex then
+            if frameTab then
+                frameTab.Visible = true
+                frameTab.Size = UDim2.new(0, 50, 0, 1)
+            end
             if textLabel then
-                local tabName = textLabel.Text:gsub("%s+$", "")
-                if tabName:lower() == item.Tab:lower() then
-                    targetTab = tab
-                    
-                    -- หา Page ที่ตรงกับ Tab นี้ (Page อยู่ใน Bottom)
-                    for _, page in pairs(bottomFrame:GetChildren()) do
-                        if page:IsA("ScrollingFrame") and page.Name == "Page" then
-                            -- ตรวจสอบว่า page นี้เชื่อมกับ tab นี้ไหม? 
-                            -- โดยปกติ page จะถูกซ่อน/แสดงตาม tab ที่เลือก
-                            -- ถ้าไม่แน่ใจ ให้เลือก page แรกที่เจอ หรือจับคู่ตามลำดับ
-                            targetPage = page
-                            break
-                        end
-                    end
-                    break
-                end
+                textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                textLabel.TextTransparency = 0
+            end
+            if imageLabel then
+                imageLabel.ImageTransparency = 0
+                imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+            end
+        else
+            if frameTab then
+                frameTab.Visible = false
+                frameTab.Size = UDim2.new(0, 0, 0, 1)
+            end
+            if textLabel then
+                textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                textLabel.TextTransparency = 0.2
+            end
+            if imageLabel then
+                imageLabel.ImageTransparency = 0.2
             end
         end
     end
     
-    if not targetTab then
-        print("❌ Cannot find tab:", item.Tab)
-        return
-    end
-    
-    -- 4️⃣ จำลองการคลิก Tab
-    for _, tab in pairs(tabContainer:GetChildren()) do
-        if tab:IsA("TextButton") and tab.Name == "Tab" then
-            local frameTab = tab:FindFirstChild("FrameTab")
-            local textLabel = tab:FindFirstChild("TextLabel")
-            local imageLabel = tab:FindFirstChild("ImageLabel")
-            
-            if tab == targetTab then
-                if frameTab then
-                    frameTab.Visible = true
-                    frameTab.Size = UDim2.new(0, 50, 0, 1)
-                end
-                if textLabel then
-                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    textLabel.TextTransparency = 0
-                end
-                if imageLabel then
-                    imageLabel.ImageTransparency = 0
-                    imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
-                end
-            else
-                if frameTab then
-                    frameTab.Visible = false
-                    frameTab.Size = UDim2.new(0, 0, 0, 1)
-                end
-                if textLabel then
-                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-                    textLabel.TextTransparency = 0.2
-                end
-                if imageLabel then
-                    imageLabel.ImageTransparency = 0.2
-                end
-            end
+    -- แสดงเฉพาะ targetPage และซ่อน pages อื่น
+    for _, page in ipairs(pagesList) do
+        page.Visible = (page == targetPage)
+        if page == targetPage then
+            page.Position = UDim2.new(0, 0, 0, 0)
         end
     end
     
-    -- แสดง Page ที่ถูกต้อง (ซ่อนทุก Page แล้วแสดง targetPage)
-    if targetPage then
-        for _, page in pairs(bottomFrame:GetChildren()) do
-            if page:IsA("ScrollingFrame") then
-                page.Visible = (page == targetPage)
-                if page == targetPage then
-                    page.Position = UDim2.new(0, 0, 0, 0)
-                end
-            end
-        end
-    end
-    
-    -- รอให้ UI อัปเดต
     task.wait(0.3)
     
-    -- 5️⃣ หา Section และ Item ใน Page
-    if not targetPage then
-        print("❌ Cannot find target page")
-        return
+    -- หา Section และ Item ใน targetPage
+    local clean = function(str)
+        if not str then return "" end
+        return str:gsub("[\n\r]", ""):gsub("%s+$", ""):gsub("^%s+", ""):lower()
     end
+    
+    local cleanItemName = clean(item.Name)
+    local cleanSectionName = clean(item.Section)
     
     local targetItem = nil
     
-    -- ตรวจสอบทั้ง Left และ Right
+    -- วนซ้ายและขวา
     for _, sideName in ipairs({"Left", "Right"}) do
         local side = targetPage:FindFirstChild(sideName)
         if side then
             for _, section in pairs(side:GetChildren()) do
                 if section:IsA("Frame") then
-                    local sectionNameLabel = section:FindFirstChild("Top") and 
-                                            section.Top:FindFirstChild("Sectionname")
-                    local sectionName = sectionNameLabel and sectionNameLabel.Text or ""
+                    -- ชื่อ section อาจอยู่ใน section.Name หรือใน Sectionname TextLabel
+                    local sectionName = section.Name
+                    local sectionNameLabel = section:FindFirstChild("Top") and section.Top:FindFirstChild("Sectionname")
+                    if sectionNameLabel then
+                        sectionName = sectionNameLabel.Text
+                    end
                     
-                    if sectionName:lower() == item.Section:lower() then
-                        local sectionContainer = section:FindFirstChild("Top") and 
-                                                section.Top:FindFirstChild("SectionContainer")
+                    if clean(sectionName) == cleanSectionName then
+                        -- หา SectionContainer
+                        local topFrameInner = section:FindFirstChild("Top")
+                        local sectionContainer = topFrameInner and topFrameInner:FindFirstChild("SectionContainer")
                         if sectionContainer then
                             for _, child in pairs(sectionContainer:GetChildren()) do
-                                local childName = child.Name
-                                -- เปรียบเทียบชื่อ
-                                if childName:lower() == item.Name:lower() or childName == item.Name then
-                                    targetItem = child
-                                    break
+                                -- ตรวจสอบหลายรูปแบบ
+                                local match = false
+                                
+                                -- 1. เปรียบเทียบ child.Name
+                                if clean(child.Name) == cleanItemName then
+                                    match = true
                                 end
-                                -- Toggle
+                                
+                                -- 2. Toggle: child มี TextLabel ชื่อ "Text"
                                 local textLabel = child:FindFirstChild("Text")
-                                if textLabel and textLabel.Text:lower() == item.Name:lower() then
-                                    targetItem = child
-                                    break
+                                if textLabel and textLabel:IsA("TextLabel") and clean(textLabel.Text) == cleanItemName then
+                                    match = true
                                 end
-                                -- Button
-                                local btnText = child:FindFirstChild("Text")
-                                if btnText and btnText:IsA("TextLabel") and 
-                                   btnText.Text:lower() == item.Name:lower() then
+                                
+                                -- 3. Button: child มี TextLabel ชื่อ "Text" (เหมือนกัน)
+                                if not match then
+                                    local btnText = child:FindFirstChild("Text")
+                                    if btnText and btnText:IsA("TextLabel") and clean(btnText.Text) == cleanItemName then
+                                        match = true
+                                    end
+                                end
+                                
+                                -- 4. Dropdown: child มี NameLabel
+                                if not match then
+                                    local nameLabel = child:FindFirstChild("NameLabel")
+                                    if nameLabel and nameLabel:IsA("TextLabel") and clean(nameLabel.Text) == cleanItemName then
+                                        match = true
+                                    end
+                                end
+                                
+                                -- 5. Slider: child มี LabelNameSlider
+                                if not match then
+                                    local sliderLabel = child:FindFirstChild("LabelNameSlider")
+                                    if sliderLabel and sliderLabel:IsA("TextLabel") and clean(sliderLabel.Text) == cleanItemName then
+                                        match = true
+                                    end
+                                end
+                                
+                                if match then
                                     targetItem = child
                                     break
                                 end
                             end
                         end
-                        break
+                        if targetItem then break end
                     end
                 end
             end
@@ -1263,11 +1289,11 @@ function SearchSystem:NavigateToItem(item)
     end
     
     if not targetItem then
-        print("❌ Cannot find item:", item.Name)
+        print("❌ Cannot find item:", item.Name, "in section:", item.Section)
         return
     end
     
-    -- 6️⃣ เลื่อน Scroll และไฮไลท์
+    -- เลื่อน scroll และไฮไลท์
     self:ScrollToElement(targetItem)
     self:HighlightElement(targetItem)
 end
@@ -1340,162 +1366,6 @@ function SearchSystem:SimulateClick(container, control)
 end
 
  
-
-function SearchSystem:PerformSearch(query)
-    if searchDebounce then return end
-    searchDebounce = true
-    task.wait(0.1)
-    
-    -- Clear old results
-    for _, child in pairs(SearchResults:GetChildren()) do
-        if child:IsA("TextButton") or child:IsA("TextLabel") then
-            child:Destroy()
-        end
-    end
-    
-    if query == "" or #query < 1 then
-        SearchResults.Visible = false
-        searchDebounce = false
-        return
-    end
-    
-    query = query:lower()
-    local resultsFound = 0
-    local maxResults = 12
-    
-    for _, item in ipairs(self.Database) do
-        if resultsFound >= maxResults then break end
-        
-        local itemName = item.Name:lower()
-        local tabName = item.Tab:lower()
-        local sectionName = (item.Section or ""):lower()
-        
-        -- Improved search: match name, tab, or section
-        if itemName:find(query, 1, true) or 
-           tabName:find(query, 1, true) or
-           sectionName:find(query, 1, true) then
-            resultsFound = resultsFound + 1
-            
-            local ResultButton = Instance.new("TextButton")
-            ResultButton.Parent = SearchResults
-            ResultButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-            ResultButton.BorderSizePixel = 0
-            ResultButton.Size = UDim2.new(1, -5, 0, 50)
-            ResultButton.ZIndex = 106
-            ResultButton.Font = Enum.Font.GothamBold
-            ResultButton.Text = ""
-            ResultButton.AutoButtonColor = false
-            
-            local ResultCorner = Instance.new("UICorner")
-            ResultCorner.CornerRadius = UDim.new(0, 4)
-            ResultCorner.Parent = ResultButton
-            
-            -- Category Icon
-            local CategoryIcon = Instance.new("TextLabel")
-            CategoryIcon.Parent = ResultButton
-            CategoryIcon.BackgroundTransparency = 1
-            CategoryIcon.Position = UDim2.new(0, 5, 0, 3)
-            CategoryIcon.Size = UDim2.new(0, 15, 0, 15)
-            CategoryIcon.ZIndex = 107
-            CategoryIcon.Font = Enum.Font.GothamBold
-            CategoryIcon.TextColor3 = _G.Color
-            CategoryIcon.TextSize = 12
-            CategoryIcon.TextXAlignment = Enum.TextXAlignment.Left
-            
-            local icons = {
-                Toggle = "☑", Button = "🔘", Slider = "🎚",
-                Dropdown = "📋", MultiDropdown = "📋",
-                Textbox = "📝", Label = "📄", Colorpicker = "🎨"
-            }
-            CategoryIcon.Text = icons[item.Category] or "•"
-            
-            -- Category Label
-            local CategoryLabel = Instance.new("TextLabel")
-            CategoryLabel.Parent = ResultButton
-            CategoryLabel.BackgroundTransparency = 1
-            CategoryLabel.Position = UDim2.new(0, 22, 0, 3)
-            CategoryLabel.Size = UDim2.new(1, -27, 0, 12)
-            CategoryLabel.ZIndex = 107
-            CategoryLabel.Font = Enum.Font.GothamBold
-            CategoryLabel.Text = item.Category
-            CategoryLabel.TextColor3 = _G.Color
-            CategoryLabel.TextSize = 10
-            CategoryLabel.TextXAlignment = Enum.TextXAlignment.Left
-            CategoryLabel.TextTruncate = Enum.TextTruncate.AtEnd
-            
-            -- Item Name
-            local NameLabel = Instance.new("TextLabel")
-            NameLabel.Parent = ResultButton
-            NameLabel.BackgroundTransparency = 1
-            NameLabel.Position = UDim2.new(0, 5, 0, 16)
-            NameLabel.Size = UDim2.new(1, -10, 0, 15)
-            NameLabel.ZIndex = 107
-            NameLabel.Font = Enum.Font.GothamBold
-            NameLabel.Text = item.Name
-            NameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-            NameLabel.TextSize = 12
-            NameLabel.TextXAlignment = Enum.TextXAlignment.Left
-            NameLabel.TextTruncate = Enum.TextTruncate.AtEnd
-            
-            -- Path Label
-            local PathLabel = Instance.new("TextLabel")
-            PathLabel.Parent = ResultButton
-            PathLabel.BackgroundTransparency = 1
-            PathLabel.Position = UDim2.new(0, 5, 0, 32)
-            PathLabel.Size = UDim2.new(1, -10, 0, 13)
-            PathLabel.ZIndex = 107
-            PathLabel.Font = Enum.Font.Gotham
-            PathLabel.Text = item.Tab .. (item.Section ~= "" and " > " .. item.Section or "")
-            PathLabel.TextColor3 = Color3.fromRGB(120, 120, 120)
-            PathLabel.TextSize = 9
-            PathLabel.TextXAlignment = Enum.TextXAlignment.Left
-            PathLabel.TextTruncate = Enum.TextTruncate.AtEnd
-            
-            ResultButton.MouseEnter:Connect(function()
-                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-                    {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
-            end)
-            
-            ResultButton.MouseLeave:Connect(function()
-                TweenService:Create(ResultButton, TweenInfo.new(0.2, Enum.EasingStyle.Quad), 
-                    {BackgroundColor3 = Color3.fromRGB(30, 30, 30)}):Play()
-            end)
-            
-            ResultButton.MouseButton1Click:Connect(function()
-                SearchSystem:NavigateToItem(item)
-                task.wait(0.2)
-                SearchBox.Text = ""
-                SearchResults.Visible = false
-            end)
-        end
-    end
-    
-    if resultsFound > 0 then
-        local maxHeight = math.min(resultsFound * 55 + 10, 300)
-        SearchResults.Size = UDim2.new(0, 155, 0, maxHeight)
-        SearchResults.CanvasSize = UDim2.new(0, 0, 0, resultsFound * 55 + 10)
-        SearchResults.Visible = true
-        SearchResults.CanvasPosition = Vector2.new(0, 0)
-    else
-        local NoResults = Instance.new("TextLabel")
-        NoResults.Parent = SearchResults
-        NoResults.BackgroundTransparency = 1
-        NoResults.Size = UDim2.new(1, 0, 0, 60)
-        NoResults.ZIndex = 106
-        NoResults.Font = Enum.Font.GothamBold
-        NoResults.Text = "No results\nfound 😔"
-        NoResults.TextColor3 = Color3.fromRGB(150, 150, 150)
-        NoResults.TextSize = 11
-        NoResults.TextYAlignment = Enum.TextYAlignment.Center
-        
-        SearchResults.Size = UDim2.new(0, 155, 0, 70)
-        SearchResults.Visible = true
-    end
-    
-    searchDebounce = false
-end
-
-
 
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     SearchSystem:PerformSearch(SearchBox.Text)

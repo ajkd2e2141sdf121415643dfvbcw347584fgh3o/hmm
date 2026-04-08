@@ -787,15 +787,17 @@ ResultsPadding.PaddingRight = UDim.new(0, 5)
 ResultsPadding.PaddingBottom = UDim.new(0, 5)
 
 -- ===== ADD TO DATABASE FUNCTION =====
-function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, itemObject)
+function SearchSystem:AddToDatabase(category, itemName, tabName, sectionName, containerObject, controlObject)
     table.insert(self.Database, {
         Category = category,
         Name = itemName,
         Tab = tabName,
         Section = sectionName,
-        Object = itemObject
+        Container = containerObject,  -- frame ที่ห่อหุ้ม
+        Control = controlObject,       -- object ที่ใช้คลิกจริง
+        FullPath = tabName .. " > " .. sectionName .. " > " .. itemName
     })
-end
+end 
 
 
 -- ===== FIX 2: ปรับ ScanItemsInPage =====
@@ -1085,35 +1087,47 @@ function SearchSystem:ScanSideItems(tabName, sideName, side)
 end
 
 
-
--- ===== FIX 3: ปรับ NavigateToItem ให้สมบูรณ์ =====
 function SearchSystem:NavigateToItem(item)
+    if not item or not item.Container then
+        print("❌ Invalid item")
+        return
+    end
     
-    local foundTab = nil
-    local pageToShow = nil
+    -- 1️⃣ ปิด search results
+    SearchResults.Visible = false
+    SearchBox.Text = ""
     
-    -- หา Tab ที่ตรงกัน
+    -- 2️⃣ หา Main Frame และ Bottom
+    local mainFrame = SearchResults.Parent.Parent  -- Main Frame
+    local bottomFrame = mainFrame and mainFrame:FindFirstChild("Bottom")
+    
+    if not bottomFrame then
+        print("❌ Cannot find Bottom frame")
+        return
+    end
+    
+    -- 3️⃣ หา Tab ที่ตรงกับ item.Tab
+    local targetTab = nil
+    local targetPage = nil
+    
     for _, tab in pairs(TabContainer:GetChildren()) do
         if tab:IsA("TextButton") and tab.Name == "Tab" then
             local textLabel = tab:FindFirstChild("TextLabel")
             if textLabel then
-                local fullText = textLabel.Text:gsub(" ", ""):lower()
-                local searchTab = item.Tab:lower()
-                
-                if fullText == searchTab or fullText:find(searchTab, 1, true) then
-                    foundTab = tab
+                local tabName = textLabel.Text:gsub("%s+$", "")  -- trim space
+                if tabName:lower() == item.Tab:lower() then
+                    targetTab = tab
                     
-                    -- หา Page ที่ตรงกัน
-                    local mainFrame = tab.Parent.Parent.Parent.Parent
-                    if mainFrame and mainFrame.Name == "Main" then
-                        local bottomFrame = mainFrame:FindFirstChild("Bottom")
-                        if bottomFrame then
-                            for _, page in pairs(bottomFrame:GetChildren()) do
-                                if page:IsA("ScrollingFrame") and page.Name == "Page" then
-                                    pageToShow = page
-                                    break
-                                end
+                    -- หา Page ที่ตรงกับ Tab นี้
+                    for _, page in pairs(bottomFrame:GetChildren()) do
+                        if page:IsA("ScrollingFrame") and page.Name == "Page" then
+                            -- ตรวจสอบว่า page นี้เชื่อมกับ tab นี้ไหม
+                            if page.Visible == false then
+                                -- page นี้ซ่อนอยู่ แสดงว่าไม่ใช่ tab ที่เลือก
+                                continue
                             end
+                            targetPage = page
+                            break
                         end
                     end
                     break
@@ -1122,53 +1136,230 @@ function SearchSystem:NavigateToItem(item)
         end
     end
     
-    if not foundTab then
+    if not targetTab then
+        print("❌ Cannot find tab:", item.Tab)
         return
     end
     
-    foundTab.MouseButton1Click:Connect(function() end)
-    foundTab:TweenPosition(foundTab.Position, "Out", "Quad", 0.2, true)
-    
-    task.wait(0.6)
-    
-    -- ตรวจสอบ Object
-    if not item.Object then
-        return
+    -- 4️⃣ จำลองการคลิก Tab (โดยไม่ต้องคลิกจริง)
+    local oldSelected = nil
+    for _, tab in pairs(TabContainer:GetChildren()) do
+        if tab:IsA("TextButton") and tab.Name == "Tab" then
+            if tab == targetTab then
+                -- ทำให้ Tab นี้เป็น selected
+                local frameTab = tab:FindFirstChild("FrameTab")
+                local textLabel = tab:FindFirstChild("TextLabel")
+                local imageLabel = tab:FindFirstChild("ImageLabel")
+                
+                if frameTab then
+                    frameTab.Visible = true
+                    frameTab.Size = UDim2.new(0, 50, 0, 1)
+                end
+                if textLabel then
+                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    textLabel.TextTransparency = 0
+                end
+                if imageLabel then
+                    imageLabel.ImageTransparency = 0
+                    imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+                end
+                
+                -- แสดง Page ที่ถูกต้อง
+                if targetPage then
+                    for _, page in pairs(bottomFrame:GetChildren()) do
+                        if page:IsA("ScrollingFrame") then
+                            page.Visible = (page == targetPage)
+                            if page == targetPage then
+                                page.Position = UDim2.new(0, 0, 0, 0)
+                            end
+                        end
+                    end
+                end
+            else
+                -- ทำให้ Tab อื่นไม่ถูกเลือก
+                local frameTab = tab:FindFirstChild("FrameTab")
+                local textLabel = tab:FindFirstChild("TextLabel")
+                local imageLabel = tab:FindFirstChild("ImageLabel")
+                
+                if frameTab then
+                    frameTab.Visible = false
+                    frameTab.Size = UDim2.new(0, 0, 0, 1)
+                end
+                if textLabel then
+                    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+                    textLabel.TextTransparency = 0.2
+                end
+                if imageLabel then
+                    imageLabel.ImageTransparency = 0.2
+                end
+            end
+        end
     end
     
-    if not item.Object.Parent then
-        return
-    end
-    
-    local obj = item.Object
-    
-    local originalColor = obj.BackgroundColor3
-
-    for i = 1, 3 do
-        task.spawn(function()
-            task.wait(i * 0.25)
-            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = _G.Color}):Play()
-            task.wait(0.15)
-            TweenService:Create(obj, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {BackgroundColor3 = originalColor}):Play()
-        end)
-    end
-    
-    -- Auto scroll
+    -- รอให้ UI อัปเดต
     task.wait(0.3)
-    local scrollFrame = obj.Parent
+    
+    -- 5️⃣ หา Section และ Item ใน Page
+    if not targetPage then
+        print("❌ Cannot find target page")
+        return
+    end
+    
+    -- หา Side (Left/Right)
+    local targetSide = nil
+    local targetSection = nil
+    local targetItem = nil
+    
+    -- ตรวจสอบทั้ง Left และ Right
+    for _, sideName in ipairs({"Left", "Right"}) do
+        local side = targetPage:FindFirstChild(sideName)
+        if side then
+            for _, section in pairs(side:GetChildren()) do
+                if section:IsA("Frame") then
+                    local sectionNameLabel = section:FindFirstChild("Top") and 
+                                            section.Top:FindFirstChild("Sectionname")
+                    local sectionName = sectionNameLabel and sectionNameLabel.Text or ""
+                    
+                    if sectionName:lower() == item.Section:lower() then
+                        targetSide = side
+                        targetSection = section
+                        
+                        -- หา SectionContainer
+                        local sectionContainer = section:FindFirstChild("Top") and 
+                                                section.Top:FindFirstChild("SectionContainer")
+                        
+                        if sectionContainer then
+                            -- ค้นหา Item ใน SectionContainer
+                            for _, child in pairs(sectionContainer:GetChildren()) do
+                                -- เปรียบเทียบชื่อ
+                                local childName = child.Name
+                                if childName:lower() == item.Name:lower() or 
+                                   (childName == item.Name) then
+                                    targetItem = child
+                                    break
+                                end
+                                
+                                -- ถ้าเป็น Toggle ให้ดูที่ TextLabel
+                                local textLabel = child:FindFirstChild("Text")
+                                if textLabel and textLabel.Text:lower() == item.Name:lower() then
+                                    targetItem = child
+                                    break
+                                end
+                                
+                                -- ถ้าเป็น Button ให้ดูที่ Text
+                                local btnText = child:FindFirstChild("Text")
+                                if btnText and btnText:IsA("TextLabel") and 
+                                   btnText.Text:lower() == item.Name:lower() then
+                                    targetItem = child
+                                    break
+                                end
+                            end
+                        end
+                        break
+                    end
+                end
+            end
+        end
+        if targetItem then break end
+    end
+    
+    if not targetItem then
+        print("❌ Cannot find item:", item.Name)
+        -- พยายามเลื่อนไปที่ Section แทน
+        if targetSection then
+            self:ScrollToElement(targetSection)
+        end
+        return
+    end
+    
+    -- 6️⃣ เลื่อน Scroll ไปหา Item
+    self:ScrollToElement(targetItem)
+    
+    -- 7️⃣ แสดง Highlight Effect
+    self:HighlightElement(targetItem)
+    
+    -- 8️⃣ ถ้าเป็น Toggle/Button ให้จำลองการกด (optional)
+    -- self:SimulateClick(targetItem, item.Control)
+end
+
+function SearchSystem:ScrollToElement(element)
+    task.wait(0.2)
+    
+    -- หา ScrollingFrame ที่ห่อหุ้ม element นี้
+    local scrollFrame = element.Parent
     while scrollFrame and not scrollFrame:IsA("ScrollingFrame") do
         scrollFrame = scrollFrame.Parent
     end
     
-    if scrollFrame then
-        local itemPosition = obj.AbsolutePosition.Y - scrollFrame.AbsolutePosition.Y
-        local targetCanvasY = math.max(0, itemPosition - 50)
-        TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {CanvasPosition = Vector2.new(0, targetCanvasY)}):Play()
-    else
-        print("⚠️ [!] ScrollingFrame not found")
+    if scrollFrame and scrollFrame:IsA("ScrollingFrame") then
+        local elementPos = element.AbsolutePosition.Y
+        local scrollFramePos = scrollFrame.AbsolutePosition.Y
+        local offset = elementPos - scrollFramePos - 50  -- เลื่อนมาให้เห็นพอดี
+        
+        local currentPos = scrollFrame.CanvasPosition.Y
+        local targetPos = math.max(0, currentPos + offset)
+        
+        TweenService:Create(scrollFrame, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
+            CanvasPosition = Vector2.new(0, targetPos)
+        }):Play()
     end
-
 end
+
+function SearchSystem:HighlightElement(element)
+    if not element then return end
+    
+    -- บันทึกสีเดิม
+    local originalColor = element.BackgroundColor3
+    local originalTransparency = element.BackgroundTransparency
+    
+    -- ไฮไลท์ 3 ครั้ง
+    for i = 1, 3 do
+        TweenService:Create(element, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = Color3.fromRGB(0, 200, 255),
+            BackgroundTransparency = 0.3
+        }):Play()
+        task.wait(0.15)
+        
+        TweenService:Create(element, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {
+            BackgroundColor3 = originalColor,
+            BackgroundTransparency = originalTransparency or 0
+        }):Play()
+        task.wait(0.15)
+    end
+end
+
+function SearchSystem:SimulateClick(container, control)
+    if control and control:IsA("TextButton") then
+        -- จำลองการคลิก
+        local clickEvent = control.MouseButton1Click
+        if clickEvent then
+            -- เรียก callback โดยตรง
+            for _, conn in pairs(getconnections(clickEvent)) do
+                conn.Function()
+            end
+        end
+    elseif container then
+        -- ถ้าไม่มี control ให้หา TextButton ข้างใน
+        local button = container:FindFirstChildWhichIsA("TextButton") or
+                       container:FindFirstChildWhichIsA("ImageButton")
+        if button then
+            for _, conn in pairs(getconnections(button.MouseButton1Click)) do
+                conn.Function()
+            end
+        end
+    end
+end
+
+task.spawn(function()
+    task.wait(1)  -- รอให้ UI สร้างเสร็จ
+    SearchSystem:ScanAllTabs()
+    print("✅ Search System Ready - Found", #SearchSystem.Database, "items")
+    
+    -- ทดสอบ
+    for _, item in ipairs(SearchSystem.Database) do
+        print(string.format("[%s] %s (%s)", item.Category, item.Name, item.FullPath))
+    end
+end)
 
 function SearchSystem:PerformSearch(query)
     if searchDebounce then return end
@@ -1779,27 +1970,23 @@ end)
         UIListLayout_2:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
             Section.Size = UDim2.new(1, 0, 0, UIListLayout_2.AbsoluteContentSize.Y + 35)
         end)
-local function RegisterComponent(category, name, object)
-    pcall(function()
-        if not object then
-            return
-        end
-        
-        if not object.Parent then
-            return
-        end
-        
-        local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
-        
-        
-        SearchSystem:AddToDatabase(
-            category,
-            cleanName,
-            CurrentTabName,
-            CurrentSectionName,
-            object
-        )
-    end)
+local function RegisterComponent(category, name, componentObject, realItemObject)
+    -- componentObject คือ container frame (MainToggle, Button Frame ฯลฯ)
+    -- realItemObject คือ object ที่ใช้เรียก callback (TextButton ข้างใน)
+    
+    if not componentObject then return end
+    
+    local cleanName = name:gsub("\n.*", ""):gsub("\\n.*", "")
+    
+    -- 🔥 สำคัญ: เก็บทั้ง container และ actual control object
+    SearchSystem:AddToDatabase(
+        category,
+        cleanName,
+        CurrentTabName,
+        CurrentSectionName,
+        componentObject,     -- container
+        realItemObject       -- actual control (optional)
+    )
 end
     local ColorDependents = {}
     -- ฟังก์ชันอัปเดตสีของ components ที่ลงทะเบียน
@@ -2079,9 +2266,9 @@ function functionitem:Toggle(...)
         CircleClick(TextButton, Mouse.X, Mouse.Y)
         SoundClick:Destroy()
     end)
-
+    local actualButton = TextButton -- ตัวที่ใช้เรียก callback จริงๆ
     -- 🔥 Register to Search
-    RegisterComponent("Toggle", Name, MainToggle)
+    RegisterComponent("Toggle", Name, MainToggle, actualButton)
     return ToglFunc
 end
 
@@ -2153,7 +2340,7 @@ function functionitem:Button(...)
     end)
 
     -- 🔥 Register to Search
-    RegisterComponent("Button", Name, Button)
+    RegisterComponent("Button", Name, Button, TextButton)
     
     return
 end
@@ -2461,7 +2648,7 @@ function functionitem:Textbox(...)
     end)
 
     -- 🔥 Register to Search
-    RegisterComponent("Textbox", Name, Textbox)
+    RegisterComponent("Textbox", Name, Textbox, HeadTitle)
     
     return
 end
@@ -2859,7 +3046,7 @@ function functionitem:Dropdown(...)
         end
     end
 
-    RegisterComponent("Dropdown", Name, MainDropDown)
+    RegisterComponent("Dropdown", Name, MainDropDown,ClickArea)
     return Dropfunc
 end
 -- ==========================================
@@ -3244,7 +3431,7 @@ function functionitem:MultiDropdown(...)
         end)
     end
 
-    RegisterComponent("MultiDropdown", Name, MainDropDown)
+    RegisterComponent("MultiDropdown", Name, MainDropDown,ClickArea)
     return Dropfunc
 end
 -- ==========================================
@@ -3460,7 +3647,7 @@ function functionitem:Slider(...)
         pcall(Callback, value)
     end
 
-    RegisterComponent("Slider", text, SliderFrame)
+    RegisterComponent("Slider", text, SliderFrame, ConneValue)
     return sliderfunc
 end
 

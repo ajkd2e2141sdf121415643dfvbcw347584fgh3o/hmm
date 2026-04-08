@@ -1516,13 +1516,7 @@ function VectorHub:Evil()
     TabContainer.ScrollBarThickness = 1
     TabContainer.VerticalScrollBarInset = Enum.ScrollBarInset.Always
 
-    UIListLayout.Parent = TabContainer
-    UIListLayout.FillDirection = Enum.FillDirection.Horizontal
-    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    UIListLayout.Padding = UDim.new(0, 10)
-    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        TabContainer.CanvasSize = UDim2.new(0, UIListLayout.AbsoluteContentSize.X, 0, 0)
-    end)
+
     
     UIPadding.Parent = TabContainer
     UIPadding.PaddingTop = UDim.new(0, 5)

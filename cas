@@ -1191,104 +1191,66 @@ local callbacks = {}
 end
 
 function creator.Create(className: string)
-    return function(properties)
-        properties = properties or {}
+	return function(properties)
+		properties = properties or {}
 
-        local instance = Instance.new(className)
-        local delayedParent = nil -- ตัวแปรสำหรับเก็บ Parent ไว้ตั้งค่าทีหลังสุด
+		local instance = Instance.new(className)
 
-        for key, value in pairs(properties) do
-            -- แยก Parent ออกมาทำทีหลังสุดเพื่อความปลอดภัย
-            if key == "Parent" then
-                delayedParent = value
-                continue
-            end
+		for key, value in pairs(properties) do
+			if key == "__dynamicKeys" and type(value) == "table" then
+				for property, valueObject: ValueState__DARKLUA_TYPE_m in pairs(value) do
+					pcall(function()
+						instance[property] = valueObject.Value
+					end)
 
-            if key == "__dynamicKeys" and type(value) == "table" then
-                for property, valueObject in pairs(value) do
-                    -- ใช้ pcall ครอบการตั้งค่าเริ่มต้น
-                    pcall(function()
-                        instance[property] = valueObject.Value
-                    end)
+					valueObject:Connect(function(newValue)
+						task.defer(pcall, function()
+							if properties["__contextKeys"] and properties["__contextKeys"]["_general"] then
+								properties["__contextKeys"]["_general"]()
+							end
 
-                    valueObject:Connect(function(newValue)
-                        task.defer(pcall, function()
-                            if properties["__contextKeys"] and properties["__contextKeys"]["_general"] then
-                                properties["__contextKeys"]["_general"]()
-                            end
+							instance[property] = properties["__contextKeys"]
+									and properties["__contextKeys"][property]
+									and properties["__contextKeys"][property]()
+								or newValue
+						end)
+					end)
+				end
 
-                            instance[property] = properties["__contextKeys"]
-                                and properties["__contextKeys"][property]
-                                and properties["__contextKeys"][property]()
-                                or newValue
-                        end)
-                    end)
-                end
-                continue
-            end
+				continue
+			end
 
-            -- ตรวจสอบ Object ภายในที่ส่งผ่านตาราง (Unique Table)
-            if typeof(value) == "table" and value.__unique then
-                -- ลองตั้งค่า Parent ของลูกมัน
-                pcall(function()
-                    value.Parent = instance
-                end)
-            else
-                -- ตั้งค่า Property ทั่วไป
-                pcall(function()
-                    instance[key] = value
-                end)
-            end
-        end
+			if typeof(value) == "table" and value.__unique then
+				value.Parent = instance
+			end
 
-        -- ตั้งค่า Parent ของตัวมันเองเป็นลำดับสุดท้าย (และใช้ task.defer กันเหนียว)
-        if delayedParent then
-            task.defer(function()
-                local success, err = pcall(function()
-                    instance.Parent = delayedParent
-                end)
-                if not success then
-                    warn("Failed to set Parent for " .. className .. ": " .. tostring(err))
-                end
-            end)
-        end
+			pcall(function()
+				instance[key] = value
+			end)
+		end
 
-        return setmetatable({ __unique = true }, {
-            __metatable = instance,
-            __index = function(_, key)
-                if key == "__instance" then
-                    return instance
-                end
+		return setmetatable({ __unique = true }, {
+			__metatable = instance,
+			__index = function(_, key)
+				if key == "__instance" then
+					return instance
+				end
 
-                local value = instance[key]
+				local value = instance[key]
 
-                if typeof(value) == "function" then
-                    return function(_, ...)
-                        return value(instance, ...)
-                    end
-                else
-                    return value
-                end
-            end,
-            __newindex = function(_, key, value)
-                local function setProperty()
-                    instance[key] = value
-                end
-
-                local success, err = pcall(setProperty)
-
-                if not success then
-                    if string.find(tostring(err), "locked") then
-                        task.defer(function()
-                            pcall(setProperty)
-                        end)
-                    else
-                        warn("Error setting property '" .. tostring(key) .. "': " .. tostring(err))
-                    end
-                end
-            end,
-        })
-    end
+				if typeof(value) == "function" then
+					return function(_, ...)
+						return value(instance, ...)
+					end
+				else
+					return value
+				end
+			end,
+			__newindex = function(_, key, value)
+				instance[key] = value
+			end,
+		})
+	end
 end
 
 return creator
@@ -6104,14 +6066,10 @@ local effects = __DIST.h()
 				structures.Titlebar.Subtitle.Text = value
 			end
 		end,
-        Searching = function(value: boolean)
-            task.defer(function()
-                if structures.Titlebar and structures.Titlebar.SearchField then
-                    structures.Titlebar.SearchField.Body.Parent = value and structures.Titlebar.Trailing or nil
-                end
-            end)
-            structures.Titlebar.SearchField.Body.Visible = value
-        end,
+		Searching = function(value: boolean)
+			structures.Titlebar.SearchField.Body.Parent = value and structures.Titlebar.Trailing or nil
+			structures.Titlebar.SearchField.Body.Visible = value
+		end,
 		Draggable = function(value: boolean)
 			dragging = not value and false
 		end,

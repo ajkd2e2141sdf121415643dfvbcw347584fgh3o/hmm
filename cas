@@ -4566,7 +4566,7 @@ end
 
 return function(frame: GuiObject, distance: number?)
     local UIS = game:GetService("UserInputService")
-    local isMobile = UIS.TouchEnabled 
+    local isMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
     
     if isMobile then
         return {
@@ -6078,6 +6078,7 @@ local effects = __DIST.h()
 				resizeClient.SetEnabled(value)
 			end
 		end,
+		local minimizeTweens = {}
 		Minimized = function(value: boolean?, tween: boolean?)
 			local useTween = tween ~= false
 
@@ -6096,15 +6097,21 @@ local effects = __DIST.h()
 			local scaleTarget = { Scale = value and 0 or 1 }
 
 			if useTween then
+				for _, t in ipairs(minimizeTweens) do t:Cancel() end
+				table.clear(minimizeTweens)
+
 				minimizing = true
-				tweenService:Create(structures.Body.__instance, tweenInfo, bodyTarget):Play()
+				local bodyTween = tweenService:Create(structures.Body.__instance, tweenInfo, bodyTarget)
+				local scaleTween = tweenService:Create(structures.Scale.__instance, tweenInfo, scaleTarget)
 
-				local scaleTween: Tween = tweenService:Create(structures.Scale.__instance, tweenInfo, scaleTarget)
+				table.insert(minimizeTweens, bodyTween)
+				table.insert(minimizeTweens, scaleTween)
 
+				bodyTween:Play()
 				scaleTween:Play()
+
 				scaleTween.Completed:Once(function()
 					minimizing = false
-
 					if structures["BlurModel"] and not properties.Minimized then
 						structures["BlurModel"].SetVisibility(true)
 					end
@@ -6118,6 +6125,8 @@ local effects = __DIST.h()
 				end
 			end
 		end,
+		local maximizeTweens = {}
+
 		Maximized = function(value: boolean?, tween: boolean?)
 			tween = tween ~= false
 
@@ -6137,9 +6146,18 @@ local effects = __DIST.h()
 			local cornerTarget = { CornerRadius = value and UDim.new(0, 0) or UDim.new(0, 10) }
 
 			if tween then
-				tweenService:Create(structures.Body.__instance, tweenInfo, bodyTarget):Play()
-				tweenService:Create(structures.Cornering, tweenInfo, cornerTarget):Play()
-			else
+					for _, t in ipairs(maximizeTweens) do t:Cancel() end
+					table.clear(maximizeTweens)
+
+					local bodyTween = tweenService:Create(structures.Body.__instance, tweenInfo, bodyTarget)
+					local cornerTween = tweenService:Create(structures.Cornering, tweenInfo, cornerTarget)
+
+					table.insert(maximizeTweens, bodyTween)
+					table.insert(maximizeTweens, cornerTween)
+
+					bodyTween:Play()
+					cornerTween:Play()
+				else
 				structures.Body.Size = bodyTarget.Size
 				structures.Body.Position = bodyTarget.Position
 				structures.Cornering.CornerRadius = cornerTarget.CornerRadius
@@ -6182,9 +6200,13 @@ local effects = __DIST.h()
 
 	do -- Sidebar button
 		local toggled = true
+		local activeTweens = {}
 
 		local function toggle()
 			toggled = not toggled
+
+			for _, t in ipairs(activeTweens) do t:Cancel() end
+			table.clear(activeTweens)
 
 			local marginsTargetSize = toggled and UDim.new(0, 0) or UDim.new(0, -200)
 			local sidebarTargetSize = toggled and UDim2.new(0, 200, 1, 0) or UDim2.new(0, 0, 1, 0)
@@ -6196,32 +6218,23 @@ local effects = __DIST.h()
 			structures.Separator.Visible = toggled and true or false
 			structures.CornerClip.Visible = toggled and true
 
-			tweenService
-				:Create(structures.ContentBody, tweenInfo, {
-					Size = contentTargetSize,
-				})
-				:Play()
+			local t1 = tweenService:Create(structures.ContentBody, tweenInfo, { Size = contentTargetSize })
+			local t2 = tweenService:Create(structures.SidebarMargins:FindFirstChild("UIPadding"), tweenInfo, { PaddingLeft = marginsTargetSize })
+			local t3 = tweenService:Create(structures.SidebarMargins, tweenInfo, { Size = sidebarTargetSize })
+			local t4 = tweenService:Create(structures.Titlebar.CornerClipLeft, tweenInfo, { Size = cornerLeftSize })
 
-			tweenService
-				:Create(structures.SidebarMargins:FindFirstChild("UIPadding"), tweenInfo, {
-					PaddingLeft = marginsTargetSize,
-				})
-				:Play()
+			table.insert(activeTweens, t1)
+			table.insert(activeTweens, t2)
+			table.insert(activeTweens, t3)
+			table.insert(activeTweens, t4)
 
-			local sidebarTween = tweenService:Create(structures.SidebarMargins, tweenInfo, {
-				Size = sidebarTargetSize,
-			})
-
-			tweenService
-				:Create(structures.Titlebar.CornerClipLeft, tweenInfo, {
-					Size = cornerLeftSize,
-				})
-				:Play()
-
-			sidebarTween:Play()
+			t1:Play()
+			t2:Play()
+			t3:Play()
+			t4:Play()
 
 			if not toggled then
-				sidebarTween.Completed:Connect(function()
+				t3.Completed:Connect(function()
 					structures.CornerClip.Visible = false
 				end)
 			end
@@ -6428,22 +6441,23 @@ local effects = __DIST.h()
 	end
 
 	binder.Apply(properties, object)
+	local isMobile = game:GetService("UserInputService").TouchEnabled 
+		and not game:GetService("UserInputService").KeyboardEnabled
 
-        local isMobile =  game:GetService("UserInputService").TouchEnabled and not  game:GetService("UserInputService").KeyboardEnabled
-        if not isMobile then
-            local function recheck()
-                local descendants = structures.Body:GetDescendants()
-                for i = 1, #descendants do
-                    local v = descendants[i]
-                    local ok, size = pcall(function() return v.Size end)
-                    if not ok then continue end
-                    v.Size = UDim2.fromOffset(0, 0)
-                    v.Size = size
-                    if i % 50 == 0 then task.wait() end
-                end
-            end
-            task.defer(recheck)
-        end
+	if not isMobile then
+		local function recheck()
+			local descendants = structures.Body:GetDescendants()
+			for i = 1, #descendants do
+				local v = descendants[i]
+				local ok, size = pcall(function() return v.Size end)
+				if not ok then continue end
+				v.Size = UDim2.fromOffset(0, 0)
+				v.Size = size
+				if i % 50 == 0 then task.wait() end
+			end
+		end
+		task.defer(recheck)
+	end
 
 	return object
 end
@@ -9813,7 +9827,7 @@ local creator = __DIST.d()
     structures.Body.Destroying:Connect(function()
         inputConn:Disconnect()
     end)
-
+	
 	return object
 end
 end function __DIST.F():typeof(__modImpl())local v=__DIST.cache.F if not v then v={c=__modImpl()}__DIST.cache.F=v end return v.c end end do local function __modImpl()
@@ -10330,6 +10344,10 @@ local creator = __DIST.d()
 
 	structures.Body.MouseButton1Click:Connect(function()
 		object.Expanded = not object.Expanded
+	end)
+
+	structures.Body.Destroying:Connect(function()
+		inputConn:Disconnect()
 	end)
 
 	return object

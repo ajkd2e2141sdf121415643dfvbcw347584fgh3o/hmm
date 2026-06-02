@@ -11329,36 +11329,104 @@ local function makeGradient(topHex, bottomHex)
 end
 
 return {
-	Blue = {
-		_id = "Blue",
-
+Blue = {
+	_id = "Blue",
 		Dark = {
 			SwitchAccent = Color3.fromHex("#0A84FF"),
 			Selection = Color3.fromHex("#007AFF"),
-			SelectionFocused = Color3.fromHex("#0A82FF"),
-		    SelectionStroke =  Color3.fromHex("#0A82FF"),
-			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
+			SelectionFocused = Color3.fromHex("#3B9CFF"),
+			SelectionStroke = Color3.fromHex("#3B9CFF"),
+
+			Text = {
+				Primary = Color3.fromHex("#FFFFFF"),
+				Secondary = Color3.fromHex("#B8D8FF"),
+				Tertiary = Color3.fromHex("#7AAFFF"),
+			},
+
+			Background = Color3.fromHex("#0D1117"),
+			View = Color3.fromHex("#161B22"),
+			ViewBorder = Color3.fromHex("#1F6FEB"),
+
+			Sidebar = Color3.fromHex("#111827"),
+			Titlebar = Color3.fromHex("#1E293B"),
+
+			Toggle = {
+				SwitchOn = Color3.fromHex("#0A84FF"),
+				SwitchOff = Color3.fromHex("#3A3A3A"),
+				Knob = Color3.fromHex("#FFFFFF"),
+			},
+
+			Slider = {
+				Track = Color3.fromHex("#1E293B"),
+				Thumb = Color3.fromHex("#0A84FF"),
+			},
+
 			Button = {
 				FillPrimary = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 148, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 110, 255)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(82,156,255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(0,122,255)),
+				}),
+
+				FillSecondary = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(45,55,72)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(30,41,59)),
 				}),
 			},
+
+			MenuButton = {
+				IndicatorBackground = Color3.fromHex("#1E3A5F"),
+				MenuBackground = Color3.fromHex("#111827"),
+			},
 		},
+
 		Light = {
-			SwitchAccent = Color3.fromHex("#0A84FF"),
+			SwitchAccent = Color3.fromHex("#007AFF"),
 			Selection = Color3.fromHex("#007AFF"),
-			SelectionFocused = Color3.fromHex("#0A82FF"),
-		    SelectionStroke =  Color3.fromHex("#0A82FF"),
-			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
+			SelectionFocused = Color3.fromHex("#3395FF"),
+			SelectionStroke = Color3.fromHex("#3395FF"),
+
+			Text = {
+				Primary = Color3.fromHex("#111827"),
+				Secondary = Color3.fromHex("#374151"),
+				Tertiary = Color3.fromHex("#6B7280"),
+			},
+
+			Background = Color3.fromHex("#F8FAFC"),
+			View = Color3.fromHex("#FFFFFF"),
+			ViewBorder = Color3.fromHex("#BFDBFE"),
+
+			Sidebar = Color3.fromHex("#EFF6FF"),
+			Titlebar = Color3.fromHex("#DBEAFE"),
+
+			Toggle = {
+				SwitchOn = Color3.fromHex("#007AFF"),
+				SwitchOff = Color3.fromHex("#D1D5DB"),
+				Knob = Color3.fromHex("#FFFFFF"),
+			},
+
+			Slider = {
+				Track = Color3.fromHex("#D6E4FF"),
+				Thumb = Color3.fromHex("#007AFF"),
+			},
+
 			Button = {
 				FillPrimary = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 145, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 122, 255)),
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(70,160,255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(0,122,255)),
+				}),
+
+				FillSecondary = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(240,244,248)),
 				}),
 			},
+
+			MenuButton = {
+				IndicatorBackground = Color3.fromHex("#D6E4FF"),
+				MenuBackground = Color3.fromHex("#FFFFFF"),
+			},
 		},
-	},
+	}
 	
 	Purple = {
 		_id = "Purple",
@@ -12160,7 +12228,7 @@ return {
 			Button = { FillPrimary = makeGradient("#57BD68", "#1D6B2C") },
 		},
 	},
-	
+
 }
 end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end end--// Imports
 

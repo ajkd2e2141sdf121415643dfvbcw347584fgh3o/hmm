@@ -10801,47 +10801,61 @@ return function(self, properties)
     local hexLabel    = structures.Preview:FindFirstChild("HexLabel")
 
     local object
+	local function applyColor(instant: boolean?)
+		local color = hsvToColor3(state.h, state.s, state.v)
 
-    local function applyColor(instant)
-        local color = hsvToColor3(state.h, state.s, state.v)
+		-- SV Cursor
+		if svCursor then
+			local newPos = UDim2.new(state.s, 0, 1 - state.v, 0)
+			if instant then
+				svCursor.Position = newPos
+			else
+				tweenService:Create(svCursor, TweenInfo.new(0.1), { Position = newPos }):Play()
+			end
+		end
 
-        if svCursor then
-            local newPos = UDim2.new(state.s, 0, 1 - state.v, 0)
-            if instant then svCursor.Position = newPos
-            else tweenService:Create(svCursor, TweenInfo.new(0.07), { Position = newPos }):Play() end
-        end
-        if svInner then svInner.BackgroundColor3 = color end
+		if svInner then
+			svInner.BackgroundColor3 = color
+		end
 
-        if satGradInst then
-            satGradInst.Color = ColorSequence.new({
-                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-                ColorSequenceKeypoint.new(1, hsvToColor3(state.h, 1, 1)),
-            })
-        end
+		-- Sat Gradient
+		if satGradInst then
+			satGradInst.Color = ColorSequence.new({
+				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+				ColorSequenceKeypoint.new(1, hsvToColor3(state.h, 1, 1)),
+			})
+		end
 
-        if hueThumb then
-            local newPos = UDim2.new(state.h, 0, 0.5, 0)
-            if instant then hueThumb.Position = newPos
-            else tweenService:Create(hueThumb, TweenInfo.new(0.07), { Position = newPos }):Play() end
-        end
+		-- Hue Thumb
+		if hueThumb then
+			local newPos = UDim2.new(state.h, 0, 0.5, 0)
+			if instant then
+				hueThumb.Position = newPos
+			else
+				tweenService:Create(hueThumb, TweenInfo.new(0.1), { Position = newPos }):Play()
+			end
+		end
 
-        if swatch then swatch.BackgroundColor3 = color end
-        if hexLabel then hexLabel.Text = "#" .. hexFromColor3(color) end
+		-- Preview
+		if swatch then swatch.BackgroundColor3 = color end
+		if hexLabel then hexLabel.Text = "#" .. hexFromColor3(color) end
 
-        if properties.ValueChanged and object then
-            task.spawn(properties.ValueChanged, object, color)
-        end
-    end
+		if properties.ValueChanged then
+			task.spawn(properties.ValueChanged, object, color)
+		end
+	end
 
     local svDragging = false
 
-    local function svFromAbsolute(input)
-        local abs = structures.SVSquare.AbsolutePosition
-        local sz  = structures.SVSquare.AbsoluteSize
-        state.s = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
-        state.v = 1 - math.clamp((input.Position.Y - abs.Y) / sz.Y, 0, 1)
-        applyColor(true)
-    end
+	local function svFromAbsolute(input)
+		local abs = structures.SVSquare.AbsolutePosition
+		local sz  = structures.SVSquare.AbsoluteSize
+		
+		state.s = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
+		state.v = 1 - math.clamp((input.Position.Y - abs.Y) / sz.Y, 0, 1)
+		
+		applyColor(true)
+	end
 
     structures.SVSquare.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -10867,12 +10881,12 @@ return function(self, properties)
 
     local hueDragging = false
 
-    local function hueFromAbsolute(input)
-        local abs = structures.HueSlider.AbsolutePosition
-        local sz  = structures.HueSlider.AbsoluteSize
-        state.h = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
-        applyColor(true)
-    end
+	local function hueFromAbsolute(input)
+		local abs = structures.HueSlider.AbsolutePosition
+		local sz  = structures.HueSlider.AbsoluteSize
+		state.h = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
+		applyColor(true)
+	end
 
     structures.HueSlider.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1
@@ -10897,13 +10911,15 @@ return function(self, properties)
     end)
 
     local bindings = {
-        Value = function(newColor)
-            local h, s, v = color3ToHsv(newColor)
-            state.h = h
-            state.s = s
-            state.v = v
-            applyColor(false)
-        end,
+		Value = function(newColor)
+			if typeof(newColor) ~= "Color3" then return end
+			
+			local h, s, v = color3ToHsv(newColor)
+			state.h = h
+			state.s = s
+			state.v = v
+			applyColor(true)  -- instant = true
+		end,
     }
 
     object = binder.Wrap(properties, bindings, structures.Body)

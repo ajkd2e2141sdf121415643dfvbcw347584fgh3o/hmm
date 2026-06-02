@@ -7291,7 +7291,6 @@ local creator = __DIST.d()
 
 	return object
 end
-end function __DIST.x():typeof(__modImpl())local v=__DIST.cache.x if not v then v={c=__modImpl()}__DIST.cache.x=v end return v.c end end do local function __modImpl()
 local types = __DIST.b()
 
 return function(self, properties: ToggleProperties__DARKLUA_TYPE_O): Row__DARKLUA_TYPE_B	--// Imports
@@ -10533,38 +10532,9 @@ local services = __DIST.e()
 
 	return object
 end
-end function __DIST.J():typeof(__modImpl())local v=__DIST.cache.J if not v then v={c=__modImpl()}__DIST.cache.J=v end return v.c end end do local function __modImpl()--// Imports
-
---[[
-    ColorPicker Component for Cascade UI
-    
-    Usage:
-        local picker = row:ColorPicker({
-            Value = Color3.fromHex("#0A84FF"),
-            ValueChanged = function(self, color)
-                -- color is Color3
-                local accent = ColorPicker.colorToAccent(color)
-                -- accent มี .Dark และ .Light ใช้กับ Cascade ได้เลย
-            end,
-        })
-
-    Helper:
-        ColorPicker.colorToAccent(color: Color3) -> accent table
-        ใช้ generate accent table เหมือน preset (Blue, Purple, ฯลฯ)
-        แล้วเอาไปใส่ใน Accent property ของ Window ได้เลย
-]]
-
--- ───────────────────────────────────────────
---  ColorPicker Component
--- ───────────────────────────────────────────
-do local function __modImpl()
-	
--- ───────────────────────────────────────────
---  Helpers: HSV math
--- ───────────────────────────────────────────
+end function __DIST.J():typeof(__modImpl())local v=__DIST.cache.J if not v then v={c=__modImpl()}__DIST.cache.J=v end return v.c end end do local function __modImpl()
 
 local function hsvToColor3(h, s, v)
-    -- h: 0-1, s: 0-1, v: 0-1
     return Color3.fromHSV(h, s, v)
 end
 
@@ -10580,466 +10550,375 @@ local function hexFromColor3(color)
     )
 end
 
-local function lighten(color, amount)
-    -- amount: 0-1, เพิ่ม brightness
-    local h, s, v = color3ToHsv(color)
-    return hsvToColor3(h, s, math.min(1, v + amount))
-end
-
-local function darken(color, amount)
-    local h, s, v = color3ToHsv(color)
-    return hsvToColor3(h, s, math.max(0, v - amount))
-end
-
-local function makeGradient(top: Color3, bottom: Color3)
+local function makeGradient(top, bottom)
     return ColorSequence.new({
         ColorSequenceKeypoint.new(0, top),
         ColorSequenceKeypoint.new(1, bottom),
     })
 end
 
--- ───────────────────────────────────────────
---  colorToAccent  — แปลง Color3 → accent table
---  ใช้งาน: Window({ Accent = ColorPicker.colorToAccent(myColor) })
--- ───────────────────────────────────────────
-
-local function colorToAccent(color: Color3)
-		local h, s, v = color3ToHsv(color)
-
-		-- Dark mode: สว่างขึ้นนิดหน่อย
-		local darkBase      = hsvToColor3(h, s, math.min(1, v + 0.05))
-		local darkFocused   = hsvToColor3(h, s, math.min(1, v + 0.18))
-		local darkGradTop   = hsvToColor3(h, s, math.min(1, v + 0.15))
-		local darkGradBot   = hsvToColor3(h, s, math.max(0, v - 0.15))
-
-		-- Light mode: เข้มลงนิดหน่อย
-		local lightBase     = hsvToColor3(h, math.min(1, s + 0.05), math.max(0, v - 0.05))
-		local lightFocused  = hsvToColor3(h, s, math.min(1, v + 0.12))
-		local lightGradTop  = hsvToColor3(h, s, math.min(1, v + 0.08))
-		local lightGradBot  = hsvToColor3(h, math.min(1, s + 0.05), math.max(0, v - 0.20))
-
-		return {
-			_id = "Custom",
-
-			Dark = {
-				SwitchAccent      = darkBase,
-				Selection         = darkBase,
-				SelectionFocused  = darkFocused,
-				SelectionStroke   = darkFocused,
-				Toggle            = { SwitchOn = darkBase },
-				Button            = { FillPrimary = makeGradient(darkGradTop, darkGradBot) },
-			},
-
-			Light = {
-				SwitchAccent      = lightBase,
-				Selection         = lightBase,
-				SelectionFocused  = lightFocused,
-				SelectionStroke   = lightFocused,
-				Toggle            = { SwitchOn = lightBase },
-				Button            = { FillPrimary = makeGradient(lightGradTop, lightGradBot) },
-			},
-		}
-	end
-
-
-	return function(self, properties)
-		local creator  = __DIST.d()
-		local binder   = __DIST.c()
-		local services = __DIST.e()
-
-		local create       = creator.Create
-		local tweenService = services.TweenService
-		local uis          = services.UserInputService
-
-		-- ── Default properties ──────────────────
-		properties = properties or {}
-		local initColor = properties.Value or Color3.fromHex("#0A84FF")
-		local initH, initS, initV = color3ToHsv(initColor)
-
-		local state = {
-			h = initH,
-			s = initS,
-			v = initV,
-		}
-
-		local structures = {}
-
-		-- ── Sizes ────────────────────────────────
-		local SV_SIZE   = 136   -- SV square width/height
-		local HUE_H     = 10    -- hue slider height
-		local PADDING   = 8
-
-		-- ── UI ──────────────────────────────────
-
-		-- SV Square (Saturation/Brightness)
-		-- Background: gradient from white→hue color (X), and black overlay (Y)
-		structures.SVSquare = create("ImageButton")({
-			Name              = "SVSquare",
-			AutoButtonColor   = false,
-			BackgroundColor3  = Color3.fromRGB(255, 255, 255),
-			BorderSizePixel   = 0,
-			Size              = UDim2.fromOffset(SV_SIZE, SV_SIZE),
-			Image             = "",
-			ClipsDescendants  = true,
-
-			create("UICorner")({ CornerRadius = UDim.new(0, 6) }),
-
-			-- Saturation gradient: white (left) → pure hue color (right)
-			create("Frame")({
-				Name             = "SatGradient",
-				Size             = UDim2.fromScale(1, 1),
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BorderSizePixel  = 0,
-
-				create("UIGradient")({
-					Name      = "Grad",
-					Rotation  = 0,
-					Color     = ColorSequence.new({
-						ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-						ColorSequenceKeypoint.new(1, hsvToColor3(initH, 1, 1)),
-					}),
-				}),
-			}),
-
-			-- Brightness gradient: transparent (top) → black (bottom), layered on top
-			create("Frame")({
-				Name             = "ValGradient",
-				Size             = UDim2.fromScale(1, 1),
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1,
-				BorderSizePixel  = 0,
-
-				create("UIGradient")({
-					Name      = "Grad",
-					Rotation  = 90,
-					Color     = ColorSequence.new({
-						ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-						ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
-					}),
-					Transparency = NumberSequence.new({
-						NumberSequenceKeypoint.new(0, 1),
-						NumberSequenceKeypoint.new(1, 0),
-					}),
-				}),
-			}),
-
-			-- Cursor dot
-			create("Frame")({
-				Name              = "Cursor",
-				AnchorPoint       = Vector2.new(0.5, 0.5),
-				BackgroundColor3  = Color3.fromRGB(255, 255, 255),
-				BorderSizePixel   = 0,
-				Size              = UDim2.fromOffset(10, 10),
-				Position          = UDim2.new(initS, 0, 1 - initV, 0),
-				ZIndex            = 5,
-
-				create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
-
-				create("UIStroke")({
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color           = Color3.fromRGB(255, 255, 255),
-					Thickness       = 2,
-				}),
-
-				-- inner colored dot
-				create("Frame")({
-					Name             = "Inner",
-					AnchorPoint      = Vector2.new(0.5, 0.5),
-					BackgroundColor3 = initColor,
-					BorderSizePixel  = 0,
-					Position         = UDim2.fromScale(0.5, 0.5),
-					Size             = UDim2.fromOffset(6, 6),
-					ZIndex           = 6,
-					create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
-				}),
-			}),
-		})
-
-		-- Hue Slider
-		structures.HueSlider = create("Frame")({
-			Name            = "HueSlider",
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BorderSizePixel = 0,
-			Size            = UDim2.new(1, 0, 0, HUE_H),
-
-			create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
-
-			create("UIGradient")({
-				Name     = "HueGrad",
-				Rotation = 0,
-				Color    = ColorSequence.new({
-					ColorSequenceKeypoint.new(0/6,    Color3.fromRGB(255, 0,   0)),
-					ColorSequenceKeypoint.new(1/6,    Color3.fromRGB(255, 255, 0)),
-					ColorSequenceKeypoint.new(2/6,    Color3.fromRGB(0,   255, 0)),
-					ColorSequenceKeypoint.new(3/6,    Color3.fromRGB(0,   255, 255)),
-					ColorSequenceKeypoint.new(4/6,    Color3.fromRGB(0,   0,   255)),
-					ColorSequenceKeypoint.new(5/6,    Color3.fromRGB(255, 0,   255)),
-					ColorSequenceKeypoint.new(1,      Color3.fromRGB(255, 0,   0)),
-				}),
-			}),
-
-			-- Hue cursor (thumb)
-			create("Frame")({
-				Name              = "Thumb",
-				AnchorPoint       = Vector2.new(0.5, 0.5),
-				BackgroundColor3  = Color3.fromRGB(255, 255, 255),
-				BorderSizePixel   = 0,
-				Position          = UDim2.new(initH, 0, 0.5, 0),
-				Size              = UDim2.fromOffset(HUE_H + 4, HUE_H + 4),
-				ZIndex            = 5,
-
-				create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
-				create("UIStroke")({
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Color           = Color3.fromRGB(200, 200, 200),
-					Thickness       = 1,
-				}),
-			}),
-		})
-
-		-- Preview swatch + hex label
-		structures.Preview = create("Frame")({
-			Name             = "Preview",
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 1,
-			BorderSizePixel  = 0,
-			Size             = UDim2.new(1, 0, 0, 20),
-
-			create("UIListLayout")({
-				FillDirection        = Enum.FillDirection.Horizontal,
-				VerticalAlignment    = Enum.VerticalAlignment.Center,
-				HorizontalAlignment  = Enum.HorizontalAlignment.Left,
-				Padding              = UDim.new(0, 6),
-				SortOrder            = Enum.SortOrder.LayoutOrder,
-			}),
-
-			-- Color swatch
-			create("Frame")({
-				Name             = "Swatch",
-				BackgroundColor3 = initColor,
-				BorderSizePixel  = 0,
-				Size             = UDim2.fromOffset(20, 20),
-				LayoutOrder      = 0,
-				create("UICorner")({ CornerRadius = UDim.new(0, 4) }),
-				create("UIStroke")({
-					ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
-					Thickness       = 1,
-					__dynamicKeys   = {
-						Color        = self.Theme.Controls.ViewBorder[1],
-						Transparency = self.Theme.Controls.ViewBorder[2],
-					},
-				}),
-			}),
-
-			-- Hex label
-			create("TextLabel")({
-				Name                = "HexLabel",
-				AutomaticSize       = Enum.AutomaticSize.X,
-				BackgroundTransparency = 1,
-				BorderSizePixel     = 0,
-				FontFace            = Font.new("rbxassetid://12187365364", Enum.FontWeight.Medium),
-				Size                = UDim2.fromOffset(0, 20),
-				Text                = "#" .. hexFromColor3(initColor),
-				TextSize            = 13,
-				LayoutOrder         = 1,
-
-				__dynamicKeys = {
-					TextColor3      = self.Theme.Text.Secondary[1],
-					TextTransparency = self.Theme.Text.Secondary[2],
-				},
-			}),
-		})
-
-		-- Body: assembles everything
-		local parent = self.__container or self.__instance or self
-
-		structures.Body = create("Frame")({
-			Name             = "ColorPicker",
-			AutomaticSize    = Enum.AutomaticSize.Y,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 1,
-			BorderSizePixel  = 0,
-			Size             = UDim2.new(1, 0, 0, 0),
-			Parent           = parent,
-
-			create("UIListLayout")({
-				FillDirection     = Enum.FillDirection.Vertical,
-				SortOrder         = Enum.SortOrder.LayoutOrder,
-				Padding           = UDim.new(0, PADDING),
-			}),
-
-			create("UIPadding")({
-				PaddingTop    = UDim.new(0, PADDING),
-				PaddingBottom = UDim.new(0, PADDING),
-			}),
-		})
-
-		structures.SVSquare.LayoutOrder  = 0
-		structures.HueSlider.LayoutOrder = 1
-		structures.Preview.LayoutOrder   = 2
-
-		structures.SVSquare.Parent  = structures.Body
-		structures.HueSlider.Parent = structures.Body
-		structures.Preview.Parent   = structures.Body
-
-		-- ── References ───────────────────────────
-		local svCursor    = structures.SVSquare:FindFirstChild("Cursor")
-		local svInner     = svCursor and svCursor:FindFirstChild("Inner")
-		local satGrad     = structures.SVSquare:FindFirstChild("SatGradient")
-		local satGradInst = satGrad and satGrad:FindFirstChild("Grad")
-		local hueThumb    = structures.HueSlider:FindFirstChild("Thumb")
-		local swatch      = structures.Preview:FindFirstChild("Swatch")
-		local hexLabel    = structures.Preview:FindFirstChild("HexLabel")
-
-		-- ── Internal update function ─────────────
-		local object  -- forward-declare, assigned below
-
-		local function applyColor(instant)
-			local color = hsvToColor3(state.h, state.s, state.v)
-
-			-- Update SV cursor position: X = saturation, Y = 1 - brightness
-			if svCursor then
-				local newPos = UDim2.new(state.s, 0, 1 - state.v, 0)
-				if instant then
-					svCursor.Position = newPos
-				else
-					tweenService:Create(svCursor, TweenInfo.new(0.07), { Position = newPos }):Play()
-				end
-			end
-			if svInner then
-				svInner.BackgroundColor3 = color
-			end
-
-			-- Update hue gradient background (pure hue color)
-			if satGradInst then
-				satGradInst.Color = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-					ColorSequenceKeypoint.new(1, hsvToColor3(state.h, 1, 1)),
-				})
-			end
-
-			-- Update hue thumb
-			if hueThumb then
-				local newPos = UDim2.new(state.h, 0, 0.5, 0)
-				if instant then
-					hueThumb.Position = newPos
-				else
-					tweenService:Create(hueThumb, TweenInfo.new(0.07), { Position = newPos }):Play()
-				end
-			end
-
-			-- Update swatch + hex
-			if swatch then swatch.BackgroundColor3 = color end
-			if hexLabel then hexLabel.Text = "#" .. hexFromColor3(color) end
-
-			-- Fire callback
-			if properties.ValueChanged and object then
-				task.spawn(properties.ValueChanged, object, color)
-			end
-		end
-
-		-- ── Drag logic: SV square ────────────────
-		local svDragging = false
-
-		local function svFromAbsolute(input)
-			local abs = structures.SVSquare.AbsolutePosition
-			local sz  = structures.SVSquare.AbsoluteSize
-			local x   = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
-			local y   = math.clamp((input.Position.Y - abs.Y) / sz.Y, 0, 1)
-			state.s = x
-			state.v = 1 - y
-			applyColor(true)
-		end
-
-		structures.SVSquare.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1
-				or input.UserInputType == Enum.UserInputType.Touch then
-				svDragging = true
-				svFromAbsolute(input)
-			end
-		end)
-
-		uis.InputChanged:Connect(function(input)
-			if svDragging and (
-				input.UserInputType == Enum.UserInputType.MouseMovement
-				or input.UserInputType == Enum.UserInputType.Touch
-			) then
-				svFromAbsolute(input)
-			end
-		end)
-
-		uis.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1
-				or input.UserInputType == Enum.UserInputType.Touch then
-				svDragging = false
-			end
-		end)
-
-		-- ── Drag logic: Hue slider ───────────────
-		local hueDragging = false
-
-		local function hueFromAbsolute(input)
-			local abs = structures.HueSlider.AbsolutePosition
-			local sz  = structures.HueSlider.AbsoluteSize
-			local x   = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
-			state.h = x
-			applyColor(true)
-		end
-
-		structures.HueSlider.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1
-				or input.UserInputType == Enum.UserInputType.Touch then
-				hueDragging = true
-				hueFromAbsolute(input)
-			end
-		end)
-
-		uis.InputChanged:Connect(function(input)
-			if hueDragging and (
-				input.UserInputType == Enum.UserInputType.MouseMovement
-				or input.UserInputType == Enum.UserInputType.Touch
-			) then
-				hueFromAbsolute(input)
-			end
-		end)
-
-		uis.InputEnded:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1
-				or input.UserInputType == Enum.UserInputType.Touch then
-				hueDragging = false
-			end
-		end)
-
-		-- ── Binder / object ─────────────────────
-		local bindings = {
-			Value = function(newColor: Color3)
-				local h, s, v = color3ToHsv(newColor)
-				state.h = h
-				state.s = s
-				state.v = v
-				applyColor(false)
-			end,
-		}
-
-		object = binder.Wrap(properties, bindings, structures.Body)
-
-		object.Type       = "ColorPicker"
-		object.Theme      = self.Theme
-		object.Structures = structures
-
-		binder.Apply(properties, object)
-
-		return object
-	end
+local function colorToAccent(color)
+    local h, s, v = color3ToHsv(color)
+    local darkBase    = hsvToColor3(h, s, math.min(1, v + 0.05))
+    local darkFocused = hsvToColor3(h, s, math.min(1, v + 0.18))
+    local darkGradTop = hsvToColor3(h, s, math.min(1, v + 0.15))
+    local darkGradBot = hsvToColor3(h, s, math.max(0, v - 0.15))
+    local lightBase     = hsvToColor3(h, math.min(1, s + 0.05), math.max(0, v - 0.05))
+    local lightFocused  = hsvToColor3(h, s, math.min(1, v + 0.12))
+    local lightGradTop  = hsvToColor3(h, s, math.min(1, v + 0.08))
+    local lightGradBot  = hsvToColor3(h, math.min(1, s + 0.05), math.max(0, v - 0.20))
+    return {
+        _id = "Custom",
+        Dark = {
+            SwitchAccent     = darkBase,
+            Selection        = darkBase,
+            SelectionFocused = darkFocused,
+            SelectionStroke  = darkFocused,
+            Toggle           = { SwitchOn = darkBase },
+            Button           = { FillPrimary = makeGradient(darkGradTop, darkGradBot) },
+        },
+        Light = {
+            SwitchAccent     = lightBase,
+            Selection        = lightBase,
+            SelectionFocused = lightFocused,
+            SelectionStroke  = lightFocused,
+            Toggle           = { SwitchOn = lightBase },
+            Button           = { FillPrimary = makeGradient(lightGradTop, lightGradBot) },
+        },
+    }
 end
-function __DIST.X():typeof(__modImpl())  
-    local v = __DIST.cache.X
-    if not v then
-        v = {c = __modImpl()}
-        __DIST.cache.X = v
+
+return function(self, properties)
+    local creator  = __DIST.d()
+    local binder   = __DIST.c()
+    local services = __DIST.e()
+
+    local create       = creator.Create
+    local tweenService = services.TweenService
+    local uis          = services.UserInputService
+
+    properties = properties or {}
+    local initColor = properties.Value or Color3.fromHex("#0A84FF")
+    local initH, initS, initV = color3ToHsv(initColor)
+
+    local state = { h = initH, s = initS, v = initV }
+    local structures = {}
+
+    local SV_SIZE = 136
+    local HUE_H   = 10
+    local PADDING = 8
+
+    structures.SVSquare = create("ImageButton")({
+        Name             = "SVSquare",
+        AutoButtonColor  = false,
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel  = 0,
+        Size             = UDim2.fromOffset(SV_SIZE, SV_SIZE),
+        Image            = "",
+        ClipsDescendants = true,
+
+        create("UICorner")({ CornerRadius = UDim.new(0, 6) }),
+
+        create("Frame")({
+            Name             = "SatGradient",
+            Size             = UDim2.fromScale(1, 1),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel  = 0,
+            create("UIGradient")({
+                Name     = "Grad",
+                Rotation = 0,
+                Color    = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                    ColorSequenceKeypoint.new(1, hsvToColor3(initH, 1, 1)),
+                }),
+            }),
+        }),
+
+        create("Frame")({
+            Name                   = "ValGradient",
+            Size                   = UDim2.fromScale(1, 1),
+            BackgroundColor3       = Color3.fromRGB(0, 0, 0),
+            BackgroundTransparency = 1,
+            BorderSizePixel        = 0,
+            create("UIGradient")({
+                Name         = "Grad",
+                Rotation     = 90,
+                Color        = ColorSequence.new({
+                    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
+                    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
+                }),
+                Transparency = NumberSequence.new({
+                    NumberSequenceKeypoint.new(0, 1),
+                    NumberSequenceKeypoint.new(1, 0),
+                }),
+            }),
+        }),
+
+        create("Frame")({
+            Name             = "Cursor",
+            AnchorPoint      = Vector2.new(0.5, 0.5),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel  = 0,
+            Size             = UDim2.fromOffset(10, 10),
+            Position         = UDim2.new(initS, 0, 1 - initV, 0),
+            ZIndex           = 5,
+            create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
+            create("UIStroke")({
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                Color           = Color3.fromRGB(255, 255, 255),
+                Thickness       = 2,
+            }),
+            create("Frame")({
+                Name             = "Inner",
+                AnchorPoint      = Vector2.new(0.5, 0.5),
+                BackgroundColor3 = initColor,
+                BorderSizePixel  = 0,
+                Position         = UDim2.fromScale(0.5, 0.5),
+                Size             = UDim2.fromOffset(6, 6),
+                ZIndex           = 6,
+                create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
+            }),
+        }),
+    })
+
+    structures.HueSlider = create("Frame")({
+        Name             = "HueSlider",
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel  = 0,
+        Size             = UDim2.new(1, 0, 0, HUE_H),
+        create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
+        create("UIGradient")({
+            Name     = "HueGrad",
+            Rotation = 0,
+            Color    = ColorSequence.new({
+                ColorSequenceKeypoint.new(0/6, Color3.fromRGB(255, 0,   0)),
+                ColorSequenceKeypoint.new(1/6, Color3.fromRGB(255, 255, 0)),
+                ColorSequenceKeypoint.new(2/6, Color3.fromRGB(0,   255, 0)),
+                ColorSequenceKeypoint.new(3/6, Color3.fromRGB(0,   255, 255)),
+                ColorSequenceKeypoint.new(4/6, Color3.fromRGB(0,   0,   255)),
+                ColorSequenceKeypoint.new(5/6, Color3.fromRGB(255, 0,   255)),
+                ColorSequenceKeypoint.new(1,   Color3.fromRGB(255, 0,   0)),
+            }),
+        }),
+        create("Frame")({
+            Name             = "Thumb",
+            AnchorPoint      = Vector2.new(0.5, 0.5),
+            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+            BorderSizePixel  = 0,
+            Position         = UDim2.new(initH, 0, 0.5, 0),
+            Size             = UDim2.fromOffset(HUE_H + 4, HUE_H + 4),
+            ZIndex           = 5,
+            create("UICorner")({ CornerRadius = UDim.new(1, 0) }),
+            create("UIStroke")({
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                Color           = Color3.fromRGB(200, 200, 200),
+                Thickness       = 1,
+            }),
+        }),
+    })
+
+    structures.Preview = create("Frame")({
+        Name                   = "Preview",
+        BackgroundColor3       = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        BorderSizePixel        = 0,
+        Size                   = UDim2.new(1, 0, 0, 20),
+        create("UIListLayout")({
+            FillDirection       = Enum.FillDirection.Horizontal,
+            VerticalAlignment   = Enum.VerticalAlignment.Center,
+            HorizontalAlignment = Enum.HorizontalAlignment.Left,
+            Padding             = UDim.new(0, 6),
+            SortOrder           = Enum.SortOrder.LayoutOrder,
+        }),
+        create("Frame")({
+            Name             = "Swatch",
+            BackgroundColor3 = initColor,
+            BorderSizePixel  = 0,
+            Size             = UDim2.fromOffset(20, 20),
+            LayoutOrder      = 0,
+            create("UICorner")({ CornerRadius = UDim.new(0, 4) }),
+            create("UIStroke")({
+                ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+                Thickness       = 1,
+                __dynamicKeys   = {
+                    Color        = self.Theme.Controls.ViewBorder[1],
+                    Transparency = self.Theme.Controls.ViewBorder[2],
+                },
+            }),
+        }),
+        create("TextLabel")({
+            Name                   = "HexLabel",
+            AutomaticSize          = Enum.AutomaticSize.X,
+            BackgroundTransparency = 1,
+            BorderSizePixel        = 0,
+            FontFace               = Font.new("rbxassetid://12187365364", Enum.FontWeight.Medium),
+            Size                   = UDim2.fromOffset(0, 20),
+            Text                   = "#" .. hexFromColor3(initColor),
+            TextSize               = 13,
+            LayoutOrder            = 1,
+            __dynamicKeys = {
+                TextColor3       = self.Theme.Text.Secondary[1],
+                TextTransparency = self.Theme.Text.Secondary[2],
+            },
+        }),
+    })
+
+    local parent = self.__container or self.__instance or self
+
+    structures.Body = create("Frame")({
+        Name                   = "ColorPicker",
+        AutomaticSize          = Enum.AutomaticSize.Y,
+        BackgroundColor3       = Color3.fromRGB(255, 255, 255),
+        BackgroundTransparency = 1,
+        BorderSizePixel        = 0,
+        Size                   = UDim2.new(1, 0, 0, 0),
+        Parent                 = parent,
+        create("UIListLayout")({
+            FillDirection = Enum.FillDirection.Vertical,
+            SortOrder     = Enum.SortOrder.LayoutOrder,
+            Padding       = UDim.new(0, PADDING),
+        }),
+        create("UIPadding")({
+            PaddingTop    = UDim.new(0, PADDING),
+            PaddingBottom = UDim.new(0, PADDING),
+        }),
+    })
+
+    structures.SVSquare.LayoutOrder  = 0
+    structures.HueSlider.LayoutOrder = 1
+    structures.Preview.LayoutOrder   = 2
+
+    structures.SVSquare.Parent  = structures.Body
+    structures.HueSlider.Parent = structures.Body
+    structures.Preview.Parent   = structures.Body
+
+    local svCursor    = structures.SVSquare:FindFirstChild("Cursor")
+    local svInner     = svCursor and svCursor:FindFirstChild("Inner")
+    local satGrad     = structures.SVSquare:FindFirstChild("SatGradient")
+    local satGradInst = satGrad and satGrad:FindFirstChild("Grad")
+    local hueThumb    = structures.HueSlider:FindFirstChild("Thumb")
+    local swatch      = structures.Preview:FindFirstChild("Swatch")
+    local hexLabel    = structures.Preview:FindFirstChild("HexLabel")
+
+    local object
+
+    local function applyColor(instant)
+        local color = hsvToColor3(state.h, state.s, state.v)
+
+        if svCursor then
+            local newPos = UDim2.new(state.s, 0, 1 - state.v, 0)
+            if instant then svCursor.Position = newPos
+            else tweenService:Create(svCursor, TweenInfo.new(0.07), { Position = newPos }):Play() end
+        end
+        if svInner then svInner.BackgroundColor3 = color end
+
+        if satGradInst then
+            satGradInst.Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
+                ColorSequenceKeypoint.new(1, hsvToColor3(state.h, 1, 1)),
+            })
+        end
+
+        if hueThumb then
+            local newPos = UDim2.new(state.h, 0, 0.5, 0)
+            if instant then hueThumb.Position = newPos
+            else tweenService:Create(hueThumb, TweenInfo.new(0.07), { Position = newPos }):Play() end
+        end
+
+        if swatch then swatch.BackgroundColor3 = color end
+        if hexLabel then hexLabel.Text = "#" .. hexFromColor3(color) end
+
+        if properties.ValueChanged and object then
+            task.spawn(properties.ValueChanged, object, color)
+        end
     end
-    return v.c
-end end
+
+    local svDragging = false
+
+    local function svFromAbsolute(input)
+        local abs = structures.SVSquare.AbsolutePosition
+        local sz  = structures.SVSquare.AbsoluteSize
+        state.s = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
+        state.v = 1 - math.clamp((input.Position.Y - abs.Y) / sz.Y, 0, 1)
+        applyColor(true)
+    end
+
+    structures.SVSquare.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            svDragging = true
+            svFromAbsolute(input)
+        end
+    end)
+
+    uis.InputChanged:Connect(function(input)
+        if svDragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch
+        ) then svFromAbsolute(input) end
+    end)
+
+    uis.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            svDragging = false
+        end
+    end)
+
+    local hueDragging = false
+
+    local function hueFromAbsolute(input)
+        local abs = structures.HueSlider.AbsolutePosition
+        local sz  = structures.HueSlider.AbsoluteSize
+        state.h = math.clamp((input.Position.X - abs.X) / sz.X, 0, 1)
+        applyColor(true)
+    end
+
+    structures.HueSlider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            hueDragging = true
+            hueFromAbsolute(input)
+        end
+    end)
+
+    uis.InputChanged:Connect(function(input)
+        if hueDragging and (
+            input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch
+        ) then hueFromAbsolute(input) end
+    end)
+
+    uis.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+            hueDragging = false
+        end
+    end)
+
+    local bindings = {
+        Value = function(newColor)
+            local h, s, v = color3ToHsv(newColor)
+            state.h = h
+            state.s = s
+            state.v = v
+            applyColor(false)
+        end,
+    }
+
+    object = binder.Wrap(properties, bindings, structures.Body)
+
+    object.Type          = "ColorPicker"
+    object.Theme         = self.Theme
+    object.Structures    = structures
+    object.colorToAccent = colorToAccent
+
+    binder.Apply(properties, object)
+
+    return object
+end
+
+end function __DIST.X():typeof(__modImpl())local v=__DIST.cache.X if not v then v={c=__modImpl()}__DIST.cache.X=v end return v.c end end do local function __modImpl()--// Imports
 
 local binder = __DIST.c()
 
@@ -11075,147 +10954,15 @@ for component, make in pairs(components) do
 	components[component] = (function(make)
 		return function(...)
 			local object = make(...)
-
 			binder.Apply(components, object)
-
 			return object
 		end
 	end)(make)
 end
 
 return components
-end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports
-local creator = __DIST.d()
+end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end
 
---// References
-local value = creator.Value
-
---// Private Methods
-local function color4(color: Color3 | string, alpha: number)
-	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
-
-	return {
-		value(parsedColor),
-		value(1 - (alpha / 100)),
-	}
-end
-
---// Publish
-return {
-	_id = "Dark",
-
-	Text = {
-		Primary = color4("FFFFFF", 85),
-		Secondary = color4("FFFFFF", 55),
-		Tertiary = color4("FFFFFF", 25),
-		Quaternary = color4("FFFFFF", 10),
-		Quinary = color4("FFFFFF", 5),
-
-		SelectionPrimary = color4("FFFFFF", 100),
-		PrimaryAccent = color4("FFFFFF", 38),
-	},
-
-	Accents = {
-		Red = color4("FF453A", 100),
-	},
-
-	Controls = {
-		Background = color4("1C1C1E", 100),
-
-		View = color4("1F1F21", 100),
-		ViewBorder = color4("FFFFFF", 5),
-
-		WindowControlIcon = color4("000000", 50),
-		WindowControlStroke = color4("FFFFFF", 10),
-		Exit = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom = color4("28C840", 100),
-
-		SwitchAccent = color4("478CF6", 100),
-		Selection = color4("007AFF", 100),
-		SelectionStroke = color4("007AFF", 60),
-		SelectionFocused = color4("0A82FF", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 85),
-
-		Sidebar = color4("202023", 84),
-		Separator = {
-			Background = color4("000000", 50),
-			Shadow = color4("FFFFFF", 0),
-		},
-
-		Titlebar = color4("363636", 100),
-		TitlebarShadow = {
-			Background = color4("000000", 0),
-			Color = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.5),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
-		},
-
-		Toggle = {
-			Knob = color4("FFFFFF", 100),
-			KnobEffects = color4("FFFFFF", 100),
-
-			SwitchOff = color4("7a7a7a", 40),
-			SwitchOn = color4("478cf6", 100),
-
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(225, 225, 225)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
-		},
-
-		Slider = {
-			Track = color4("2C2C2E", 100),
-			TrackEffects = color4("000000", 10),
-
-			Thumb = color4("FFFFFF", 100),
-			ThumbStroke = color4("000000", 20),
-			ThumbEffects = color4("FFFFFF", 80),
-		},
-
-		Button = {
-			Shadow = value(Color3.fromRGB(0, 0, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 148, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 110, 255)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(60, 60, 60)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(55, 55, 55)),
-			})),
-		},
-
-		Stepper = {
-			Background = color4("373737", 100),
-			Dropshadow = color4("000000", 100),
-			Separator = color4("FFFFFF", 10),
-			Filler = color4("FFFFFF", 4),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
-			})),
-		},
-
-		RadioButtonGroup = {
-			Background = color4("373737", 100),
-			Dot = color4("FFFFFF", 100),
-			Stroke = color4("000000", 20),
-			Overlay = color4("FFFFFF", 8),
-			InnerShadow = color4("FFFFFF", 10),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("FFFFFF", 10),
-			MenuBackground = color4("2C2C2E", 95),
-		},
-	},
-}
 end function __DIST.L():typeof(__modImpl())local v=__DIST.cache.L if not v then v={c=__modImpl()}__DIST.cache.L=v end return v.c end end do local function __modImpl()--// Imports
 
 local creator = __DIST.d()

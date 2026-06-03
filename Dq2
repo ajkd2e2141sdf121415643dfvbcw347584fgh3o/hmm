@@ -11046,6 +11046,538 @@ for component, make in pairs(components) do
 	end)(make)
 end
 
+-- Cascade ColorPicker component
+-- Paste this after your Section/CreateSection methods are available.
+-- Usage:
+-- ThemeSection:ColorPicker({
+--     Name = "ESP Color\nสี ESP",
+--     Value = _G.save.ESPColor or Color3.fromRGB(0, 255, 0),
+--     Rainbow = _G.save.ESPRainbow or false,
+--     Confirm = true,
+--     ValueChanged = function(self, color, rainbow)
+--         _G.save.ESPColor = color
+--         _G.save.ESPRainbow = rainbow
+--         Save()
+--     end,
+-- })
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+
+local LocalPlayer = Players.LocalPlayer
+local Mouse = LocalPlayer:GetMouse()
+
+local function disconnect(connection)
+	if connection then
+		connection:Disconnect()
+	end
+end
+
+local function toColor3(value, fallback)
+	if typeof(value) == "Color3" then
+		return value
+	end
+
+	if type(value) == "string" then
+		local ok, color = pcall(Color3.fromHex, value:gsub("#", ""))
+		if ok then
+			return color
+		end
+	end
+
+	return fallback or Color3.fromRGB(0, 122, 255)
+end
+
+local function colorToHex(color)
+	local r = math.floor(color.R * 255 + 0.5)
+	local g = math.floor(color.G * 255 + 0.5)
+	local b = math.floor(color.B * 255 + 0.5)
+	return string.format("#%02X%02X%02X", r, g, b)
+end
+
+local function getThemeColor(section, path, fallback)
+	local app = rawget(_G, "VectorHub") and _G.VectorHub._app
+	local theme = app and app.Theme
+
+	if not theme and section then
+		theme = section.Theme or section._theme
+	end
+
+	local current = theme
+	for key in string.gmatch(path, "[^%.]+") do
+		if type(current) ~= "table" then
+			return fallback
+		end
+		current = current[key]
+	end
+
+	if type(current) == "table" then
+		if current.Value ~= nil then
+			return current.Value
+		end
+		if current[1] and current[1].Value ~= nil then
+			return current[1].Value
+		end
+	end
+
+	if typeof(current) == "Color3" then
+		return current
+	end
+
+	return fallback
+end
+
+local function getThemeTransparency(section, path, fallback)
+	local app = rawget(_G, "VectorHub") and _G.VectorHub._app
+	local theme = app and app.Theme
+
+	if not theme and section then
+		theme = section.Theme or section._theme
+	end
+
+	local current = theme
+	for key in string.gmatch(path, "[^%.]+") do
+		if type(current) ~= "table" then
+			return fallback
+		end
+		current = current[key]
+	end
+
+	if type(current) == "table" and current[2] and current[2].Value ~= nil then
+		return current[2].Value
+	end
+
+	return fallback
+end
+
+local function getSectionParent(section)
+	return section.Container
+		or section.Content
+		or section.Body
+		or section.Frame
+		or section._container
+		or section._content
+		or section._body
+		or section.__instance
+		or section
+end
+
+local function create(className, props, children)
+	local object = Instance.new(className)
+
+	for key, value in pairs(props or {}) do
+		object[key] = value
+	end
+
+	for _, child in ipairs(children or {}) do
+		child.Parent = object
+	end
+
+	return object
+end
+
+local function makeCorner(radius)
+	return create("UICorner", {
+		CornerRadius = UDim.new(0, radius or 6),
+	})
+end
+
+local function makeStroke(color, transparency, thickness)
+	return create("UIStroke", {
+		Color = color,
+		Transparency = transparency or 0.85,
+		Thickness = thickness or 1,
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	})
+end
+
+local function makeRainbowGradient(parent)
+	local gradient = create("UIGradient", {
+		Rotation = 270,
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)),
+			ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)),
+			ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)),
+			ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)),
+			ColorSequenceKeypoint.new(0.67, Color3.fromRGB(0, 0, 255)),
+			ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
+			ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0)),
+		}),
+	})
+	gradient.Parent = parent
+	return gradient
+end
+
+local function installColorPicker(SectionClass)
+	function SectionClass:ColorPicker(properties)
+		properties = properties or {}
+
+		local parent = getSectionParent(self)
+		local title = properties.Name or properties.Title or properties.Label or "Colorpicker"
+		local currentColor = toColor3(properties.Value or properties.Default, Color3.fromRGB(0, 122, 255))
+		local committedColor = currentColor
+		local rainbow = properties.Rainbow == true
+		local confirm = properties.Confirm ~= false
+
+		local h, s, v = Color3.toHSV(currentColor)
+		local expanded = false
+		local colorDrag
+		local hueDrag
+		local rainbowConnection
+
+		local background = getThemeColor(self, "Controls.View", Color3.fromRGB(31, 31, 33))
+		local border = getThemeColor(self, "Controls.ViewBorder", Color3.fromRGB(255, 255, 255))
+		local textPrimary = getThemeColor(self, "Text.Primary", Color3.fromRGB(255, 255, 255))
+		local textSecondary = getThemeColor(self, "Text.Secondary", Color3.fromRGB(190, 190, 190))
+		local accent = getThemeColor(self, "Controls.SwitchAccent", Color3.fromRGB(0, 122, 255))
+		local backgroundTransparency = getThemeTransparency(self, "Controls.View", 0)
+
+		local root = create("Frame", {
+			Name = "ColorPicker",
+			Parent = parent,
+			BackgroundColor3 = background,
+			BackgroundTransparency = backgroundTransparency,
+			BorderSizePixel = 0,
+			ClipsDescendants = true,
+			Size = UDim2.new(1, 0, 0, 42),
+		}, {
+			makeCorner(7),
+			makeStroke(border, 0.9, 1),
+		})
+
+		local titleLabel = create("TextLabel", {
+			Name = "Title",
+			Parent = root,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 12, 0, 0),
+			Size = UDim2.new(1, -74, 0, 42),
+			Font = Enum.Font.Gotham,
+			Text = title,
+			TextColor3 = textPrimary,
+			TextSize = 13,
+			TextWrapped = true,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextYAlignment = Enum.TextYAlignment.Center,
+		})
+
+		local preview = create("TextButton", {
+			Name = "Preview",
+			Parent = root,
+			AutoButtonColor = false,
+			BackgroundColor3 = currentColor,
+			BorderSizePixel = 0,
+			Position = UDim2.new(1, -52, 0, 10),
+			Size = UDim2.new(0, 40, 0, 22),
+			Text = "",
+		}, {
+			makeCorner(5),
+		})
+
+		local panel = create("Frame", {
+			Name = "Panel",
+			Parent = root,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0, 8, 0, 45),
+			Size = UDim2.new(1, -16, 0, 88),
+		})
+
+		local svBox = create("ImageButton", {
+			Name = "SaturationValue",
+			Parent = panel,
+			AutoButtonColor = false,
+			BackgroundColor3 = Color3.fromHSV(h, 1, 1),
+			BorderSizePixel = 0,
+			Image = "rbxassetid://4155801252",
+			Position = UDim2.new(0, 0, 0, 0),
+			Size = UDim2.new(1, -144, 0, 80),
+		}, {
+			makeCorner(4),
+		})
+
+		local svCursor = create("Frame", {
+			Name = "Cursor",
+			Parent = svBox,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundTransparency = 1,
+			Position = UDim2.new(s, 0, 1 - v, 0),
+			Size = UDim2.new(0, 14, 0, 14),
+		}, {
+			makeCorner(99),
+			makeStroke(Color3.fromRGB(255, 255, 255), 0, 2),
+			makeStroke(Color3.fromRGB(0, 0, 0), 0.35, 1),
+		})
+
+		local hueBar = create("ImageButton", {
+			Name = "Hue",
+			Parent = panel,
+			AutoButtonColor = false,
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BorderSizePixel = 0,
+			Image = "",
+			Position = UDim2.new(1, -136, 0, 0),
+			Size = UDim2.new(0, 24, 0, 80),
+		}, {
+			makeCorner(4),
+		})
+		makeRainbowGradient(hueBar)
+
+		local hueCursor = create("Frame", {
+			Name = "Cursor",
+			Parent = hueBar,
+			AnchorPoint = Vector2.new(0.5, 0.5),
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0.5, 0, 1 - h, 0),
+			Size = UDim2.new(0, 16, 0, 16),
+		}, {
+			makeCorner(99),
+			makeStroke(Color3.fromRGB(255, 255, 255), 0, 2),
+			makeStroke(Color3.fromRGB(0, 0, 0), 0.35, 1),
+		})
+
+		local confirmButton = create("TextButton", {
+			Name = "Confirm",
+			Parent = panel,
+			AutoButtonColor = false,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, -104, 0, 4),
+			Size = UDim2.new(0, 96, 0, 28),
+			Font = Enum.Font.Gotham,
+			Text = "Confirm",
+			TextColor3 = textPrimary,
+			TextSize = 13,
+			TextXAlignment = Enum.TextXAlignment.Left,
+		})
+
+		local rainbowButton = create("TextButton", {
+			Name = "Rainbow",
+			Parent = panel,
+			AutoButtonColor = false,
+			BackgroundTransparency = 1,
+			Position = UDim2.new(1, -104, 0, 42),
+			Size = UDim2.new(0, 96, 0, 28),
+			Font = Enum.Font.Gotham,
+			Text = "Rainbow",
+			TextColor3 = textSecondary,
+			TextSize = 13,
+			TextXAlignment = Enum.TextXAlignment.Left,
+		})
+
+		local switchTrack = create("Frame", {
+			Name = "Track",
+			Parent = rainbowButton,
+			BackgroundColor3 = rainbow and accent or Color3.fromRGB(54, 54, 56),
+			BorderSizePixel = 0,
+			Position = UDim2.new(1, -38, 0.5, -9),
+			Size = UDim2.new(0, 36, 0, 18),
+		}, {
+			makeCorner(99),
+		})
+
+		local switchKnob = create("Frame", {
+			Name = "Knob",
+			Parent = switchTrack,
+			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BorderSizePixel = 0,
+			Position = rainbow and UDim2.new(1, -16, 0, 2) or UDim2.new(0, 2, 0, 2),
+			Size = UDim2.new(0, 14, 0, 14),
+		}, {
+			makeCorner(99),
+		})
+
+		local function fireChanged(color, isConfirmed)
+			if properties.Callback then
+				task.spawn(properties.Callback, color, rainbow, isConfirmed)
+			end
+
+			if properties.ValueChanged then
+				task.spawn(properties.ValueChanged, self, color, rainbow, isConfirmed)
+			end
+		end
+
+		local function setVisualColor(color)
+			currentColor = color
+			preview.BackgroundColor3 = color
+			svBox.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
+			titleLabel.Text = title .. "  " .. colorToHex(color)
+		end
+
+		local function updateColor(shouldCommit)
+			local color = Color3.fromHSV(h, s, v)
+			setVisualColor(color)
+
+			if shouldCommit or not confirm then
+				committedColor = color
+				fireChanged(color, shouldCommit == true)
+			end
+		end
+
+		local function updateSVFromMouse()
+			local x = math.clamp((Mouse.X - svBox.AbsolutePosition.X) / svBox.AbsoluteSize.X, 0, 1)
+			local y = math.clamp((Mouse.Y - svBox.AbsolutePosition.Y) / svBox.AbsoluteSize.Y, 0, 1)
+
+			s = x
+			v = 1 - y
+			svCursor.Position = UDim2.new(x, 0, y, 0)
+			updateColor(false)
+		end
+
+		local function updateHueFromMouse()
+			local y = math.clamp((Mouse.Y - hueBar.AbsolutePosition.Y) / hueBar.AbsoluteSize.Y, 0, 1)
+
+			h = 1 - y
+			hueCursor.Position = UDim2.new(0.5, 0, y, 0)
+			updateColor(false)
+		end
+
+		local function setExpanded(value)
+			expanded = value
+
+			TweenService:Create(root, TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Size = expanded and UDim2.new(1, 0, 0, 138) or UDim2.new(1, 0, 0, 42),
+			}):Play()
+		end
+
+		local function setRainbow(value)
+			rainbow = value
+
+			TweenService:Create(switchTrack, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				BackgroundColor3 = rainbow and accent or Color3.fromRGB(54, 54, 56),
+			}):Play()
+
+			TweenService:Create(switchKnob, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
+				Position = rainbow and UDim2.new(1, -16, 0, 2) or UDim2.new(0, 2, 0, 2),
+			}):Play()
+
+			disconnect(rainbowConnection)
+			rainbowConnection = nil
+
+			if rainbow then
+				rainbowConnection = RunService.RenderStepped:Connect(function()
+					h = (os.clock() * 0.18) % 1
+					s = 1
+					v = 1
+					hueCursor.Position = UDim2.new(0.5, 0, 1 - h, 0)
+					svCursor.Position = UDim2.new(1, 0, 0, 0)
+					updateColor(true)
+				end)
+			else
+				h, s, v = Color3.toHSV(committedColor)
+				hueCursor.Position = UDim2.new(0.5, 0, 1 - h, 0)
+				svCursor.Position = UDim2.new(s, 0, 1 - v, 0)
+				updateColor(true)
+			end
+		end
+
+		preview.MouseButton1Click:Connect(function()
+			setExpanded(not expanded)
+		end)
+
+		root.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 and input.Position.Y <= root.AbsolutePosition.Y + 42 then
+				setExpanded(not expanded)
+			end
+		end)
+
+		svBox.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				if rainbow then
+					return
+				end
+
+				disconnect(colorDrag)
+				updateSVFromMouse()
+
+				colorDrag = RunService.RenderStepped:Connect(updateSVFromMouse)
+			end
+		end)
+
+		hueBar.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				if rainbow then
+					return
+				end
+
+				disconnect(hueDrag)
+				updateHueFromMouse()
+
+				hueDrag = RunService.RenderStepped:Connect(updateHueFromMouse)
+			end
+		end)
+
+		UserInputService.InputEnded:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				disconnect(colorDrag)
+				disconnect(hueDrag)
+				colorDrag = nil
+				hueDrag = nil
+			end
+		end)
+
+		confirmButton.MouseButton1Click:Connect(function()
+			committedColor = currentColor
+			fireChanged(currentColor, true)
+			setExpanded(false)
+		end)
+
+		rainbowButton.MouseButton1Click:Connect(function()
+			setRainbow(not rainbow)
+		end)
+
+		root.Destroying:Connect(function()
+			disconnect(colorDrag)
+			disconnect(hueDrag)
+			disconnect(rainbowConnection)
+		end)
+
+		setVisualColor(currentColor)
+
+		if rainbow then
+			setRainbow(true)
+		elseif not confirm then
+			fireChanged(currentColor, false)
+		end
+
+		local object = {
+			Instance = root,
+			Value = currentColor,
+			Rainbow = rainbow,
+		}
+
+		function object:SetValue(color, shouldFire)
+			currentColor = toColor3(color, currentColor)
+			committedColor = currentColor
+			h, s, v = Color3.toHSV(currentColor)
+			hueCursor.Position = UDim2.new(0.5, 0, 1 - h, 0)
+			svCursor.Position = UDim2.new(s, 0, 1 - v, 0)
+			setVisualColor(currentColor)
+
+			if shouldFire then
+				fireChanged(currentColor, true)
+			end
+		end
+
+		function object:SetRainbow(value, shouldFire)
+			setRainbow(value == true)
+
+			if shouldFire then
+				fireChanged(currentColor, true)
+			end
+		end
+
+		function object:Destroy()
+			root:Destroy()
+		end
+
+		return object
+	end
+end
+
+return installColorPicker
+
+
 return components
 end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports
 local creator = __DIST.d()

@@ -11660,20 +11660,28 @@ end
 local function updateThemes(target, theme, accent)
 	local function deepUpdate(target, new)
 		for key, value in pairs(new) do
-			if type(value) == "table" and type(target[key]) == "table" and not value.Value then
+			local valueType = typeof(value)
+
+			if valueType == "table" and type(target[key]) == "table" and value.Value == nil then
 				deepUpdate(target[key], value)
-			elseif target[key] and value and value.Value ~= nil then
-				target[key].Value = value.Value
+
+			elseif target[key] ~= nil then
+				if valueType == "table" and value.Value ~= nil then
+					target[key].Value = value.Value
+				elseif target[key].Value ~= nil then
+					target[key].Value = value
+				end
 			end
 		end
 	end
+
 	deepUpdate(target, theme)
 
 	if accent then
 		local accentTheme = accent[theme._id] or accent[theme._accentBase] or accent.Dark or accent.Light
 
 		if accentTheme then
-			deepUpdate(target.Controls, deepCopy(accentTheme, accent._id))
+			deepUpdate(target.Controls, accentTheme)
 		end
 	end
 end

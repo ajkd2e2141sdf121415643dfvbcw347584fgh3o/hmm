@@ -12612,7 +12612,9 @@ local function parseAccent(theme, overrides)
 end
 
 local function updateThemes(target, theme, accent)
+	 if not target or not theme then return end 
 	local function deepUpdate(target, new)
+		if not target or not new then return end
 		for key, value in pairs(new) do
 			if type(value) == "table" and type(target[key]) == "table" and not value.Value then
 				deepUpdate(target[key], value)

@@ -6155,7 +6155,7 @@ local effects = __DIST.h()
 			local bodyTarget = {
 				Position = value and UDim2.new(0.5, 0, 0.5, structures.Body.AbsoluteSize.Y * 2) or originalPosition2,
 			}
-			local scaleTarget = { Scale = value and 0.06 or 1 }
+			local scaleTarget = { Scale = value and 0 or 1 }
 
 			if useTween then
 				minimizing = true

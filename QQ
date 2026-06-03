@@ -12155,7 +12155,7 @@ return {
 	Sunset       = __DIST.Sunset(),
 	Arctic       = __DIST.Arctic(),
 }
-end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end do local function __modImpl()
+end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end do local function __modImpl()
 -- Refined to match macOS Human Interface Guidelines (HIG)
 
 

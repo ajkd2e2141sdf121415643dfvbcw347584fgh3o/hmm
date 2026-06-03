@@ -11028,9 +11028,23 @@ local components = {
 	RadioButtonGroup = __DIST.E(),
 	PopUpButton = __DIST.F(),
 	PullDownButton = __DIST.G(),
-	Page = __DIST.n(),
+	Page = __DIST.n()
+,
 	Notification = __DIST.J(),
 }
+
+--// Intialize
+for component, make in pairs(components) do
+	components[component] = (function(make)
+		return function(...)
+			local object = make(...)
+
+			binder.Apply(components, object)
+
+			return object
+		end
+	end)(make)
+end
 
 return components
 end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports
@@ -11299,159 +11313,10 @@ return {
 	},
 }
 end function __DIST.M():typeof(__modImpl())local v=__DIST.cache.M if not v then v={c=__modImpl()}__DIST.cache.M=v end return v.c end end do local function __modImpl()
-local creator = __DIST.d()
-local value = creator.Value
-
-local function color4(color: Color3 | string, alpha: number)
-    local parsedColor = (typeof(color) == "Color3" and color) or Color3.fromHex(color)
-
-    return {
-        value(parsedColor),
-        value(1 - (alpha / 100)),
-    }
-end
-
-local function cloneTheme(base, id, accentBase)
-    local function clone(v)
-        if type(v) == "table" then
-            if v.Value ~= nil then
-                return value(v.Value)
-            end
-
-            local copied = {}
-            for k, child in pairs(v) do
-                copied[k] = clone(child)
-            end
-            return copied
-        end
-
-        return v
-    end
-
-    local theme = clone(base)
-    theme._id = id
-    theme._accentBase = accentBase or base._id
-
-    return theme
-end
-
-local Themes = {
-    Dark = __DIST.L(),
-    Light = __DIST.M(),
+return {
+	Dark = __DIST.L(),
+	Light = __DIST.M(),
 }
-
-Themes.Midnight = cloneTheme(Themes.Dark, "Midnight", "Dark")
-Themes.Midnight.Text.Primary = color4("EAF2FF", 92)
-Themes.Midnight.Text.Secondary = color4("B9C6D8", 70)
-Themes.Midnight.Controls.Background = color4("070A12", 100)
-Themes.Midnight.Controls.View = color4("101624", 100)
-Themes.Midnight.Controls.ViewBorder = color4("7EA7FF", 10)
-Themes.Midnight.Controls.Sidebar = color4("0B1020", 88)
-Themes.Midnight.Controls.Titlebar = color4("111827", 100)
-Themes.Midnight.Controls.Separator.Background = color4("FFFFFF", 8)
-Themes.Midnight.Controls.Toggle.SwitchOff = color4("334155", 55)
-Themes.Midnight.Controls.Slider.Track = color4("1E293B", 100)
-Themes.Midnight.Controls.Button.FillSecondary = value(ColorSequence.new({
-    ColorSequenceKeypoint.new(0, Color3.fromRGB(31, 41, 55)),
-    ColorSequenceKeypoint.new(1, Color3.fromRGB(17, 24, 39)),
-}))
-
-Themes.Amoled = cloneTheme(Themes.Dark, "Amoled", "Dark")
-Themes.Amoled.Text.Primary = color4("FFFFFF", 92)
-Themes.Amoled.Text.Secondary = color4("D1D5DB", 65)
-Themes.Amoled.Controls.Background = color4("000000", 100)
-Themes.Amoled.Controls.View = color4("050505", 100)
-Themes.Amoled.Controls.ViewBorder = color4("FFFFFF", 7)
-Themes.Amoled.Controls.Sidebar = color4("000000", 92)
-Themes.Amoled.Controls.Titlebar = color4("050505", 100)
-Themes.Amoled.Controls.Separator.Background = color4("FFFFFF", 7)
-Themes.Amoled.Controls.Toggle.SwitchOff = color4("262626", 70)
-Themes.Amoled.Controls.Slider.Track = color4("111111", 100)
-
-Themes.Sakura = cloneTheme(Themes.Light, "Sakura", "Light")
-Themes.Sakura.Text.Primary = color4("2A111A", 88)
-Themes.Sakura.Text.Secondary = color4("6B3448", 62)
-Themes.Sakura.Controls.Background = color4("FFF7FA", 100)
-Themes.Sakura.Controls.View = color4("FFFFFF", 100)
-Themes.Sakura.Controls.ViewBorder = color4("E86A92", 12)
-Themes.Sakura.Controls.Sidebar = color4("FFE8F0", 88)
-Themes.Sakura.Controls.Titlebar = color4("FFEAF1", 100)
-Themes.Sakura.Controls.Separator.Background = color4("B8325F", 16)
-Themes.Sakura.Controls.Toggle.SwitchOff = color4("E7B8C8", 55)
-Themes.Sakura.Controls.Slider.Track = color4("F7CBD8", 100)
-
-Themes.Void = cloneTheme(Themes.Dark, "Void", "Dark")
-Themes.Void.Text.Primary = color4("F8FAFC", 92)
-Themes.Void.Text.Secondary = color4("CBD5E1", 68)
-Themes.Void.Controls.Background = color4("020617", 100)
-Themes.Void.Controls.View = color4("0F172A", 100)
-Themes.Void.Controls.ViewBorder = color4("38BDF8", 12)
-Themes.Void.Controls.Sidebar = color4("020617", 90)
-Themes.Void.Controls.Titlebar = color4("0B1120", 100)
-Themes.Void.Controls.Separator.Background = color4("38BDF8", 10)
-Themes.Void.Controls.Toggle.SwitchOff = color4("334155", 60)
-Themes.Void.Controls.Slider.Track = color4("1E293B", 100)
-
-Themes.Neon = cloneTheme(Themes.Dark, "Neon", "Dark")
-Themes.Neon.Text.Primary = color4("ECFEFF", 94)
-Themes.Neon.Text.Secondary = color4("A5F3FC", 68)
-Themes.Neon.Controls.Background = color4("030712", 100)
-Themes.Neon.Controls.View = color4("07111F", 100)
-Themes.Neon.Controls.ViewBorder = color4("22D3EE", 16)
-Themes.Neon.Controls.Sidebar = color4("06101D", 88)
-Themes.Neon.Controls.Titlebar = color4("071827", 100)
-Themes.Neon.Controls.Separator.Background = color4("22D3EE", 14)
-Themes.Neon.Controls.Toggle.SwitchOff = color4("164E63", 55)
-Themes.Neon.Controls.Slider.Track = color4("083344", 100)
-
-Themes.BloodMoon = cloneTheme(Themes.Dark, "BloodMoon", "Dark")
-Themes.BloodMoon.Text.Primary = color4("FFF1F2", 94)
-Themes.BloodMoon.Text.Secondary = color4("FDA4AF", 70)
-Themes.BloodMoon.Controls.Background = color4("120308", 100)
-Themes.BloodMoon.Controls.View = color4("1F0710", 100)
-Themes.BloodMoon.Controls.ViewBorder = color4("FB7185", 14)
-Themes.BloodMoon.Controls.Sidebar = color4("18050B", 90)
-Themes.BloodMoon.Controls.Titlebar = color4("240812", 100)
-Themes.BloodMoon.Controls.Separator.Background = color4("FB7185", 14)
-Themes.BloodMoon.Controls.Toggle.SwitchOff = color4("4C1020", 60)
-Themes.BloodMoon.Controls.Slider.Track = color4("3F0A18", 100)
-
-Themes.Frost = cloneTheme(Themes.Light, "Frost", "Light")
-Themes.Frost.Text.Primary = color4("0F172A", 88)
-Themes.Frost.Text.Secondary = color4("475569", 62)
-Themes.Frost.Controls.Background = color4("F8FAFC", 100)
-Themes.Frost.Controls.View = color4("FFFFFF", 100)
-Themes.Frost.Controls.ViewBorder = color4("38BDF8", 16)
-Themes.Frost.Controls.Sidebar = color4("E0F2FE", 86)
-Themes.Frost.Controls.Titlebar = color4("EAF7FF", 100)
-Themes.Frost.Controls.Separator.Background = color4("0284C7", 15)
-Themes.Frost.Controls.Toggle.SwitchOff = color4("BAE6FD", 65)
-Themes.Frost.Controls.Slider.Track = color4("DDF4FF", 100)
-
-Themes.Gold = cloneTheme(Themes.Dark, "Gold", "Dark")
-Themes.Gold.Text.Primary = color4("FFF7ED", 94)
-Themes.Gold.Text.Secondary = color4("FED7AA", 68)
-Themes.Gold.Controls.Background = color4("0C0802", 100)
-Themes.Gold.Controls.View = color4("1C1408", 100)
-Themes.Gold.Controls.ViewBorder = color4("F59E0B", 14)
-Themes.Gold.Controls.Sidebar = color4("140D04", 90)
-Themes.Gold.Controls.Titlebar = color4("201505", 100)
-Themes.Gold.Controls.Separator.Background = color4("F59E0B", 14)
-Themes.Gold.Controls.Toggle.SwitchOff = color4("4A2F08", 60)
-Themes.Gold.Controls.Slider.Track = color4("3B2607", 100)
-
-Themes.Matrix = cloneTheme(Themes.Dark, "Matrix", "Dark")
-Themes.Matrix.Text.Primary = color4("ECFDF5", 94)
-Themes.Matrix.Text.Secondary = color4("86EFAC", 68)
-Themes.Matrix.Controls.Background = color4("010A05", 100)
-Themes.Matrix.Controls.View = color4("06150C", 100)
-Themes.Matrix.Controls.ViewBorder = color4("22C55E", 14)
-Themes.Matrix.Controls.Sidebar = color4("031007", 90)
-Themes.Matrix.Controls.Titlebar = color4("071A0E", 100)
-Themes.Matrix.Controls.Separator.Background = color4("22C55E", 14)
-Themes.Matrix.Controls.Toggle.SwitchOff = color4("14532D", 58)
-Themes.Matrix.Controls.Slider.Track = color4("052E16", 100)
-return Themes
 end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end do local function __modImpl()--// Publish
 -- Refined to match macOS Human Interface Guidelines (HIG)
 
@@ -11463,92 +11328,178 @@ local function makeGradient(topHex, bottomHex)
 	})
 end
 
-local function makeAccent(id, darkMain, darkFocus, darkBottom, lightMain, lightFocus, lightBottom)
-	return {
-		_id = id,
+return {
+	Blue = {
+		_id = "Blue",
 
 		Dark = {
-			SwitchAccent = Color3.fromHex(darkMain),
-			Selection = Color3.fromHex(darkMain),
-			SelectionFocused = Color3.fromHex(darkFocus),
-			SelectionStroke = Color3.fromHex(darkFocus),
-
-			Toggle = {
-				SwitchOn = Color3.fromHex(darkMain),
-			},
-
-			Slider = {
-				Track = Color3.fromHex(darkMain),
-				Thumb = Color3.fromHex(darkFocus),
-				ThumbEffects = Color3.fromHex(darkMain),
-			},
-
+			SwitchAccent = Color3.fromHex("#0A84FF"),
+			Selection = Color3.fromHex("#007AFF"),
+			SelectionFocused = Color3.fromHex("#0A82FF"),
+		    SelectionStroke =  Color3.fromHex("#0A82FF"),
+			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
 			Button = {
-				FillPrimary = makeGradient(darkFocus, darkBottom),
+				FillPrimary = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 148, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 110, 255)),
+				}),
 			},
 		},
-
 		Light = {
-			SwitchAccent = Color3.fromHex(lightMain),
-			Selection = Color3.fromHex(lightMain),
-			SelectionFocused = Color3.fromHex(lightFocus),
-			SelectionStroke = Color3.fromHex(lightFocus),
-
-			Toggle = {
-				SwitchOn = Color3.fromHex(lightMain),
-			},
-
-			Slider = {
-				Track = Color3.fromHex(lightMain),
-				Thumb = Color3.fromHex(lightFocus),
-				ThumbEffects = Color3.fromHex(lightMain),
-			},
-
+			SwitchAccent = Color3.fromHex("#0A84FF"),
+			Selection = Color3.fromHex("#007AFF"),
+			SelectionFocused = Color3.fromHex("#0A82FF"),
+		    SelectionStroke =  Color3.fromHex("#0A82FF"),
+			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
 			Button = {
-				FillPrimary = makeGradient(lightFocus, lightBottom),
+				FillPrimary = ColorSequence.new({
+					ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 145, 255)),
+					ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 122, 255)),
+				}),
 			},
 		},
-	}
-end
+	},
+	
+	Purple = {
+		_id = "Purple",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#BF5AF6"),
+			Selection = Color3.fromHex("#BF5AF6"),
+			SelectionFocused = Color3.fromHex("#CB7AF7"),
+		    SelectionStroke =  Color3.fromHex("#CB7AF7"),
+			Toggle = { SwitchOn = Color3.fromHex("#BF5AF6") },
+			Button = { FillPrimary = makeGradient("#CB7AF7", "#9A3BD6") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#AF52DE"),
+			Selection = Color3.fromHex("#AF52DE"),
+			SelectionFocused = Color3.fromHex("#BF74E4"),
+		    SelectionStroke =  Color3.fromHex("#BF74E4"),
+			Toggle = { SwitchOn = Color3.fromHex("#AF52DE") },
+			Button = { FillPrimary = makeGradient("#BF74E4", "#8B30BF") },
+		},
+	},
 
-return {
-	Blue = makeAccent("Blue", "#0A84FF", "#4894FF", "#0A6EFF", "#007AFF", "#2B91FF", "#007AFF"),
+	Pink = {
+		_id = "Pink",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#FF375F"),
+			Selection = Color3.fromHex("#FF375F"),
+			SelectionFocused = Color3.fromHex("#FF5E7E"),
+		    SelectionStroke =  Color3.fromHex("#FF5E7E"),
+            Toggle = { SwitchOn = Color3.fromHex("#FF375F") },
+			Button = { FillPrimary = makeGradient("#FF5E7E", "#D82042") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#FF2D55"),
+			Selection = Color3.fromHex("#FF2D55"),
+			SelectionFocused = Color3.fromHex("#FF5676"),
+		    SelectionStroke =  Color3.fromHex("#FF5676"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF2D55") },
+			Button = { FillPrimary = makeGradient("#FF5676", "#D8183B") },
+		},
+	},
 
-	Purple = makeAccent("Purple", "#BF5AF6", "#CB7AF7", "#9A3BD6", "#AF52DE", "#BF74E4", "#8B30BF"),
+	Red = {
+		_id = "Red",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#FF453A"),
+			Selection = Color3.fromHex("#FF453A"),
+			SelectionFocused = Color3.fromHex("#FF6961"),
+		    SelectionStroke =  Color3.fromHex("#FF6961"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF453A") },
+			Button = { FillPrimary = makeGradient("#FF6961", "#D6251A") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#FF3B30"),
+			Selection = Color3.fromHex("#FF3B30"),
+			SelectionFocused = Color3.fromHex("#FF6961"),
+		    SelectionStroke =  Color3.fromHex("#FF6961"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF3B30") },
+			Button = { FillPrimary = makeGradient("#FF6961", "#D62015") },
+		},
+	},
 
-	Pink = makeAccent("Pink", "#FF375F", "#FF5E7E", "#D82042", "#FF2D55", "#FF5676", "#D8183B"),
+	Orange = {
+		_id = "Orange",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#FF9F0A"),
+			Selection = Color3.fromHex("#FF9F0A"),
+			SelectionFocused = Color3.fromHex("#FFB340"),
+		    SelectionStroke =  Color3.fromHex("#FFB340"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF9F0A") },
+			Button = { FillPrimary = makeGradient("#FFB340", "#D67A00") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#FF9500"),
+			Selection = Color3.fromHex("#FF9500"),
+			SelectionFocused = Color3.fromHex("#FFAB33"),
+		    SelectionStroke =  Color3.fromHex("#FFAB33"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF9500") },
+			Button = { FillPrimary = makeGradient("#FFAB33", "#D67000") },
+		},
+	},
 
-	Red = makeAccent("Red", "#FF453A", "#FF6961", "#D6251A", "#FF3B30", "#FF6961", "#D62015"),
+	Yellow = {
+		_id = "Yellow",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#FFD60A"),
+			Selection = Color3.fromHex("#FFD60A"),
+			SelectionFocused = Color3.fromHex("#FFDF40"),
+		    SelectionStroke =  Color3.fromHex("#FFDF40"),
+			Toggle = { SwitchOn = Color3.fromHex("#FFD60A") },
+			Button = { FillPrimary = makeGradient("#FFDF40", "#D6AD00") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#FFCC00"),
+			Selection = Color3.fromHex("#FFCC00"),
+			SelectionFocused = Color3.fromHex("#FFD633"),
+		    SelectionStroke =  Color3.fromHex("#FFD633"),
+			Toggle = { SwitchOn = Color3.fromHex("#FFCC00") },
+			Button = { FillPrimary = makeGradient("#FFD633", "#D6A300") },
+		},
+	},
 
-	Orange = makeAccent("Orange", "#FF9F0A", "#FFB340", "#D67A00", "#FF9500", "#FFAB33", "#D67000"),
+	Green = {
+		_id = "Green",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#32D74B"),
+			Selection = Color3.fromHex("#32D74B"),
+			SelectionFocused = Color3.fromHex("#56DF6B"),
+		    SelectionStroke =  Color3.fromHex("#56DF6B"),
+			Toggle = { SwitchOn = Color3.fromHex("#32D74B") },
+			Button = { FillPrimary = makeGradient("#56DF6B", "#22AB36") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#28CD41"),
+			Selection = Color3.fromHex("#28CD41"),
+			SelectionFocused = Color3.fromHex("#52D765"),
+		    SelectionStroke =  Color3.fromHex("#52D765"),
+			Toggle = { SwitchOn = Color3.fromHex("#28CD41") },
+			Button = { FillPrimary = makeGradient("#52D765", "#1CA32C") },
+		},
+	},
 
-	Yellow = makeAccent("Yellow", "#FFD60A", "#FFDF40", "#D6AD00", "#FFCC00", "#FFD633", "#D6A300"),
-
-	Green = makeAccent("Green", "#32D74B", "#56DF6B", "#22AB36", "#28CD41", "#52D765", "#1CA32C"),
-
-	Graphite = makeAccent("Graphite", "#98989D", "#AFAFB4", "#7B7B80", "#8E8E93", "#A6A6AA", "#717176"),
-
-	Cyan = makeAccent("Cyan", "#22D3EE", "#67E8F9", "#0891B2", "#06B6D4", "#22D3EE", "#0891B2"),
-
-	Teal = makeAccent("Teal", "#2DD4BF", "#5EEAD4", "#0F766E", "#14B8A6", "#2DD4BF", "#0F766E"),
-
-	Lime = makeAccent("Lime", "#A3E635", "#BEF264", "#65A30D", "#84CC16", "#A3E635", "#4D7C0F"),
-
-	Rose = makeAccent("Rose", "#FB7185", "#FDA4AF", "#E11D48", "#F43F5E", "#FB7185", "#BE123C"),
-
-	Crimson = makeAccent("Crimson", "#EF4444", "#F87171", "#B91C1C", "#DC2626", "#EF4444", "#991B1B"),
-
-	Violet = makeAccent("Violet", "#8B5CF6", "#A78BFA", "#6D28D9", "#7C3AED", "#8B5CF6", "#5B21B6"),
-
-	Indigo = makeAccent("Indigo", "#6366F1", "#818CF8", "#4338CA", "#4F46E5", "#6366F1", "#3730A3"),
-
-	Amber = makeAccent("Amber", "#F59E0B", "#FBBF24", "#B45309", "#D97706", "#F59E0B", "#92400E"),
-
-	Emerald = makeAccent("Emerald", "#34D399", "#6EE7B7", "#059669", "#10B981", "#34D399", "#047857"),
-
-	White = makeAccent("White", "#E5E7EB", "#FFFFFF", "#9CA3AF", "#6B7280", "#9CA3AF", "#374151"),
+	Graphite = {
+		_id = "Graphite",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#98989D"),
+			Selection = Color3.fromHex("#98989D"),
+			SelectionFocused = Color3.fromHex("#AFAFB4"),
+		    SelectionStroke =  Color3.fromHex("#AFAFB4"),
+			Toggle = { SwitchOn = Color3.fromHex("#98989D") },
+			Button = { FillPrimary = makeGradient("#AFAFB4", "#7B7B80") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#8E8E93"),
+			Selection = Color3.fromHex("#8E8E93"),
+			SelectionFocused = Color3.fromHex("#A6A6AA"),
+		    SelectionStroke =  Color3.fromHex("#A6A6AA"),
+			Toggle = { SwitchOn = Color3.fromHex("#8E8E93") },
+			Button = { FillPrimary = makeGradient("#A6A6AA", "#717176") },
+		},
+	},
 }
-
 end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end end--// Imports
 
 local utility = __DIST.a()
@@ -11631,37 +11582,17 @@ end
 local function updateThemes(target, theme, accent)
 	local function deepUpdate(target, new)
 		for key, value in pairs(new) do
-			local valueType = typeof(value)
-			local targetValue = target[key]
-
-			if valueType == "table" and type(targetValue) == "table" and value.Value == nil then
-				deepUpdate(targetValue, value)
-
-			elseif targetValue ~= nil then
-				if valueType == "table" and value.Value ~= nil then
-					targetValue.Value = value.Value
-
-				elseif type(targetValue) == "table"
-					and targetValue[1]
-					and targetValue[1].Value ~= nil then
-					targetValue[1].Value = value
-
-				elseif type(targetValue) == "table"
-					and targetValue.Value ~= nil then
-					targetValue.Value = value
-				end
+			if type(value) == "table" and type(target[key]) == "table" and not value.Value then
+				deepUpdate(target[key], value)
+			elseif target[key] and value and value.Value ~= nil then
+				target[key].Value = value.Value
 			end
 		end
 	end
-
 	deepUpdate(target, theme)
 
-	if accent then
-		local accentTheme = accent[theme._id] or accent[theme._accentBase] or accent.Dark or accent.Light
-
-		if accentTheme then
-			deepUpdate(target.Controls, accentTheme)
-		end
+	if accent and accent[theme._id] then
+		parseAccent(target, accent[theme._id])
 	end
 end
 

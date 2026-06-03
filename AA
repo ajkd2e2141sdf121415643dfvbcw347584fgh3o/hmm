@@ -12562,7 +12562,7 @@ local currentTween: Tween? = nil
 
 --// Functions
 local function deepCopy(original, identifier: string?)
-	if not original then return {} end
+	 if not original then return {} end
 	local copy = {}
 	for key, value in pairs(original) do
 		local vType = typeof(value)
@@ -12713,7 +12713,7 @@ if not game:IsLoaded() then
 			updateThemes(properties.Theme, newTheme, properties.Accent)
 		end,
 		Accent = function(newAccent)
-			if not newAccent then return end
+			    if not newAccent then return end  -- เพิ่มบรรทัดนี้
 			properties.Accent = deepCopy(newAccent, newAccent._id)
 			updateThemes(properties.Theme, currentBaseTheme, newAccent)
 		end,
@@ -12732,4 +12732,5 @@ if not game:IsLoaded() then
 
 	return object
 end
+
 return cascade

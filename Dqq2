@@ -11028,9 +11028,9 @@ local components = {
 	RadioButtonGroup = __DIST.E(),
 	PopUpButton = __DIST.F(),
 	PullDownButton = __DIST.G(),
-	Page = __DIST.n()
-,
+	Page = __DIST.n(),
 	Notification = __DIST.J(),
+    ColorPicker = __DIST.O(),
 }
 
 
@@ -11220,7 +11220,11 @@ local function installColorPicker(SectionClass)
 		local textPrimary = getThemeColor(self, "Text.Primary", Color3.fromRGB(255, 255, 255))
 		local textSecondary = getThemeColor(self, "Text.Secondary", Color3.fromRGB(190, 190, 190))
 		local accent = getThemeColor(self, "Controls.SwitchAccent", Color3.fromRGB(0, 122, 255))
+		local switchOff = getThemeColor(self, "Controls.Toggle.SwitchOff", Color3.fromRGB(54, 54, 56))
+		local track = getThemeColor(self, "Controls.Slider.Track", background)
 		local backgroundTransparency = getThemeTransparency(self, "Controls.View", 0)
+		local switchOffTransparency = getThemeTransparency(self, "Controls.Toggle.SwitchOff", 0)
+		local panelTransparency = math.clamp(backgroundTransparency + 0.08, 0, 1)
 
 		local root = create("Frame", {
 			Name = "ColorPicker",
@@ -11232,7 +11236,7 @@ local function installColorPicker(SectionClass)
 			Size = UDim2.new(1, 0, 0, 42),
 		}, {
 			makeCorner(7),
-			makeStroke(border, 0.9, 1),
+			makeStroke(border, 0.78, 1),
 		})
 
 		local titleLabel = create("TextLabel", {
@@ -11261,14 +11265,20 @@ local function installColorPicker(SectionClass)
 			Text = "",
 		}, {
 			makeCorner(5),
+			makeStroke(border, 0.72, 1),
 		})
 
 		local panel = create("Frame", {
 			Name = "Panel",
 			Parent = root,
-			BackgroundTransparency = 1,
+			BackgroundColor3 = track,
+			BackgroundTransparency = panelTransparency,
+			BorderSizePixel = 0,
 			Position = UDim2.new(0, 8, 0, 45),
 			Size = UDim2.new(1, -16, 0, 88),
+		}, {
+			makeCorner(6),
+			makeStroke(border, 0.86, 1),
 		})
 
 		local svBox = create("ImageButton", {
@@ -11278,10 +11288,11 @@ local function installColorPicker(SectionClass)
 			BackgroundColor3 = Color3.fromHSV(h, 1, 1),
 			BorderSizePixel = 0,
 			Image = "rbxassetid://4155801252",
-			Position = UDim2.new(0, 0, 0, 0),
-			Size = UDim2.new(1, -144, 0, 80),
+			Position = UDim2.new(0, 6, 0, 4),
+			Size = UDim2.new(1, -156, 0, 80),
 		}, {
 			makeCorner(4),
+			makeStroke(border, 0.82, 1),
 		})
 
 		local svCursor = create("Frame", {
@@ -11305,10 +11316,11 @@ local function installColorPicker(SectionClass)
 			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
 			BorderSizePixel = 0,
 			Image = "",
-			Position = UDim2.new(1, -136, 0, 0),
+			Position = UDim2.new(1, -144, 0, 4),
 			Size = UDim2.new(0, 24, 0, 80),
 		}, {
 			makeCorner(4),
+			makeStroke(border, 0.82, 1),
 		})
 		makeRainbowGradient(hueBar)
 
@@ -11329,34 +11341,45 @@ local function installColorPicker(SectionClass)
 			Name = "Confirm",
 			Parent = panel,
 			AutoButtonColor = false,
-			BackgroundTransparency = 1,
-			Position = UDim2.new(1, -104, 0, 4),
-			Size = UDim2.new(0, 96, 0, 28),
+			BackgroundColor3 = accent,
+			BackgroundTransparency = 0.08,
+			BorderSizePixel = 0,
+			Position = UDim2.new(1, -106, 0, 8),
+			Size = UDim2.new(0, 96, 0, 26),
 			Font = Enum.Font.Gotham,
 			Text = "Confirm",
 			TextColor3 = textPrimary,
 			TextSize = 13,
-			TextXAlignment = Enum.TextXAlignment.Left,
+			TextXAlignment = Enum.TextXAlignment.Center,
+		}, {
+			makeCorner(6),
+			makeStroke(border, 0.86, 1),
 		})
 
 		local rainbowButton = create("TextButton", {
 			Name = "Rainbow",
 			Parent = panel,
 			AutoButtonColor = false,
-			BackgroundTransparency = 1,
-			Position = UDim2.new(1, -104, 0, 42),
+			BackgroundColor3 = background,
+			BackgroundTransparency = panelTransparency,
+			BorderSizePixel = 0,
+			Position = UDim2.new(1, -106, 0, 46),
 			Size = UDim2.new(0, 96, 0, 28),
 			Font = Enum.Font.Gotham,
 			Text = "Rainbow",
 			TextColor3 = textSecondary,
 			TextSize = 13,
 			TextXAlignment = Enum.TextXAlignment.Left,
+		}, {
+			makeCorner(6),
+			makeStroke(border, 0.88, 1),
 		})
 
 		local switchTrack = create("Frame", {
 			Name = "Track",
 			Parent = rainbowButton,
-			BackgroundColor3 = rainbow and accent or Color3.fromRGB(54, 54, 56),
+			BackgroundColor3 = rainbow and accent or switchOff,
+			BackgroundTransparency = rainbow and 0.05 or switchOffTransparency,
 			BorderSizePixel = 0,
 			Position = UDim2.new(1, -38, 0.5, -9),
 			Size = UDim2.new(0, 36, 0, 18),
@@ -11367,7 +11390,7 @@ local function installColorPicker(SectionClass)
 		local switchKnob = create("Frame", {
 			Name = "Knob",
 			Parent = switchTrack,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+			BackgroundColor3 = textPrimary,
 			BorderSizePixel = 0,
 			Position = rainbow and UDim2.new(1, -16, 0, 2) or UDim2.new(0, 2, 0, 2),
 			Size = UDim2.new(0, 14, 0, 14),
@@ -11432,7 +11455,8 @@ local function installColorPicker(SectionClass)
 			rainbow = value
 
 			TweenService:Create(switchTrack, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-				BackgroundColor3 = rainbow and accent or Color3.fromRGB(54, 54, 56),
+				BackgroundColor3 = rainbow and accent or switchOff,
+				BackgroundTransparency = rainbow and 0.05 or switchOffTransparency,
 			}):Play()
 
 			TweenService:Create(switchKnob, TweenInfo.new(0.18, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
@@ -11572,15 +11596,13 @@ for component, make in pairs(components) do
 			binder.Apply(components, object)
 
 			if componentName == "Section" then
-				installColorPicker(object)
+				    installColorPicker(object)
 			end
 
 			return object
 		end
 	end)(component, make)
 end
-
-
 return components
 end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports
 local creator = __DIST.d()

@@ -11313,7 +11313,9 @@ return {
 	},
 }
 end function __DIST.M():typeof(__modImpl())local v=__DIST.cache.M if not v then v={c=__modImpl()}__DIST.cache.M=v end return v.c end end do local function __modImpl()
-return {
+
+end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end do local function __modImpl()--// Publish
+	return {
     Dark         = __DIST.L(),
     Light        = __DIST.M(),
     Midnight     = __DIST.Midnight(),
@@ -11325,7 +11327,7 @@ return {
     Sunset       = __DIST.Sunset(),
     Arctic       = __DIST.Arctic(),
 }
-end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end do local function __modImpl()--// Publish
+end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end do local function __modImpl()
 -- Refined to match macOS Human Interface Guidelines (HIG)
 
 

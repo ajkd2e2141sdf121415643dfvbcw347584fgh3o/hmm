@@ -4649,7 +4649,7 @@ return function(self)
 			Thickness = 1,
 
 			__dynamicKeys = {
-				Color = self.Theme.Controls.ViewBorder[1], ตรงนี้ครับ บรรทัด 4652
+				Color = self.Theme.Controls.ViewBorder[1],  
 				Transparency = self.Theme.Controls.ViewBorder[2],
 			},
 		}),

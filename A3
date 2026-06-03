@@ -4649,7 +4649,7 @@ return function(self)
 			Thickness = 1,
 
 			__dynamicKeys = {
-				Color = self.Theme.Controls.ViewBorder[1],
+				Color = self.Theme.Controls.ViewBorder[1], ตรงนี้ครับ บรรทัด 4652
 				Transparency = self.Theme.Controls.ViewBorder[2],
 			},
 		}),
@@ -11047,1491 +11047,476 @@ for component, make in pairs(components) do
 end
 
 return components
-
-end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports
-end function __DIST.L():typeof(__modImpl())local v=__DIST.cache.L if not v then v={c=__modImpl()}__DIST.cache.L=v end return v.c end end do local function __modImpl()--// Imports
-
+end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()
 local creator = __DIST.d()
-
---// References
 local value = creator.Value
-
---// Private Methods
-local function color4(color: Color3 | string, alpha: number)
+local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
-
-	return {
-		value(parsedColor),
-		value(1 - (alpha / 100)),
-	}
+	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
---// Publish
 return {
-	_id = "Light",
-
+	_id = "Dark",
 	Text = {
-		Primary = color4("000000", 85),
-		Secondary = color4("000000", 50),
-		Tertiary = color4("000000", 25),
-		Quaternary = color4("000000", 10),
-		Quinary = color4("000000", 5),
-
+		Primary = color4("FFFFFF", 85),
+		Secondary = color4("FFFFFF", 55),
+		Tertiary = color4("FFFFFF", 25),
+		Quaternary = color4("FFFFFF", 10),
+		Quinary = color4("FFFFFF", 5),
 		SelectionPrimary = color4("FFFFFF", 100),
-		PrimaryAccent = color4("4D4D4D", 100),
+		PrimaryAccent = color4("FFFFFF", 38),
 	},
-
-	Accents = {
-		Red = color4("FF3B30", 100),
-	},
-
+	Accents = { Red = color4("FF453A", 100) },
 	Controls = {
-		Background = color4("FFFFFF", 100),
-
-		View = color4("FCFCFC", 100),
-		ViewBorder = color4("000000", 5),
-
+		Background = color4("1C1C1E", 100),
+		View = color4("1F1F21", 100),
+		ViewBorder = color4("FFFFFF", 5),
 		WindowControlIcon = color4("000000", 50),
-		WindowControlStroke = color4("000000", 20),
+		WindowControlStroke = color4("FFFFFF", 10),
 		Exit = color4("FF5F57", 100),
 		Minimize = color4("FEBC2E", 100),
 		Zoom = color4("28C840", 100),
-
 		SwitchAccent = color4("478CF6", 100),
 		Selection = color4("007AFF", 100),
-		SelectionStroke = color4("007AFF", 50),
+		SelectionStroke = color4("007AFF", 60),
 		SelectionFocused = color4("0A82FF", 100),
 		SelectionFocusedAccent = color4("FFFFFF", 85),
-
-		Sidebar = color4("EAEAEA", 84),
-		Separator = {
-			Background = color4("000000", 18),
-			Shadow = color4("000000", 10),
+		Sidebar = color4("202023", 84),
+		Separator = { Background = color4("000000", 50), Shadow = color4("FFFFFF", 0) },
+		Titlebar = color4("363636", 100),
+		TitlebarShadow = {
+			Background = color4("000000", 0),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.5), NumberSequenceKeypoint.new(1, 1) })),
 		},
-
+		Toggle = {
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("FFFFFF", 100),
+			SwitchOff = color4("7a7a7a", 40), SwitchOn = color4("478cf6", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(225,225,225)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255,255,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
+		},
+		Slider = { Track = color4("2C2C2E", 100), TrackEffects = color4("000000", 10), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("000000", 20), ThumbEffects = color4("FFFFFF", 80) },
+		Button = {
+			Shadow = value(Color3.fromRGB(0,0,0)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(72,148,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(10,110,255)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(60,60,60)), ColorSequenceKeypoint.new(1, Color3.fromRGB(55,55,55)) })),
+		},
+		Stepper = {
+			Background = color4("373737", 100), Dropshadow = color4("000000", 100), Separator = color4("FFFFFF", 10), Filler = color4("FFFFFF", 4),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0)) })),
+		},
+		RadioButtonGroup = { Background = color4("373737", 100), Dot = color4("FFFFFF", 100), Stroke = color4("000000", 20), Overlay = color4("FFFFFF", 8), InnerShadow = color4("FFFFFF", 10) },
+		MenuButton = { IndicatorBackground = color4("FFFFFF", 10), MenuBackground = color4("2C2C2E", 95) },
+	},
+}
+end function __DIST.L():typeof(__modImpl())local v=__DIST.cache.L if not v then v={c=__modImpl()}__DIST.cache.L=v end return v.c end end do local function __modImpl()
+local creator = __DIST.d()
+local value = creator.Value
+local function color4(color, alpha)
+	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
+	return { value(parsedColor), value(1 - (alpha / 100)) }
+end
+return {
+	_id = "Light",
+	Text = {
+		Primary = color4("000000", 85), Secondary = color4("000000", 50), Tertiary = color4("000000", 25),
+		Quaternary = color4("000000", 10), Quinary = color4("000000", 5),
+		SelectionPrimary = color4("FFFFFF", 100), PrimaryAccent = color4("4D4D4D", 100),
+	},
+	Accents = { Red = color4("FF3B30", 100) },
+	Controls = {
+		Background = color4("FFFFFF", 100), View = color4("FCFCFC", 100), ViewBorder = color4("000000", 5),
+		WindowControlIcon = color4("000000", 50), WindowControlStroke = color4("000000", 20),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("478CF6", 100), Selection = color4("007AFF", 100), SelectionStroke = color4("007AFF", 50),
+		SelectionFocused = color4("0A82FF", 100), SelectionFocusedAccent = color4("FFFFFF", 85),
+		Sidebar = color4("EAEAEA", 84),
+		Separator = { Background = color4("000000", 18), Shadow = color4("000000", 10) },
 		Titlebar = color4("EEEEEE", 100),
 		TitlebarShadow = {
 			Background = color4("EAEAEA", 25),
-			Color = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.35),
-				NumberSequenceKeypoint.new(1, 0.35),
-			})),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.35), NumberSequenceKeypoint.new(1, 0.35) })),
 		},
-
 		Toggle = {
-			Knob = color4("FFFFFF", 100),
-			KnobEffects = color4("FFFFFF", 100),
-
-			SwitchOff = color4("000000", 9),
-			SwitchOn = color4("478CF6", 100),
-
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(225, 225, 225)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("FFFFFF", 100),
+			SwitchOff = color4("000000", 9), SwitchOn = color4("478CF6", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(225,225,225)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255,255,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
 		},
-
-		Slider = {
-			Track = color4("000000", 5),
-			TrackEffects = color4("000000", 0),
-
-			Thumb = color4("FFFFFF", 100),
-			ThumbStroke = color4("000000", 2),
-			ThumbEffects = color4("FFFFFF", 100),
-		},
-
+		Slider = { Track = color4("000000", 5), TrackEffects = color4("000000", 0), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("000000", 2), ThumbEffects = color4("FFFFFF", 100) },
 		Button = {
-			Shadow = value(Color3.new(0, 0, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 145, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 122, 255)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
+			Shadow = value(Color3.new(0,0,0)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(43,145,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,122,255)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(255,255,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
 		},
-
 		Stepper = {
-			Background = color4("FFFFFF", 100),
-			Dropshadow = color4("000000", 100),
-			Separator = color4("000000", 22),
-			Filler = color4("000000", 5),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
+			Background = color4("FFFFFF", 100), Dropshadow = color4("000000", 100), Separator = color4("000000", 22), Filler = color4("000000", 5),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
 		},
-
-		RadioButtonGroup = {
-			Background = color4("FFFFFF", 100),
-			Dot = color4("FFFFFF", 100),
-			Stroke = color4("000000", 8),
-			Overlay = color4("FFFFFF", 17),
-			InnerShadow = color4("000000", 10),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("000000", 5),
-			MenuBackground = color4("F6F6F6", 95),
-		},
-	},
-}
-end function __DIST.M():typeof(__modImpl())local v=__DIST.cache.M if not v then v={c=__modImpl()}__DIST.cache.M=v end return v.c end end do local function __modImpl()
-
-local creator = __DIST.d()
-local value = creator.Value
-
-local function color4(color, alpha)
-	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
-	return { value(parsedColor), value(1 - (alpha / 100)) }
-end
-
-return {
-	_id = "Midnight",
-
-	Text = {
-		Primary            = color4("E8E8FF", 90),
-		Secondary          = color4("A0A0CC", 80),
-		Tertiary           = color4("7070AA", 70),
-		Quaternary         = color4("E8E8FF", 10),
-		Quinary            = color4("E8E8FF", 5),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("C0C0FF", 80),
-	},
-
-	Accents = {
-		Red = color4("FF6B6B", 100),
-	},
-
-	Controls = {
-		Background    = color4("0D0D1A", 100),
-		View          = color4("12122A", 100),
-		ViewBorder    = color4("7B6FFF", 12),
-
-		WindowControlIcon   = color4("000000", 50),
-		WindowControlStroke = color4("FFFFFF", 10),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("7B6FFF", 100),
-		Selection              = color4("6B5FEF", 100),
-		SelectionStroke        = color4("7B6FFF", 60),
-		SelectionFocused       = color4("8B7FFF", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("0A0A18", 90),
-		Separator = {
-			Background = color4("7B6FFF", 15),
-			Shadow     = color4("000000", 0),
-		},
-
-		Titlebar = color4("16163A", 100),
-		TitlebarShadow = {
-			Background   = color4("000000", 0),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(13, 13, 26)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(123, 111, 255)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.4),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
-		},
-
-		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("C0B8FF", 80),
-			SwitchOff   = color4("3A3A5C", 100),
-			SwitchOn    = color4("7B6FFF", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(160, 150, 255)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(200, 195, 255)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
-			})),
-		},
-
-		Slider = {
-			Track        = color4("1E1E3C", 100),
-			TrackEffects = color4("7B6FFF", 8),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("7B6FFF", 30),
-			ThumbEffects = color4("C0B8FF", 60),
-		},
-
-		Button = {
-			Shadow      = value(Color3.fromRGB(0, 0, 20)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(140, 130, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(90, 78, 220)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 80)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(35, 35, 70)),
-			})),
-		},
-
-		Stepper = {
-			Background    = color4("1E1E3C", 100),
-			Dropshadow    = color4("000010", 100),
-			Separator     = color4("7B6FFF", 15),
-			Filler        = color4("7B6FFF", 6),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 10)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 10)),
-			})),
-		},
-
-		RadioButtonGroup = {
-			Background  = color4("1E1E3C", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("7B6FFF", 25),
-			Overlay     = color4("7B6FFF", 10),
-			InnerShadow = color4("C0B8FF", 12),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("7B6FFF", 12),
-			MenuBackground      = color4("16163A", 94),
-		},
+		RadioButtonGroup = { Background = color4("FFFFFF", 100), Dot = color4("FFFFFF", 100), Stroke = color4("000000", 8), Overlay = color4("FFFFFF", 17), InnerShadow = color4("000000", 10) },
+		MenuButton = { IndicatorBackground = color4("000000", 5), MenuBackground = color4("F6F6F6", 95) },
 	},
 }
 end function __DIST.Midnight():typeof(__modImpl())local v=__DIST.cache.Midnight if not v then v={c=__modImpl()}__DIST.cache.Midnight=v end return v.c end end do local function __modImpl()
-
 local creator = __DIST.d()
 local value = creator.Value
-
 local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
 	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
 return {
-	_id = "OLED",
-
+	_id = "Midnight",
 	Text = {
-		Primary            = color4("FFFFFF", 95),
-		Secondary          = color4("FFFFFF", 55),
-		Tertiary           = color4("FFFFFF", 28),
-		Quaternary         = color4("FFFFFF", 10),
-		Quinary            = color4("FFFFFF", 5),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("CCCCCC", 90),
+		Primary = color4("E8E8FF", 90), Secondary = color4("A0A0CC", 80), Tertiary = color4("7070AA", 70),
+		Quaternary = color4("E8E8FF", 10), Quinary = color4("E8E8FF", 5),
+		SelectionPrimary = color4("FFFFFF", 100), PrimaryAccent = color4("C0C0FF", 80),
 	},
-
-	Accents = {
-		Red = color4("FF453A", 100),
-	},
-
+	Accents = { Red = color4("FF6B6B", 100) },
 	Controls = {
-		Background    = color4("000000", 100),
-		View          = color4("050505", 100),
-		ViewBorder    = color4("FFFFFF", 8),
-
-		WindowControlIcon   = color4("000000", 50),
-		WindowControlStroke = color4("FFFFFF", 15),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("0A84FF", 100),
-		Selection              = color4("0A84FF", 100),
-		SelectionStroke        = color4("0A84FF", 55),
-		SelectionFocused       = color4("1A94FF", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("000000", 95),
-		Separator = {
-			Background = color4("FFFFFF", 8),
-			Shadow     = color4("000000", 0),
-		},
-
-		Titlebar = color4("0A0A0A", 100),
+		Background = color4("0D0D1A", 100), View = color4("12122A", 100), ViewBorder = color4("7B6FFF", 12),
+		WindowControlIcon = color4("000000", 50), WindowControlStroke = color4("FFFFFF", 10),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("7B6FFF", 100), Selection = color4("6B5FEF", 100), SelectionStroke = color4("7B6FFF", 60),
+		SelectionFocused = color4("8B7FFF", 100), SelectionFocusedAccent = color4("FFFFFF", 90),
+		Sidebar = color4("0A0A18", 90),
+		Separator = { Background = color4("7B6FFF", 15), Shadow = color4("000000", 0) },
+		Titlebar = color4("16163A", 100),
 		TitlebarShadow = {
-			Background   = color4("000000", 0),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.55),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
+			Background = color4("000000", 0),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(13,13,26)), ColorSequenceKeypoint.new(1, Color3.fromRGB(123,111,255)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.4), NumberSequenceKeypoint.new(1, 1) })),
 		},
-
 		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("FFFFFF", 90),
-			SwitchOff   = color4("2A2A2A", 100),
-			SwitchOn    = color4("0A84FF", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(200, 200, 200)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(240, 240, 240)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 255)),
-			})),
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("C0B8FF", 80),
+			SwitchOff = color4("3A3A5C", 100), SwitchOn = color4("7B6FFF", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(160,150,255)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(200,195,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
 		},
-
-		Slider = {
-			Track        = color4("141414", 100),
-			TrackEffects = color4("FFFFFF", 5),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("000000", 30),
-			ThumbEffects = color4("FFFFFF", 70),
-		},
-
+		Slider = { Track = color4("1E1E3C", 100), TrackEffects = color4("7B6FFF", 8), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("7B6FFF", 30), ThumbEffects = color4("C0B8FF", 60) },
 		Button = {
-			Shadow      = value(Color3.fromRGB(0, 0, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(26, 148, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 112, 238)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(22, 22, 22)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(18, 18, 18)),
-			})),
+			Shadow = value(Color3.fromRGB(0,0,20)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(140,130,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(90,78,220)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(40,40,80)), ColorSequenceKeypoint.new(1, Color3.fromRGB(35,35,70)) })),
 		},
-
 		Stepper = {
-			Background    = color4("111111", 100),
-			Dropshadow    = color4("000000", 100),
-			Separator     = color4("FFFFFF", 8),
-			Filler        = color4("FFFFFF", 3),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
-			})),
+			Background = color4("1E1E3C", 100), Dropshadow = color4("000010", 100), Separator = color4("7B6FFF", 15), Filler = color4("7B6FFF", 6),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,10)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,10)) })),
 		},
-
-		RadioButtonGroup = {
-			Background  = color4("111111", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("FFFFFF", 12),
-			Overlay     = color4("FFFFFF", 5),
-			InnerShadow = color4("FFFFFF", 8),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("FFFFFF", 7),
-			MenuBackground      = color4("0A0A0A", 96),
-		},
+		RadioButtonGroup = { Background = color4("1E1E3C", 100), Dot = color4("FFFFFF", 100), Stroke = color4("7B6FFF", 25), Overlay = color4("7B6FFF", 10), InnerShadow = color4("C0B8FF", 12) },
+		MenuButton = { IndicatorBackground = color4("7B6FFF", 12), MenuBackground = color4("16163A", 94) },
 	},
 }
 end function __DIST.OLED():typeof(__modImpl())local v=__DIST.cache.OLED if not v then v={c=__modImpl()}__DIST.cache.OLED=v end return v.c end end do local function __modImpl()
-
 local creator = __DIST.d()
 local value = creator.Value
-
 local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
 	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
 return {
-	_id = "Solarized",
-
+	_id = "OLED",
 	Text = {
-		Primary            = color4("586E75", 100),
-		Secondary          = color4("657B83", 90),
-		Tertiary           = color4("839496", 80),
-		Quaternary         = color4("586E75", 20),
-		Quinary            = color4("586E75", 10),
-		SelectionPrimary   = color4("FDF6E3", 100),
-		PrimaryAccent      = color4("2AA198", 100),
+		Primary = color4("FFFFFF", 95), Secondary = color4("FFFFFF", 55), Tertiary = color4("FFFFFF", 28),
+		Quaternary = color4("FFFFFF", 10), Quinary = color4("FFFFFF", 5),
+		SelectionPrimary = color4("FFFFFF", 100), PrimaryAccent = color4("CCCCCC", 90),
 	},
-
-	Accents = {
-		Red = color4("DC322F", 100),
-	},
-
+	Accents = { Red = color4("FF453A", 100) },
 	Controls = {
-		Background    = color4("FDF6E3", 100),
-		View          = color4("FAF3DE", 100),
-		ViewBorder    = color4("586E75", 8),
-
-		WindowControlIcon   = color4("000000", 40),
-		WindowControlStroke = color4("586E75", 20),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("268BD2", 100),
-		Selection              = color4("268BD2", 100),
-		SelectionStroke        = color4("268BD2", 50),
-		SelectionFocused       = color4("2E9CE0", 100),
-		SelectionFocusedAccent = color4("FDF6E3", 90),
-
-		Sidebar = color4("EEE8D5", 90),
-		Separator = {
-			Background = color4("586E75", 15),
-			Shadow     = color4("586E75", 8),
-		},
-
-		Titlebar = color4("EEE8D5", 100),
+		Background = color4("000000", 100), View = color4("050505", 100), ViewBorder = color4("FFFFFF", 8),
+		WindowControlIcon = color4("000000", 50), WindowControlStroke = color4("FFFFFF", 15),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("0A84FF", 100), Selection = color4("0A84FF", 100), SelectionStroke = color4("0A84FF", 55),
+		SelectionFocused = color4("1A94FF", 100), SelectionFocusedAccent = color4("FFFFFF", 90),
+		Sidebar = color4("000000", 95),
+		Separator = { Background = color4("FFFFFF", 8), Shadow = color4("000000", 0) },
+		Titlebar = color4("0A0A0A", 100),
 		TitlebarShadow = {
-			Background   = color4("D3CDB8", 30),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(238, 232, 213)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(88, 110, 117)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(1, 0.3),
-			})),
+			Background = color4("000000", 0),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.55), NumberSequenceKeypoint.new(1, 1) })),
 		},
-
 		Toggle = {
-			Knob        = color4("FDF6E3", 100),
-			KnobEffects = color4("FFFFFF", 80),
-			SwitchOff   = color4("93A1A1", 50),
-			SwitchOn    = color4("268BD2", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(220, 215, 195)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(245, 240, 220)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(253, 246, 227)),
-			})),
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("FFFFFF", 90),
+			SwitchOff = color4("2A2A2A", 100), SwitchOn = color4("0A84FF", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(200,200,200)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(240,240,240)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,255,255)) })),
 		},
-
-		Slider = {
-			Track        = color4("EEE8D5", 100),
-			TrackEffects = color4("586E75", 0),
-			Thumb        = color4("FDF6E3", 100),
-			ThumbStroke  = color4("586E75", 15),
-			ThumbEffects = color4("FFFFFF", 80),
-		},
-
+		Slider = { Track = color4("141414", 100), TrackEffects = color4("FFFFFF", 5), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("000000", 30), ThumbEffects = color4("FFFFFF", 70) },
 		Button = {
-			Shadow      = value(Color3.fromRGB(88, 110, 117)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 162, 220)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(38, 139, 210)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(238, 232, 213)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(238, 232, 213)),
-			})),
+			Shadow = value(Color3.fromRGB(0,0,0)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(26,148,255)), ColorSequenceKeypoint.new(1, Color3.fromRGB(10,112,238)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(22,22,22)), ColorSequenceKeypoint.new(1, Color3.fromRGB(18,18,18)) })),
 		},
-
 		Stepper = {
-			Background    = color4("EEE8D5", 100),
-			Dropshadow    = color4("657B83", 60),
-			Separator     = color4("586E75", 18),
-			Filler        = color4("586E75", 5),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(88, 110, 117)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(238, 232, 213)),
-			})),
+			Background = color4("111111", 100), Dropshadow = color4("000000", 100), Separator = color4("FFFFFF", 8), Filler = color4("FFFFFF", 3),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0)) })),
 		},
-
-		RadioButtonGroup = {
-			Background  = color4("EEE8D5", 100),
-			Dot         = color4("FDF6E3", 100),
-			Stroke      = color4("586E75", 12),
-			Overlay     = color4("FDF6E3", 20),
-			InnerShadow = color4("586E75", 10),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("586E75", 8),
-			MenuBackground      = color4("F5EED8", 96),
-		},
+		RadioButtonGroup = { Background = color4("111111", 100), Dot = color4("FFFFFF", 100), Stroke = color4("FFFFFF", 12), Overlay = color4("FFFFFF", 5), InnerShadow = color4("FFFFFF", 8) },
+		MenuButton = { IndicatorBackground = color4("FFFFFF", 7), MenuBackground = color4("0A0A0A", 96) },
 	},
 }
 end function __DIST.Solarized():typeof(__modImpl())local v=__DIST.cache.Solarized if not v then v={c=__modImpl()}__DIST.cache.Solarized=v end return v.c end end do local function __modImpl()
-
 local creator = __DIST.d()
 local value = creator.Value
-
 local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
 	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
 return {
-	_id = "RoseGold",
-
+	_id = "Solarized",
 	Text = {
-		Primary            = color4("5C2D3A", 90),
-		Secondary          = color4("7B4050", 75),
-		Tertiary           = color4("A06070", 60),
-		Quaternary         = color4("5C2D3A", 12),
-		Quinary            = color4("5C2D3A", 6),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("C85060", 100),
+		Primary = color4("586E75", 100), Secondary = color4("657B83", 90), Tertiary = color4("839496", 80),
+		Quaternary = color4("586E75", 20), Quinary = color4("586E75", 10),
+		SelectionPrimary = color4("FDF6E3", 100), PrimaryAccent = color4("2AA198", 100),
 	},
-
-	Accents = {
-		Red = color4("E03040", 100),
-	},
-
+	Accents = { Red = color4("DC322F", 100) },
 	Controls = {
-		Background    = color4("FFF5F7", 100),
-		View          = color4("FFEFF3", 100),
-		ViewBorder    = color4("D4808A", 12),
-
-		WindowControlIcon   = color4("000000", 40),
-		WindowControlStroke = color4("C87080", 20),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("E07080", 100),
-		Selection              = color4("D05060", 100),
-		SelectionStroke        = color4("E07080", 50),
-		SelectionFocused       = color4("E88090", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("FFE8EC", 88),
-		Separator = {
-			Background = color4("C87080", 18),
-			Shadow     = color4("E09090", 10),
-		},
-
-		Titlebar = color4("FFE0E6", 100),
+		Background = color4("FDF6E3", 100), View = color4("FAF3DE", 100), ViewBorder = color4("586E75", 8),
+		WindowControlIcon = color4("000000", 40), WindowControlStroke = color4("586E75", 20),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("268BD2", 100), Selection = color4("268BD2", 100), SelectionStroke = color4("268BD2", 50),
+		SelectionFocused = color4("2E9CE0", 100), SelectionFocusedAccent = color4("FDF6E3", 90),
+		Sidebar = color4("EEE8D5", 90),
+		Separator = { Background = color4("586E75", 15), Shadow = color4("586E75", 8) },
+		Titlebar = color4("EEE8D5", 100),
 		TitlebarShadow = {
-			Background   = color4("F0D0D8", 30),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 224, 230)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(200, 112, 128)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(1, 0.3),
-			})),
+			Background = color4("D3CDB8", 30),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(238,232,213)), ColorSequenceKeypoint.new(1, Color3.fromRGB(88,110,117)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.3), NumberSequenceKeypoint.new(1, 0.3) })),
 		},
-
 		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("FFE0E6", 80),
-			SwitchOff   = color4("F0C0CC", 100),
-			SwitchOn    = color4("E07080", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(240, 192, 204)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(255, 224, 230)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 245, 247)),
-			})),
+			Knob = color4("FDF6E3", 100), KnobEffects = color4("FFFFFF", 80),
+			SwitchOff = color4("93A1A1", 50), SwitchOn = color4("268BD2", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(220,215,195)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(245,240,220)), ColorSequenceKeypoint.new(1, Color3.fromRGB(253,246,227)) })),
 		},
-
-		Slider = {
-			Track        = color4("FFE0E6", 100),
-			TrackEffects = color4("E07080", 0),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("D06070", 15),
-			ThumbEffects = color4("FFFFFF", 90),
-		},
-
+		Slider = { Track = color4("EEE8D5", 100), TrackEffects = color4("586E75", 0), Thumb = color4("FDF6E3", 100), ThumbStroke = color4("586E75", 15), ThumbEffects = color4("FFFFFF", 80) },
 		Button = {
-			Shadow      = value(Color3.fromRGB(180, 80, 100)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(235, 130, 148)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(208, 80, 96)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 224, 230)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 224, 230)),
-			})),
+			Shadow = value(Color3.fromRGB(88,110,117)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(43,162,220)), ColorSequenceKeypoint.new(1, Color3.fromRGB(38,139,210)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(238,232,213)), ColorSequenceKeypoint.new(1, Color3.fromRGB(238,232,213)) })),
 		},
-
 		Stepper = {
-			Background    = color4("FFE0E6", 100),
-			Dropshadow    = color4("C06070", 50),
-			Separator     = color4("D08090", 20),
-			Filler        = color4("E07080", 6),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 112, 128)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 224, 230)),
-			})),
+			Background = color4("EEE8D5", 100), Dropshadow = color4("657B83", 60), Separator = color4("586E75", 18), Filler = color4("586E75", 5),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(88,110,117)), ColorSequenceKeypoint.new(1, Color3.fromRGB(238,232,213)) })),
 		},
-
-		RadioButtonGroup = {
-			Background  = color4("FFE8EC", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("D08090", 14),
-			Overlay     = color4("FFFFFF", 20),
-			InnerShadow = color4("E09090", 12),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("E07080", 8),
-			MenuBackground      = color4("FFF0F3", 96),
-		},
-	},
-}
-end function __DIST.RoseGold():typeof(__modImpl())local v=__DIST.cache.RoseGold if not v then v={c=__modImpl()}__DIST.cache.RoseGold=v end return v.c end end do local function __modImpl()
-
-local creator = __DIST.d()
-local value = creator.Value
-
-local function color4(color, alpha)
-	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
-	return { value(parsedColor), value(1 - (alpha / 100)) }
-end
-
-return {
-	_id = "Forest",
-
-	Text = {
-		Primary            = color4("B8DCC0", 92),
-		Secondary          = color4("80AA88", 80),
-		Tertiary           = color4("5A8060", 70),
-		Quaternary         = color4("B8DCC0", 12),
-		Quinary            = color4("B8DCC0", 6),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("6ACA78", 100),
-	},
-
-	Accents = {
-		Red = color4("FF6B5A", 100),
-	},
-
-	Controls = {
-		Background    = color4("0A1A0C", 100),
-		View          = color4("0E1E10", 100),
-		ViewBorder    = color4("4CAF58", 12),
-
-		WindowControlIcon   = color4("000000", 50),
-		WindowControlStroke = color4("4CAF58", 15),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("4CAF58", 100),
-		Selection              = color4("3E9E4A", 100),
-		SelectionStroke        = color4("4CAF58", 55),
-		SelectionFocused       = color4("5CC068", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("080E08", 92),
-		Separator = {
-			Background = color4("4CAF58", 15),
-			Shadow     = color4("000000", 0),
-		},
-
-		Titlebar = color4("132016", 100),
-		TitlebarShadow = {
-			Background   = color4("000000", 0),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(10, 26, 12)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(76, 175, 88)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.4),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
-		},
-
-		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("A8DCA0", 70),
-			SwitchOff   = color4("1E3A20", 100),
-			SwitchOn    = color4("4CAF58", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(80, 160, 88)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(140, 210, 148)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(200, 240, 200)),
-			})),
-		},
-
-		Slider = {
-			Track        = color4("162A18", 100),
-			TrackEffects = color4("4CAF58", 8),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("3E9E4A", 30),
-			ThumbEffects = color4("A8DCA0", 55),
-		},
-
-		Button = {
-			Shadow      = value(Color3.fromRGB(0, 20, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(92, 192, 104)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(62, 158, 74)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 55, 28)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 48, 22)),
-			})),
-		},
-
-		Stepper = {
-			Background    = color4("162A18", 100),
-			Dropshadow    = color4("001000", 100),
-			Separator     = color4("4CAF58", 15),
-			Filler        = color4("4CAF58", 6),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 10, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 10, 0)),
-			})),
-		},
-
-		RadioButtonGroup = {
-			Background  = color4("162A18", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("4CAF58", 25),
-			Overlay     = color4("4CAF58", 8),
-			InnerShadow = color4("A8DCA0", 12),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("4CAF58", 12),
-			MenuBackground      = color4("132016", 95),
-		},
+		RadioButtonGroup = { Background = color4("EEE8D5", 100), Dot = color4("FDF6E3", 100), Stroke = color4("586E75", 12), Overlay = color4("FDF6E3", 20), InnerShadow = color4("586E75", 10) },
+		MenuButton = { IndicatorBackground = color4("586E75", 8), MenuBackground = color4("F5EED8", 96) },
 	},
 }
 end function __DIST.Forest():typeof(__modImpl())local v=__DIST.cache.Forest if not v then v={c=__modImpl()}__DIST.cache.Forest=v end return v.c end end do local function __modImpl()
-
 local creator = __DIST.d()
 local value = creator.Value
-
 local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
 	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
 return {
-	_id = "HighContrast",
-
+	_id = "Forest",
 	Text = {
-		Primary            = color4("FFFFFF", 100),
-		Secondary          = color4("FFFF00", 100),
-		Tertiary           = color4("FFFFFF", 70),
-		Quaternary         = color4("FFFFFF", 20),
-		Quinary            = color4("FFFFFF", 10),
-		SelectionPrimary   = color4("000000", 100),
-		PrimaryAccent      = color4("00FFFF", 100),
+		Primary = color4("B8DCC0", 92), Secondary = color4("80AA88", 80), Tertiary = color4("5A8060", 70),
+		Quaternary = color4("B8DCC0", 12), Quinary = color4("B8DCC0", 6),
+		SelectionPrimary = color4("FFFFFF", 100), PrimaryAccent = color4("6ACA78", 100),
 	},
-
-	Accents = {
-		Red = color4("FF4444", 100),
-	},
-
+	Accents = { Red = color4("FF6B5A", 100) },
 	Controls = {
-		Background    = color4("000000", 100),
-		View          = color4("0A0A0A", 100),
-		ViewBorder    = color4("FFFFFF", 100),
-
-		WindowControlIcon   = color4("000000", 100),
-		WindowControlStroke = color4("FFFFFF", 100),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FFFF00", 100),
-		Zoom     = color4("00FF00", 100),
-
-		SwitchAccent           = color4("FFFF00", 100),
-		Selection              = color4("FFFF00", 100),
-		SelectionStroke        = color4("FFFF00", 100),
-		SelectionFocused       = color4("FFFFFF", 100),
-		SelectionFocusedAccent = color4("000000", 100),
-
-		Sidebar = color4("000000", 100),
-		Separator = {
-			Background = color4("FFFFFF", 60),
-			Shadow     = color4("000000", 0),
-		},
-
-		Titlebar = color4("111111", 100),
+		Background = color4("0A1A0C", 100), View = color4("0E1E10", 100), ViewBorder = color4("4CAF58", 12),
+		WindowControlIcon = color4("000000", 50), WindowControlStroke = color4("4CAF58", 15),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("4CAF58", 100), Selection = color4("3E9E4A", 100), SelectionStroke = color4("4CAF58", 55),
+		SelectionFocused = color4("5CC068", 100), SelectionFocusedAccent = color4("FFFFFF", 90),
+		Sidebar = color4("080E08", 92),
+		Separator = { Background = color4("4CAF58", 15), Shadow = color4("000000", 0) },
+		Titlebar = color4("132016", 100),
 		TitlebarShadow = {
-			Background   = color4("000000", 0),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.2),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
+			Background = color4("000000", 0),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(10,26,12)), ColorSequenceKeypoint.new(1, Color3.fromRGB(76,175,88)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.4), NumberSequenceKeypoint.new(1, 1) })),
 		},
-
 		Toggle = {
-			Knob        = color4("000000", 100),
-			KnobEffects = color4("FFFF00", 100),
-			SwitchOff   = color4("444444", 100),
-			SwitchOn    = color4("FFFF00", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(200, 200, 0)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(240, 240, 0)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 255, 0)),
-			})),
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("A8DCA0", 70),
+			SwitchOff = color4("1E3A20", 100), SwitchOn = color4("4CAF58", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(80,160,88)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(140,210,148)), ColorSequenceKeypoint.new(1, Color3.fromRGB(200,240,200)) })),
 		},
-
-		Slider = {
-			Track        = color4("222222", 100),
-			TrackEffects = color4("FFFFFF", 10),
-			Thumb        = color4("FFFF00", 100),
-			ThumbStroke  = color4("000000", 100),
-			ThumbEffects = color4("FFFF00", 80),
-		},
-
+		Slider = { Track = color4("162A18", 100), TrackEffects = color4("4CAF58", 8), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("3E9E4A", 30), ThumbEffects = color4("A8DCA0", 55) },
 		Button = {
-			Shadow      = value(Color3.fromRGB(0, 0, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 220, 0)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(40, 40, 40)),
-			})),
+			Shadow = value(Color3.fromRGB(0,20,0)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(92,192,104)), ColorSequenceKeypoint.new(1, Color3.fromRGB(62,158,74)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(25,55,28)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20,48,22)) })),
 		},
-
 		Stepper = {
-			Background    = color4("1A1A1A", 100),
-			Dropshadow    = color4("000000", 100),
-			Separator     = color4("FFFFFF", 40),
-			Filler        = color4("FFFFFF", 10),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)),
-			})),
+			Background = color4("162A18", 100), Dropshadow = color4("001000", 100), Separator = color4("4CAF58", 15), Filler = color4("4CAF58", 6),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0,10,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0,10,0)) })),
 		},
-
-		RadioButtonGroup = {
-			Background  = color4("1A1A1A", 100),
-			Dot         = color4("FFFF00", 100),
-			Stroke      = color4("FFFFFF", 60),
-			Overlay     = color4("FFFFFF", 12),
-			InnerShadow = color4("FFFF00", 20),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("FFFFFF", 15),
-			MenuBackground      = color4("111111", 97),
-		},
-	},
-}
-end function __DIST.HighContrast():typeof(__modImpl())local v=__DIST.cache.HighContrast if not v then v={c=__modImpl()}__DIST.cache.HighContrast=v end return v.c end end do local function __modImpl()
-
-local creator = __DIST.d()
-local value = creator.Value
-
-local function color4(color, alpha)
-	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
-	return { value(parsedColor), value(1 - (alpha / 100)) }
-end
-
-return {
-	_id = "Sunset",
-
-	Text = {
-		Primary            = color4("FFE8CC", 92),
-		Secondary          = color4("FFAA66", 80),
-		Tertiary           = color4("CC7744", 70),
-		Quaternary         = color4("FFE8CC", 12),
-		Quinary            = color4("FFE8CC", 6),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("FF8844", 100),
-	},
-
-	Accents = {
-		Red = color4("FF4444", 100),
-	},
-
-	Controls = {
-		Background    = color4("1A0E08", 100),
-		View          = color4("20120A", 100),
-		ViewBorder    = color4("FF8844", 12),
-
-		WindowControlIcon   = color4("000000", 50),
-		WindowControlStroke = color4("FF8844", 15),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("FF8844", 100),
-		Selection              = color4("EE6622", 100),
-		SelectionStroke        = color4("FF8844", 55),
-		SelectionFocused       = color4("FF9955", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("140A04", 92),
-		Separator = {
-			Background = color4("FF8844", 15),
-			Shadow     = color4("000000", 0),
-		},
-
-		Titlebar = color4("261408", 100),
-		TitlebarShadow = {
-			Background   = color4("000000", 0),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(26, 14, 8)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 136, 68)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.4),
-				NumberSequenceKeypoint.new(1, 1),
-			})),
-		},
-
-		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("FFCC99", 70),
-			SwitchOff   = color4("3A1E0A", 100),
-			SwitchOn    = color4("FF8844", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(200, 100, 40)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(240, 160, 100)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(255, 220, 180)),
-			})),
-		},
-
-		Slider = {
-			Track        = color4("2A1408", 100),
-			TrackEffects = color4("FF8844", 8),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("EE6622", 30),
-			ThumbEffects = color4("FFCC99", 55),
-		},
-
-		Button = {
-			Shadow      = value(Color3.fromRGB(30, 10, 0)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 160, 80)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(230, 100, 34)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(50, 28, 12)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(42, 22, 8)),
-			})),
-		},
-
-		Stepper = {
-			Background    = color4("2A1A0C", 100),
-			Dropshadow    = color4("100400", 100),
-			Separator     = color4("FF8844", 15),
-			Filler        = color4("FF8844", 6),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(20, 8, 0)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 8, 0)),
-			})),
-		},
-
-		RadioButtonGroup = {
-			Background  = color4("2A1A0C", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("FF8844", 25),
-			Overlay     = color4("FF8844", 8),
-			InnerShadow = color4("FFCC99", 12),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("FF8844", 12),
-			MenuBackground      = color4("221208", 95),
-		},
+		RadioButtonGroup = { Background = color4("162A18", 100), Dot = color4("FFFFFF", 100), Stroke = color4("4CAF58", 25), Overlay = color4("4CAF58", 8), InnerShadow = color4("A8DCA0", 12) },
+		MenuButton = { IndicatorBackground = color4("4CAF58", 12), MenuBackground = color4("132016", 95) },
 	},
 }
 end function __DIST.Sunset():typeof(__modImpl())local v=__DIST.cache.Sunset if not v then v={c=__modImpl()}__DIST.cache.Sunset=v end return v.c end end do local function __modImpl()
-
 local creator = __DIST.d()
 local value = creator.Value
-
 local function color4(color, alpha)
 	local parsedColor = (typeof(color) == "Color3" and color) or (typeof(color) == "string" and Color3.fromHex(color))
 	return { value(parsedColor), value(1 - (alpha / 100)) }
 end
-
 return {
-	_id = "Arctic",
-
+	_id = "Sunset",
 	Text = {
-		Primary            = color4("1A3A5C", 90),
-		Secondary          = color4("2A5A8C", 75),
-		Tertiary           = color4("4A7AAC", 60),
-		Quaternary         = color4("1A3A5C", 12),
-		Quinary            = color4("1A3A5C", 6),
-		SelectionPrimary   = color4("FFFFFF", 100),
-		PrimaryAccent      = color4("0088CC", 100),
+		Primary = color4("FFE8CC", 92), Secondary = color4("FFAA66", 80), Tertiary = color4("CC7744", 70),
+		Quaternary = color4("FFE8CC", 12), Quinary = color4("FFE8CC", 6),
+		SelectionPrimary = color4("FFFFFF", 100), PrimaryAccent = color4("FF8844", 100),
 	},
-
-	Accents = {
-		Red = color4("E03030", 100),
-	},
-
+	Accents = { Red = color4("FF4444", 100) },
 	Controls = {
-		Background    = color4("F0F8FF", 100),
-		View          = color4("EAF4FF", 100),
-		ViewBorder    = color4("6AAEDD", 12),
-
-		WindowControlIcon   = color4("000000", 40),
-		WindowControlStroke = color4("4A8ABB", 20),
-		Exit     = color4("FF5F57", 100),
-		Minimize = color4("FEBC2E", 100),
-		Zoom     = color4("28C840", 100),
-
-		SwitchAccent           = color4("0088CC", 100),
-		Selection              = color4("0070BB", 100),
-		SelectionStroke        = color4("0088CC", 50),
-		SelectionFocused       = color4("0099DD", 100),
-		SelectionFocusedAccent = color4("FFFFFF", 90),
-
-		Sidebar = color4("DCEEFF", 88),
-		Separator = {
-			Background = color4("6AAEDD", 20),
-			Shadow     = color4("4A8ABB", 10),
-		},
-
-		Titlebar = color4("DCEEFF", 100),
+		Background = color4("1A0E08", 100), View = color4("20120A", 100), ViewBorder = color4("FF8844", 12),
+		WindowControlIcon = color4("000000", 50), WindowControlStroke = color4("FF8844", 15),
+		Exit = color4("FF5F57", 100), Minimize = color4("FEBC2E", 100), Zoom = color4("28C840", 100),
+		SwitchAccent = color4("FF8844", 100), Selection = color4("EE6622", 100), SelectionStroke = color4("FF8844", 55),
+		SelectionFocused = color4("FF9955", 100), SelectionFocusedAccent = color4("FFFFFF", 90),
+		Sidebar = color4("140A04", 92),
+		Separator = { Background = color4("FF8844", 15), Shadow = color4("000000", 0) },
+		Titlebar = color4("261408", 100),
 		TitlebarShadow = {
-			Background   = color4("C8E4FF", 35),
-			Color        = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 238, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(74, 138, 187)),
-			})),
-			Transparency = value(NumberSequence.new({
-				NumberSequenceKeypoint.new(0, 0.3),
-				NumberSequenceKeypoint.new(1, 0.3),
-			})),
+			Background = color4("000000", 0),
+			Color = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(26,14,8)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,136,68)) })),
+			Transparency = value(NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.4), NumberSequenceKeypoint.new(1, 1) })),
 		},
-
 		Toggle = {
-			Knob        = color4("FFFFFF", 100),
-			KnobEffects = color4("C8E8FF", 70),
-			SwitchOff   = color4("B0CCDD", 80),
-			SwitchOn    = color4("0088CC", 100),
-			DepthEffect = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0,    Color3.fromRGB(160, 200, 230)),
-				ColorSequenceKeypoint.new(0.68, Color3.fromRGB(210, 235, 250)),
-				ColorSequenceKeypoint.new(1,    Color3.fromRGB(240, 248, 255)),
-			})),
+			Knob = color4("FFFFFF", 100), KnobEffects = color4("FFCC99", 70),
+			SwitchOff = color4("3A1E0A", 100), SwitchOn = color4("FF8844", 100),
+			DepthEffect = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(200,100,40)), ColorSequenceKeypoint.new(0.68, Color3.fromRGB(240,160,100)), ColorSequenceKeypoint.new(1, Color3.fromRGB(255,220,180)) })),
 		},
-
-		Slider = {
-			Track        = color4("D8EEFF", 100),
-			TrackEffects = color4("4A8ABB", 0),
-			Thumb        = color4("FFFFFF", 100),
-			ThumbStroke  = color4("4A8ABB", 18),
-			ThumbEffects = color4("FFFFFF", 85),
-		},
-
+		Slider = { Track = color4("2A1408", 100), TrackEffects = color4("FF8844", 8), Thumb = color4("FFFFFF", 100), ThumbStroke = color4("EE6622", 30), ThumbEffects = color4("FFCC99", 55) },
 		Button = {
-			Shadow      = value(Color3.fromRGB(74, 138, 187)),
-			FillPrimary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 152, 220)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 112, 187)),
-			})),
-			FillSecondary = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(220, 238, 255)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 238, 255)),
-			})),
+			Shadow = value(Color3.fromRGB(30,10,0)),
+			FillPrimary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(255,160,80)), ColorSequenceKeypoint.new(1, Color3.fromRGB(230,100,34)) })),
+			FillSecondary = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(50,28,12)), ColorSequenceKeypoint.new(1, Color3.fromRGB(42,22,8)) })),
 		},
-
 		Stepper = {
-			Background    = color4("D8EEFF", 100),
-			Dropshadow    = color4("4A8ABB", 50),
-			Separator     = color4("6AAEDD", 22),
-			Filler        = color4("4A8ABB", 6),
-			SegmentShadow = value(ColorSequence.new({
-				ColorSequenceKeypoint.new(0, Color3.fromRGB(74, 138, 187)),
-				ColorSequenceKeypoint.new(1, Color3.fromRGB(220, 238, 255)),
-			})),
+			Background = color4("2A1A0C", 100), Dropshadow = color4("100400", 100), Separator = color4("FF8844", 15), Filler = color4("FF8844", 6),
+			SegmentShadow = value(ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(20,8,0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(20,8,0)) })),
 		},
-
-		RadioButtonGroup = {
-			Background  = color4("DCF0FF", 100),
-			Dot         = color4("FFFFFF", 100),
-			Stroke      = color4("4A8ABB", 15),
-			Overlay     = color4("FFFFFF", 22),
-			InnerShadow = color4("4A8ABB", 10),
-		},
-
-		MenuButton = {
-			IndicatorBackground = color4("4A8ABB", 8),
-			MenuBackground      = color4("EAF4FF", 96),
-		},
+		RadioButtonGroup = { Background = color4("2A1A0C", 100), Dot = color4("FFFFFF", 100), Stroke = color4("FF8844", 25), Overlay = color4("FF8844", 8), InnerShadow = color4("FFCC99", 12) },
+		MenuButton = { IndicatorBackground = color4("FF8844", 12), MenuBackground = color4("221208", 95) },
 	},
 }
-end function __DIST.Arctic():typeof(__modImpl())local v=__DIST.cache.Arctic if not v then v={c=__modImpl()}__DIST.cache.Arctic=v end return v.c end end do local function __modImpl()
+end function __DIST.M():typeof(__modImpl())local v=__DIST.cache.M if not v then v={c=__modImpl()}__DIST.cache.M=v end return v.c end end do local function __modImpl()
 return {
-	Dark         = __DIST.K(),
-	Light        = __DIST.L(),
-	Midnight     = __DIST.Midnight(),
-	OLED         = __DIST.OLED(),
-	Solarized    = __DIST.Solarized(),
-	RoseGold     = __DIST.RoseGold(),
-	Forest       = __DIST.Forest(),
-	HighContrast = __DIST.HighContrast(),
-	Sunset       = __DIST.Sunset(),
-	Arctic       = __DIST.Arctic(),
+	Dark        = __DIST.K(),
+	Light       = __DIST.L(),
+	Midnight    = __DIST.Midnight(),
+	OLED        = __DIST.OLED(),
+	Solarized   = __DIST.Solarized(),
+	Forest      = __DIST.Forest(),
+	Sunset      = __DIST.Sunset(),
 }
-end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end do local function __modImpl()
--- Refined to match macOS Human Interface Guidelines (HIG)
-
-
+end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end do local function __modImpl()
 local function makeGradient(topHex, bottomHex)
-	return ColorSequence.new({
-		ColorSequenceKeypoint.new(0, Color3.fromHex(topHex)),
-		ColorSequenceKeypoint.new(1, Color3.fromHex(bottomHex)),
-	})
+	return ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromHex(topHex)), ColorSequenceKeypoint.new(1, Color3.fromHex(bottomHex)) })
 end
-
 return {
 	Blue = {
 		_id = "Blue",
-
 		Dark = {
-			SwitchAccent = Color3.fromHex("#0A84FF"),
-			Selection = Color3.fromHex("#007AFF"),
-			SelectionFocused = Color3.fromHex("#0A82FF"),
-		    SelectionStroke =  Color3.fromHex("#0A82FF"),
+			SwitchAccent = Color3.fromHex("#0A84FF"), Selection = Color3.fromHex("#007AFF"),
+			SelectionFocused = Color3.fromHex("#0A82FF"), SelectionStroke = Color3.fromHex("#0A82FF"),
 			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
-			Button = {
-				FillPrimary = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(72, 148, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(10, 110, 255)),
-				}),
-			},
+			Button = { FillPrimary = makeGradient("#2B91FF", "#0A6EFF") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#0A84FF"),
-			Selection = Color3.fromHex("#007AFF"),
-			SelectionFocused = Color3.fromHex("#0A82FF"),
-		    SelectionStroke =  Color3.fromHex("#0A82FF"),
+			SwitchAccent = Color3.fromHex("#0A84FF"), Selection = Color3.fromHex("#007AFF"),
+			SelectionFocused = Color3.fromHex("#0A82FF"), SelectionStroke = Color3.fromHex("#0A82FF"),
 			Toggle = { SwitchOn = Color3.fromHex("#0A84FF") },
-			Button = {
-				FillPrimary = ColorSequence.new({
-					ColorSequenceKeypoint.new(0, Color3.fromRGB(43, 145, 255)),
-					ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 122, 255)),
-				}),
-			},
+			Button = { FillPrimary = makeGradient("#2B91FF", "#007AFF") },
 		},
 	},
-	
 	Purple = {
 		_id = "Purple",
 		Dark = {
-			SwitchAccent = Color3.fromHex("#BF5AF6"),
-			Selection = Color3.fromHex("#BF5AF6"),
-			SelectionFocused = Color3.fromHex("#CB7AF7"),
-		    SelectionStroke =  Color3.fromHex("#CB7AF7"),
+			SwitchAccent = Color3.fromHex("#BF5AF6"), Selection = Color3.fromHex("#BF5AF6"),
+			SelectionFocused = Color3.fromHex("#CB7AF7"), SelectionStroke = Color3.fromHex("#CB7AF7"),
 			Toggle = { SwitchOn = Color3.fromHex("#BF5AF6") },
 			Button = { FillPrimary = makeGradient("#CB7AF7", "#9A3BD6") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#AF52DE"),
-			Selection = Color3.fromHex("#AF52DE"),
-			SelectionFocused = Color3.fromHex("#BF74E4"),
-		    SelectionStroke =  Color3.fromHex("#BF74E4"),
+			SwitchAccent = Color3.fromHex("#AF52DE"), Selection = Color3.fromHex("#AF52DE"),
+			SelectionFocused = Color3.fromHex("#BF74E4"), SelectionStroke = Color3.fromHex("#BF74E4"),
 			Toggle = { SwitchOn = Color3.fromHex("#AF52DE") },
 			Button = { FillPrimary = makeGradient("#BF74E4", "#8B30BF") },
 		},
 	},
-
 	Pink = {
 		_id = "Pink",
 		Dark = {
-			SwitchAccent = Color3.fromHex("#FF375F"),
-			Selection = Color3.fromHex("#FF375F"),
-			SelectionFocused = Color3.fromHex("#FF5E7E"),
-		    SelectionStroke =  Color3.fromHex("#FF5E7E"),
-            Toggle = { SwitchOn = Color3.fromHex("#FF375F") },
+			SwitchAccent = Color3.fromHex("#FF375F"), Selection = Color3.fromHex("#FF375F"),
+			SelectionFocused = Color3.fromHex("#FF5E7E"), SelectionStroke = Color3.fromHex("#FF5E7E"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF375F") },
 			Button = { FillPrimary = makeGradient("#FF5E7E", "#D82042") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#FF2D55"),
-			Selection = Color3.fromHex("#FF2D55"),
-			SelectionFocused = Color3.fromHex("#FF5676"),
-		    SelectionStroke =  Color3.fromHex("#FF5676"),
+			SwitchAccent = Color3.fromHex("#FF2D55"), Selection = Color3.fromHex("#FF2D55"),
+			SelectionFocused = Color3.fromHex("#FF5676"), SelectionStroke = Color3.fromHex("#FF5676"),
 			Toggle = { SwitchOn = Color3.fromHex("#FF2D55") },
 			Button = { FillPrimary = makeGradient("#FF5676", "#D8183B") },
 		},
 	},
-
 	Red = {
 		_id = "Red",
 		Dark = {
-			SwitchAccent = Color3.fromHex("#FF453A"),
-			Selection = Color3.fromHex("#FF453A"),
-			SelectionFocused = Color3.fromHex("#FF6961"),
-		    SelectionStroke =  Color3.fromHex("#FF6961"),
+			SwitchAccent = Color3.fromHex("#FF453A"), Selection = Color3.fromHex("#FF453A"),
+			SelectionFocused = Color3.fromHex("#FF6961"), SelectionStroke = Color3.fromHex("#FF6961"),
 			Toggle = { SwitchOn = Color3.fromHex("#FF453A") },
 			Button = { FillPrimary = makeGradient("#FF6961", "#D6251A") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#FF3B30"),
-			Selection = Color3.fromHex("#FF3B30"),
-			SelectionFocused = Color3.fromHex("#FF6961"),
-		    SelectionStroke =  Color3.fromHex("#FF6961"),
+			SwitchAccent = Color3.fromHex("#FF3B30"), Selection = Color3.fromHex("#FF3B30"),
+			SelectionFocused = Color3.fromHex("#FF6961"), SelectionStroke = Color3.fromHex("#FF6961"),
 			Toggle = { SwitchOn = Color3.fromHex("#FF3B30") },
 			Button = { FillPrimary = makeGradient("#FF6961", "#D62015") },
 		},
 	},
-
-	Orange = {
-		_id = "Orange",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#FF9F0A"),
-			Selection = Color3.fromHex("#FF9F0A"),
-			SelectionFocused = Color3.fromHex("#FFB340"),
-		    SelectionStroke =  Color3.fromHex("#FFB340"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF9F0A") },
-			Button = { FillPrimary = makeGradient("#FFB340", "#D67A00") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#FF9500"),
-			Selection = Color3.fromHex("#FF9500"),
-			SelectionFocused = Color3.fromHex("#FFAB33"),
-		    SelectionStroke =  Color3.fromHex("#FFAB33"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF9500") },
-			Button = { FillPrimary = makeGradient("#FFAB33", "#D67000") },
-		},
-	},
-
-	Yellow = {
-		_id = "Yellow",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#FFD60A"),
-			Selection = Color3.fromHex("#FFD60A"),
-			SelectionFocused = Color3.fromHex("#FFDF40"),
-		    SelectionStroke =  Color3.fromHex("#FFDF40"),
-			Toggle = { SwitchOn = Color3.fromHex("#FFD60A") },
-			Button = { FillPrimary = makeGradient("#FFDF40", "#D6AD00") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#FFCC00"),
-			Selection = Color3.fromHex("#FFCC00"),
-			SelectionFocused = Color3.fromHex("#FFD633"),
-		    SelectionStroke =  Color3.fromHex("#FFD633"),
-			Toggle = { SwitchOn = Color3.fromHex("#FFCC00") },
-			Button = { FillPrimary = makeGradient("#FFD633", "#D6A300") },
-		},
-	},
-
 	Green = {
 		_id = "Green",
 		Dark = {
-			SwitchAccent = Color3.fromHex("#32D74B"),
-			Selection = Color3.fromHex("#32D74B"),
-			SelectionFocused = Color3.fromHex("#56DF6B"),
-		    SelectionStroke =  Color3.fromHex("#56DF6B"),
+			SwitchAccent = Color3.fromHex("#32D74B"), Selection = Color3.fromHex("#32D74B"),
+			SelectionFocused = Color3.fromHex("#56DF6B"), SelectionStroke = Color3.fromHex("#56DF6B"),
 			Toggle = { SwitchOn = Color3.fromHex("#32D74B") },
 			Button = { FillPrimary = makeGradient("#56DF6B", "#22AB36") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#28CD41"),
-			Selection = Color3.fromHex("#28CD41"),
-			SelectionFocused = Color3.fromHex("#52D765"),
-		    SelectionStroke =  Color3.fromHex("#52D765"),
+			SwitchAccent = Color3.fromHex("#28CD41"), Selection = Color3.fromHex("#28CD41"),
+			SelectionFocused = Color3.fromHex("#52D765"), SelectionStroke = Color3.fromHex("#52D765"),
 			Toggle = { SwitchOn = Color3.fromHex("#28CD41") },
 			Button = { FillPrimary = makeGradient("#52D765", "#1CA32C") },
 		},
 	},
-
+	Orange = {
+		_id = "Orange",
+		Dark = {
+			SwitchAccent = Color3.fromHex("#FF9F0A"), Selection = Color3.fromHex("#FF9F0A"),
+			SelectionFocused = Color3.fromHex("#FFB340"), SelectionStroke = Color3.fromHex("#FFB340"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF9F0A") },
+			Button = { FillPrimary = makeGradient("#FFB340", "#D67A00") },
+		},
+		Light = {
+			SwitchAccent = Color3.fromHex("#FF9500"), Selection = Color3.fromHex("#FF9500"),
+			SelectionFocused = Color3.fromHex("#FFAB33"), SelectionStroke = Color3.fromHex("#FFAB33"),
+			Toggle = { SwitchOn = Color3.fromHex("#FF9500") },
+			Button = { FillPrimary = makeGradient("#FFAB33", "#D67000") },
+		},
+	},
 	Graphite = {
 		_id = "Graphite",
 		Dark = {
-			SwitchAccent = Color3.fromHex("#98989D"),
-			Selection = Color3.fromHex("#98989D"),
-			SelectionFocused = Color3.fromHex("#AFAFB4"),
-		    SelectionStroke =  Color3.fromHex("#AFAFB4"),
+			SwitchAccent = Color3.fromHex("#98989D"), Selection = Color3.fromHex("#98989D"),
+			SelectionFocused = Color3.fromHex("#AFAFB4"), SelectionStroke = Color3.fromHex("#AFAFB4"),
 			Toggle = { SwitchOn = Color3.fromHex("#98989D") },
 			Button = { FillPrimary = makeGradient("#AFAFB4", "#7B7B80") },
 		},
 		Light = {
-			SwitchAccent = Color3.fromHex("#8E8E93"),
-			Selection = Color3.fromHex("#8E8E93"),
-			SelectionFocused = Color3.fromHex("#A6A6AA"),
-		    SelectionStroke =  Color3.fromHex("#A6A6AA"),
+			SwitchAccent = Color3.fromHex("#8E8E93"), Selection = Color3.fromHex("#8E8E93"),
+			SelectionFocused = Color3.fromHex("#A6A6AA"), SelectionStroke = Color3.fromHex("#A6A6AA"),
 			Toggle = { SwitchOn = Color3.fromHex("#8E8E93") },
 			Button = { FillPrimary = makeGradient("#A6A6AA", "#717176") },
 		},
 	},
-	Teal = {
-		_id = "Teal",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#64D2FF"),
-			Selection = Color3.fromHex("#64D2FF"),
-			SelectionFocused = Color3.fromHex("#84DCFF"),
-			SelectionStroke = Color3.fromHex("#84DCFF"),
-			Toggle = { SwitchOn = Color3.fromHex("#64D2FF") },
-			Button = { FillPrimary = makeGradient("#84DCFF", "#32B4E6") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#5AC8FA"),
-			Selection = Color3.fromHex("#5AC8FA"),
-			SelectionFocused = Color3.fromHex("#7FD5FB"),
-			SelectionStroke = Color3.fromHex("#7FD5FB"),
-			Toggle = { SwitchOn = Color3.fromHex("#5AC8FA") },
-			Button = { FillPrimary = makeGradient("#7FD5FB", "#2DADE2") },
-		},
-	},
-
-	Indigo = {
-		_id = "Indigo",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#5E5CE6"),
-			Selection = Color3.fromHex("#5E5CE6"),
-			SelectionFocused = Color3.fromHex("#7A78ED"),
-			SelectionStroke = Color3.fromHex("#7A78ED"),
-			Toggle = { SwitchOn = Color3.fromHex("#5E5CE6") },
-			Button = { FillPrimary = makeGradient("#7A78ED", "#4340C9") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#5856D6"),
-			Selection = Color3.fromHex("#5856D6"),
-			SelectionFocused = Color3.fromHex("#7674DF"),
-			SelectionStroke = Color3.fromHex("#7674DF"),
-			Toggle = { SwitchOn = Color3.fromHex("#5856D6") },
-			Button = { FillPrimary = makeGradient("#7674DF", "#3D3BB8") },
-		},
-	},
-
-	Mint = {
-		_id = "Mint",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#66E6C5"),
-			Selection = Color3.fromHex("#66E6C5"),
-			SelectionFocused = Color3.fromHex("#86ECD3"),
-			SelectionStroke = Color3.fromHex("#86ECD3"),
-			Toggle = { SwitchOn = Color3.fromHex("#66E6C5") },
-			Button = { FillPrimary = makeGradient("#86ECD3", "#3CC9A5") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#00C7BE"),
-			Selection = Color3.fromHex("#00C7BE"),
-			SelectionFocused = Color3.fromHex("#33D3CC"),
-			SelectionStroke = Color3.fromHex("#33D3CC"),
-			Toggle = { SwitchOn = Color3.fromHex("#00C7BE") },
-			Button = { FillPrimary = makeGradient("#33D3CC", "#00A39C") },
-		},
-	},
-
-	Brown = {
-		_id = "Brown",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#AC8E68"),
-			Selection = Color3.fromHex("#AC8E68"),
-			SelectionFocused = Color3.fromHex("#BCA182"),
-			SelectionStroke = Color3.fromHex("#BCA182"),
-			Toggle = { SwitchOn = Color3.fromHex("#AC8E68") },
-			Button = { FillPrimary = makeGradient("#BCA182", "#8D7050") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#A2845E"),
-			Selection = Color3.fromHex("#A2845E"),
-			SelectionFocused = Color3.fromHex("#B19775"),
-			SelectionStroke = Color3.fromHex("#B19775"),
-			Toggle = { SwitchOn = Color3.fromHex("#A2845E") },
-			Button = { FillPrimary = makeGradient("#B19775", "#856848") },
-		},
-	},
-	Cyan = {
-		_id = "Cyan",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#32D7FF"),
-			Selection = Color3.fromHex("#32D7FF"),
-			SelectionFocused = Color3.fromHex("#5BE0FF"),
-			SelectionStroke = Color3.fromHex("#5BE0FF"),
-			Toggle = { SwitchOn = Color3.fromHex("#32D7FF") },
-			Button = { FillPrimary = makeGradient("#5BE0FF", "#0BB7E0") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#00CFFF"),
-			Selection = Color3.fromHex("#00CFFF"),
-			SelectionFocused = Color3.fromHex("#33D9FF"),
-			SelectionStroke = Color3.fromHex("#33D9FF"),
-			Toggle = { SwitchOn = Color3.fromHex("#00CFFF") },
-			Button = { FillPrimary = makeGradient("#33D9FF", "#00ACD4") },
-		},
-	},
-	Lime = {
-		_id = "Lime",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#A8E63A"),
-			Selection = Color3.fromHex("#A8E63A"),
-			SelectionFocused = Color3.fromHex("#B9EB63"),
-			SelectionStroke = Color3.fromHex("#B9EB63"),
-			Toggle = { SwitchOn = Color3.fromHex("#A8E63A") },
-			Button = { FillPrimary = makeGradient("#B9EB63", "#82BA19") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#9AD92B"),
-			Selection = Color3.fromHex("#9AD92B"),
-			SelectionFocused = Color3.fromHex("#AFE255"),
-			SelectionStroke = Color3.fromHex("#AFE255"),
-			Toggle = { SwitchOn = Color3.fromHex("#9AD92B") },
-			Button = { FillPrimary = makeGradient("#AFE255", "#76B012") },
-		},
-	},
-	Amber = {
-		_id = "Amber",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#FFC233"),
-			Selection = Color3.fromHex("#FFC233"),
-			SelectionFocused = Color3.fromHex("#FFCF5C"),
-			SelectionStroke = Color3.fromHex("#FFCF5C"),
-			Toggle = { SwitchOn = Color3.fromHex("#FFC233") },
-			Button = { FillPrimary = makeGradient("#FFCF5C", "#D99B00") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#FFB300"),
-			Selection = Color3.fromHex("#FFB300"),
-			SelectionFocused = Color3.fromHex("#FFC533"),
-			SelectionStroke = Color3.fromHex("#FFC533"),
-			Toggle = { SwitchOn = Color3.fromHex("#FFB300") },
-			Button = { FillPrimary = makeGradient("#FFC533", "#D68F00") },
-		},
-	},
-	DeepOrange = {
-		_id = "DeepOrange",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#FF7A33"),
-			Selection = Color3.fromHex("#FF7A33"),
-			SelectionFocused = Color3.fromHex("#FF965C"),
-			SelectionStroke = Color3.fromHex("#FF965C"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF7A33") },
-			Button = { FillPrimary = makeGradient("#FF965C", "#D95500") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#FF6A00"),
-			Selection = Color3.fromHex("#FF6A00"),
-			SelectionFocused = Color3.fromHex("#FF8633"),
-			SelectionStroke = Color3.fromHex("#FF8633"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF6A00") },
-			Button = { FillPrimary = makeGradient("#FF8633", "#D94F00") },
-		},
-	},
-	Rose = {
-		_id = "Rose",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#FF5C8A"),
-			Selection = Color3.fromHex("#FF5C8A"),
-			SelectionFocused = Color3.fromHex("#FF7AA0"),
-			SelectionStroke = Color3.fromHex("#FF7AA0"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF5C8A") },
-			Button = { FillPrimary = makeGradient("#FF7AA0", "#D63261") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#FF4D7A"),
-			Selection = Color3.fromHex("#FF4D7A"),
-			SelectionFocused = Color3.fromHex("#FF6B91"),
-			SelectionStroke = Color3.fromHex("#FF6B91"),
-			Toggle = { SwitchOn = Color3.fromHex("#FF4D7A") },
-			Button = { FillPrimary = makeGradient("#FF6B91", "#D62857") },
-		},
-	},
-	DeepPurple = {
-		_id = "DeepPurple",
-		Dark = {
-			SwitchAccent = Color3.fromHex("#8A5CFF"),
-			Selection = Color3.fromHex("#8A5CFF"),
-			SelectionFocused = Color3.fromHex("#A07AFF"),
-			SelectionStroke = Color3.fromHex("#A07AFF"),
-			Toggle = { SwitchOn = Color3.fromHex("#8A5CFF") },
-			Button = { FillPrimary = makeGradient("#A07AFF", "#6633D6") },
-		},
-		Light = {
-			SwitchAccent = Color3.fromHex("#7B4DFF"),
-			Selection = Color3.fromHex("#7B4DFF"),
-			SelectionFocused = Color3.fromHex("#9570FF"),
-			SelectionStroke = Color3.fromHex("#9570FF"),
-			Toggle = { SwitchOn = Color3.fromHex("#7B4DFF") },
-			Button = { FillPrimary = makeGradient("#9570FF", "#5B28D6") },
-		},
-	},
 }
-end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end end
+end function __DIST.O():typeof(__modImpl())local v=__DIST.cache.O if not v then v={c=__modImpl()}__DIST.cache.O=v end return v.c end end
 
 local utility = __DIST.a()
 local types = __DIST.b()
@@ -12542,15 +11527,12 @@ local services = __DIST.e()
 local symbols = __DIST.f()
 local components = __DIST.K()
 
-local themes = __DIST.N()
-local accents = __DIST.O()
+local themes = __DIST.M()
+local accents = __DIST.N()
 
---// References
 local create = creator.Create
-
 local tweenService = services.TweenService
 
---// Variables
 local cascade = {
 	Themes = themes,
 	Accents = accents,
@@ -12560,9 +11542,8 @@ local cascade = {
 local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
 local currentTween: Tween? = nil
 
---// Functions
 local function deepCopy(original, identifier: string?)
-	 if not original then return {} end
+	if not original then return {} end
 	local copy = {}
 	for key, value in pairs(original) do
 		local vType = typeof(value)
@@ -12576,34 +11557,22 @@ local function deepCopy(original, identifier: string?)
 			copy[key] = value
 		end
 	end
-
 	if identifier and not original._id then
 		original._id = identifier
 	end
-
 	return copy
 end
 
 local function parseAccent(theme, overrides)
 	for key, override in pairs(overrides) do
 		local themeObj = theme[key]
-
 		if not themeObj and type(theme) == "table" and type(theme.Controls) == "table" then
 			themeObj = theme.Controls[key]
 		end
-
-		if not themeObj then
-			continue
-		end
-
+		if not themeObj then continue end
 		if type(themeObj) == "table" and themeObj.Connect then
 			themeObj.Value = override
-		elseif
-			type(themeObj) == "table"
-			and themeObj[1]
-			and themeObj[1].Connect
-			and typeof(override) == "Color3"
-		then
+		elseif type(themeObj) == "table" and themeObj[1] and themeObj[1].Connect and typeof(override) == "Color3" then
 			themeObj[1].Value = override
 		elseif type(themeObj) == "table" and type(override) == "table" then
 			parseAccent(themeObj, override)
@@ -12612,7 +11581,7 @@ local function parseAccent(theme, overrides)
 end
 
 local function updateThemes(target, theme, accent)
-	 if not target or not theme then return end 
+	if not target or not theme then return end
 	local function deepUpdate(target, new)
 		if not target or not new then return end
 		for key, value in pairs(new) do
@@ -12624,22 +11593,25 @@ local function updateThemes(target, theme, accent)
 		end
 	end
 	deepUpdate(target, theme)
-
 	if accent and accent[theme._id] then
 		parseAccent(target, accent[theme._id])
 	end
 end
 
---// Initialize
-cascade.New = function(properties: AppProperties__DARKLUA_TYPE_q): App__DARKLUA_TYPE_r	
-if not game:IsLoaded() then
+cascade.New = function(properties)
+	if not game:IsLoaded() then
 		game.Loaded:Wait()
 	end
 
 	properties = properties or {}
 
-	local initialTheme = properties.Theme or themes.Light
+	local initialTheme = properties.Theme or themes.Dark
 	local initialAccent = properties.Accent or accents.Blue
+
+	if not initialTheme then
+		warn("[Cascade] initialTheme is nil!")
+		return
+	end
 
 	local currentBaseTheme = initialTheme
 
@@ -12654,7 +11626,6 @@ if not game:IsLoaded() then
 		ResetOnSpawn = false,
 		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
 		DisplayOrder = 200,
-
 		OnTopOfCoreBlur = true,
 	})) :: ScreenGui
 
@@ -12671,39 +11642,19 @@ if not game:IsLoaded() then
 		Position = UDim2.new(0.5, 0, 0, 10),
 		Size = UDim2.fromOffset(180, 5),
 		Parent = container.__instance,
-
-		create("UICorner")({
-			Name = "UICorner",
-			CornerRadius = UDim.new(1, 0),
-		}),
+		create("UICorner")({ Name = "UICorner", CornerRadius = UDim.new(1, 0) }),
 	}) :: ImageButton
 
 	pill.MouseEnter:Connect(function()
-		if currentTween then
-			currentTween:Cancel()
-		end
-
-		currentTween = tweenService:Create(pill.__instance, tweenInfo, {
-			ImageTransparency = 0.15,
-		})
-
-		if currentTween then
-			currentTween:Play()
-		end
+		if currentTween then currentTween:Cancel() end
+		currentTween = tweenService:Create(pill.__instance, tweenInfo, { ImageTransparency = 0.15 })
+		if currentTween then currentTween:Play() end
 	end)
 
 	pill.MouseLeave:Connect(function()
-		if currentTween then
-			currentTween:Cancel()
-		end
-
-		currentTween = tweenService:Create(pill.__instance, tweenInfo, {
-			ImageTransparency = 0.5,
-		})
-
-		if currentTween then
-			currentTween:Play()
-		end
+		if currentTween then currentTween:Cancel() end
+		currentTween = tweenService:Create(pill.__instance, tweenInfo, { ImageTransparency = 0.5 })
+		if currentTween then currentTween:Play() end
 	end)
 
 	local object = binder.Wrap(properties, {
@@ -12711,19 +11662,18 @@ if not game:IsLoaded() then
 			pill.Visible = value
 		end,
 		Theme = function(newTheme)
+			if not newTheme then return end
 			currentBaseTheme = newTheme
 			updateThemes(properties.Theme, newTheme, properties.Accent)
 		end,
 		Accent = function(newAccent)
-			    if not newAccent then return end  -- เพิ่มบรรทัดนี้
+			if not newAccent then return end
 			properties.Accent = deepCopy(newAccent, newAccent._id)
 			updateThemes(properties.Theme, currentBaseTheme, newAccent)
 		end,
 	}, container, { "Theme", "Accent" })
 
-	object.Structures = {
-		WindowPill = pill,
-	}
+	object.Structures = { WindowPill = pill }
 
 	for component, make in pairs(components) do
 		object[component] = make

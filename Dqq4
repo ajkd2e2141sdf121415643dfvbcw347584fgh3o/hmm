@@ -5591,6 +5591,7 @@ local effects = __DIST.h()
 
 	local userInputService = services.UserInputService
 	local tweenService = services.TweenService
+	local runService = services.RunService
 
 	--// Variables
 	local parent = self.__container or self.__instance or self
@@ -5610,6 +5611,7 @@ local effects = __DIST.h()
 	local dragging
 	local resizeClient
 	local savedScrollPositions = {}
+	local scrollHoldConnection
 	local structures = {}
 
 	--// UI
@@ -6085,6 +6087,31 @@ local effects = __DIST.h()
 		end)
 	end
 
+	local function holdScrollPositions(duration)
+		if scrollHoldConnection then
+			scrollHoldConnection:Disconnect()
+			scrollHoldConnection = nil
+		end
+
+		restoreScrollPositions()
+
+		if not runService then
+			restoreScrollPositionsAfterLayout()
+			return
+		end
+
+		local startedAt = os.clock()
+		scrollHoldConnection = runService.RenderStepped:Connect(function()
+			restoreScrollPositions()
+
+			if os.clock() - startedAt >= duration then
+				scrollHoldConnection:Disconnect()
+				scrollHoldConnection = nil
+				restoreScrollPositionsAfterLayout()
+			end
+		end)
+	end
+
 	local bindings = {
 		Title = function(value: string)
 			structures.Titlebar.Title.Visible = value and true or false
@@ -6124,14 +6151,18 @@ local effects = __DIST.h()
 				end
 			end
 
-			local tweenInfo = TweenInfo.new(0.25, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+			local tweenInfo = TweenInfo.new(0.32, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 			local bodyTarget = {
 				Position = value and UDim2.new(0.5, 0, 0.5, structures.Body.AbsoluteSize.Y * 2) or originalPosition2,
 			}
-			local scaleTarget = { Scale = value and 0 or 1 }
+			local scaleTarget = { Scale = value and 0.06 or 1 }
 
 			if useTween then
 				minimizing = true
+				if not value then
+					holdScrollPositions(0.18)
+				end
+
 				tweenService:Create(structures.Body.__instance, tweenInfo, bodyTarget):Play()
 
 				local scaleTween: Tween = tweenService:Create(structures.Scale.__instance, tweenInfo, scaleTarget)
@@ -6143,10 +6174,6 @@ local effects = __DIST.h()
 					if structures["BlurModel"] and not properties.Minimized then
 						structures["BlurModel"].SetVisibility(true)
 					end
-
-					if not properties.Minimized then
-						restoreScrollPositionsAfterLayout()
-					end
 				end)
 			else
 				structures.Body.Position = bodyTarget.Position
@@ -6157,7 +6184,7 @@ local effects = __DIST.h()
 				end
 
 				if not value then
-					restoreScrollPositionsAfterLayout()
+					holdScrollPositions(0.08)
 				end
 			end
 		end,

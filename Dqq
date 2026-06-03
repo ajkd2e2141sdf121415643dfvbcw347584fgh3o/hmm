@@ -11033,22 +11033,6 @@ local components = {
 	Notification = __DIST.J(),
 }
 
---// Intialize
-for component, make in pairs(components) do
-	components[component] = (function(componentName, make)
-		return function(...)
-			local object = make(...)
-
-			binder.Apply(components, object)
-
-			if componentName == "Section" then
-				installColorPicker(object)
-			end
-
-			return object
-		end
-	end)(component, make)
-end
 
 -- Cascade ColorPicker component
 -- Paste this after your Section/CreateSection methods are available.
@@ -11578,6 +11562,24 @@ local function installColorPicker(SectionClass)
 		return object
 	end
 end
+
+--// Intialize
+for component, make in pairs(components) do
+	components[component] = (function(componentName, make)
+		return function(...)
+			local object = make(...)
+
+			binder.Apply(components, object)
+
+			if componentName == "Section" then
+				installColorPicker(object)
+			end
+
+			return object
+		end
+	end)(component, make)
+end
+
 
 return components
 end function __DIST.K():typeof(__modImpl())local v=__DIST.cache.K if not v then v={c=__modImpl()}__DIST.cache.K=v end return v.c end end do local function __modImpl()--// Imports

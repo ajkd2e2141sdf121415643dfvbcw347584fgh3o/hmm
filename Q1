@@ -12532,7 +12532,7 @@ return {
 	},
 }
 end function __DIST.N():typeof(__modImpl())local v=__DIST.cache.N if not v then v={c=__modImpl()}__DIST.cache.N=v end return v.c end end end
-
+-
 local utility = __DIST.a()
 local types = __DIST.b()
 local creator = __DIST.d()
@@ -12562,6 +12562,7 @@ local currentTween: Tween? = nil
 
 --// Functions
 local function deepCopy(original, identifier: string?)
+	if not original then return {} end
 	local copy = {}
 	for key, value in pairs(original) do
 		local vType = typeof(value)
@@ -12712,6 +12713,7 @@ if not game:IsLoaded() then
 			updateThemes(properties.Theme, newTheme, properties.Accent)
 		end,
 		Accent = function(newAccent)
+			if not newAccent then return end
 			properties.Accent = deepCopy(newAccent, newAccent._id)
 			updateThemes(properties.Theme, currentBaseTheme, newAccent)
 		end,
@@ -12732,3 +12734,4 @@ if not game:IsLoaded() then
 end
 
 return cascade
+ 

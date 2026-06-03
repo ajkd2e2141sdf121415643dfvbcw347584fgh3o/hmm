@@ -5609,6 +5609,7 @@ local effects = __DIST.h()
 	local minimizing
 	local dragging
 	local resizeClient
+	local savedScrollPositions = {}
 	local structures = {}
 
 	--// UI
@@ -6051,6 +6052,39 @@ local effects = __DIST.h()
 	originalSize = structures.Body.Size
 	originalPosition = structures.Body.Position
 
+	local function saveScrollPositions()
+		savedScrollPositions = {}
+
+		for _, descendant in ipairs(structures.Body.__instance:GetDescendants()) do
+			if descendant:IsA("ScrollingFrame") then
+				savedScrollPositions[descendant] = descendant.CanvasPosition
+			end
+		end
+	end
+
+	local function restoreScrollPositions()
+		for scrollingFrame, canvasPosition in pairs(savedScrollPositions) do
+			if scrollingFrame and scrollingFrame.Parent then
+				local maxCanvasPosition = Vector2.new(
+					math.max(0, scrollingFrame.AbsoluteCanvasSize.X - scrollingFrame.AbsoluteWindowSize.X),
+					math.max(0, scrollingFrame.AbsoluteCanvasSize.Y - scrollingFrame.AbsoluteWindowSize.Y)
+				)
+
+				scrollingFrame.CanvasPosition = Vector2.new(
+					math.clamp(canvasPosition.X, 0, maxCanvasPosition.X),
+					math.clamp(canvasPosition.Y, 0, maxCanvasPosition.Y)
+				)
+			end
+		end
+	end
+
+	local function restoreScrollPositionsAfterLayout()
+		task.defer(function()
+			restoreScrollPositions()
+			task.defer(restoreScrollPositions)
+		end)
+	end
+
 	local bindings = {
 		Title = function(value: string)
 			structures.Titlebar.Title.Visible = value and true or false
@@ -6083,6 +6117,7 @@ local effects = __DIST.h()
 
 			if value and not minimizing then
 				originalPosition2 = structures.Body.Position
+				saveScrollPositions()
 				
 				if structures["BlurModel"] then
 					structures["BlurModel"].SetVisibility(false)
@@ -6108,6 +6143,10 @@ local effects = __DIST.h()
 					if structures["BlurModel"] and not properties.Minimized then
 						structures["BlurModel"].SetVisibility(true)
 					end
+
+					if not properties.Minimized then
+						restoreScrollPositionsAfterLayout()
+					end
 				end)
 			else
 				structures.Body.Position = bodyTarget.Position
@@ -6115,6 +6154,10 @@ local effects = __DIST.h()
 
 				if value and structures["BlurModel"] then
 					structures["BlurModel"].SetVisibility(false)
+				end
+
+				if not value then
+					restoreScrollPositionsAfterLayout()
 				end
 			end
 		end,
